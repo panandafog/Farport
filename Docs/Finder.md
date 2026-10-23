@@ -145,7 +145,7 @@ retains its existing unsandboxed behavior. No third-party driver is required.
 
 ```sh
 sh Scripts/lint.sh
-xcodegen generate
+sh Scripts/xcodegen.sh generate
 xcodebuild -quiet -project Harbor.xcodeproj -scheme Harbor \
   -configuration Debug -destination 'platform=macOS,arch=arm64' \
   -derivedDataPath Build -allowProvisioningUpdates build

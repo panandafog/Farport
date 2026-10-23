@@ -184,12 +184,16 @@ helpers when they reduce real branching or overly dense view expressions.
 
 ## Build And Test
 
-Run commands from the repository root. Requires Xcode, SwiftLint, and XcodeGen
-only when regenerating the project (`brew install xcodegen`).
+Run commands from the repository root. Requires Xcode and SwiftLint. Regenerate
+only through `sh Scripts/xcodegen.sh generate`: it installs the checksum-pinned
+official XcodeGen 2.44.1 binary/presets in ignored `Build/Tools`, shared by local
+development and CI. Do not use an arbitrary Homebrew XcodeGen version or remove
+CI's generated-file diff check to accommodate toolchain drift. Updating the pin
+requires reviewing/regenerating the project and updating its official SHA-256.
 
 ```sh
 sh Scripts/lint.sh
-xcodegen generate
+sh Scripts/xcodegen.sh generate
 xcodebuild -quiet -project Harbor.xcodeproj -scheme Harbor \
   -configuration Debug -destination 'platform=macOS' -derivedDataPath Build build
 xcodebuild -quiet -project Harbor.xcodeproj -scheme Harbor \

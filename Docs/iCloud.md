@@ -75,7 +75,7 @@ The Finder extension does not access CloudKit.
 2. Enable iCloud/CloudKit with `iCloud.com.panandafog.harbor` and Push Notifications on the
    Harbor app identifier/target. Keep its existing App Group and Keychain group.
    The Finder extension retains only its existing capabilities.
-3. Regenerate with `xcodegen generate` after changing `project.yml`. The Harbor
+3. Regenerate with `sh Scripts/xcodegen.sh generate` after changing `project.yml`. The Harbor
    scheme uses the cloud entitlement file; HarborLocal/Local deliberately does not.
 4. Build with `-allowProvisioningUpdates`. A successful signature must include the
    container, CloudKit service and APNS environment as well as the original groups.

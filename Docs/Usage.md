@@ -72,7 +72,7 @@ open Build/Build/Products/Debug/Harbor.app
 ```
 
 `project.yml` is the XcodeGen source of truth. After changing project configuration,
-regenerate with `xcodegen generate`. The generated Xcode project is included, so
+regenerate with `sh Scripts/xcodegen.sh generate`. The generated Xcode project is included, so
 XcodeGen is not required just to build.
 
 ## Architecture

@@ -17,7 +17,7 @@ optional persistent tmux sessions, and Finder integration.
 
 - macOS 15 or newer.
 - Xcode 26.3 or newer, including Icon Composer support; locally validated with Xcode 27.
-- SwiftLint (`brew install swiftlint`). XcodeGen is needed only to regenerate the project.
+- SwiftLint (`brew install swiftlint`). The pinned XcodeGen wrapper is needed only for regeneration.
 - Apple Development signing with matching App Group, Keychain, CloudKit, and Push capabilities.
 
 iOS/iPadOS clients and additional file protocols are planned, not included.
@@ -30,7 +30,7 @@ if needed; capability setup is described in [iCloud](Docs/iCloud.md) and [Finder
 Do not rename existing App Group or Keychain identities when updating this installation.
 
 ```sh
-brew install swiftlint xcodegen
+brew install swiftlint
 xcodebuild -project Harbor.xcodeproj -scheme Harbor \
   -configuration Debug -destination 'platform=macOS' \
   -derivedDataPath Build -allowProvisioningUpdates build
@@ -42,7 +42,9 @@ for shared Keychain and Finder access. For Local Network permissions and the man
 **Harbor Attach** fallback, see [Debugging](Docs/Debugging.md).
 
 `project.yml` is the XcodeGen source of truth. The generated project and dependency
-lockfile are included. After configuration/resource changes, run `xcodegen generate`.
+lockfile are included. After configuration/resource changes, run `sh Scripts/xcodegen.sh generate`.
+The wrapper downloads the official XcodeGen 2.44.1 binary and presets into `Build/Tools`,
+checks the pinned SHA-256, and uses the same tool locally and in CI; it does not modify Homebrew.
 `AppIcon.icon` is a temporary copy of the MediaPlayer/Trackfold icon, to be replaced
 before public distribution.
 

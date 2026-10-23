@@ -68,11 +68,13 @@ jobs:
         run: xcodebuild -version
 
       - name: Install build tools
-        run: brew install swiftlint xcodegen
+        run: |
+          brew install swiftlint
+          sh Scripts/xcodegen.sh --version
 
       - name: Regenerate Xcode project
         run: |
-          xcodegen generate
+          sh Scripts/xcodegen.sh generate
           git diff --exit-code -- Harbor.xcodeproj App/Info.plist FinderExtension/Info.plist AppTests/Info.plist
 
       - name: Build without signing

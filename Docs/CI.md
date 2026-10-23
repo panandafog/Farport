@@ -15,8 +15,23 @@ unsigned macOS build approach, with additional Harbor-specific checks.
 Both run on `macos-15` with Xcode 26.3 explicitly selected. This runner includes that
 toolchain, unlike its default Xcode 16.4, which cannot compile the Icon Composer asset.
 Toolchain inventory: [GitHub runner image](https://github.com/actions/runner-images/blob/main/images/macos/macos-15-Readme.md).
-Review the selected Xcode path when updating the runner. Homebrew installs SwiftLint,
-XcodeGen, and tmux; a new tool version can legitimately require a style/generation update.
+Review the selected Xcode path when updating the runner. Homebrew installs SwiftLint
+and tmux; XcodeGen is installed separately through `Scripts/xcodegen.sh`.
+
+## Reproducible Project Generation
+
+Use `sh Scripts/xcodegen.sh generate` locally and in CI. It downloads the official
+[XcodeGen 2.44.1 release](https://github.com/yonaskolb/XcodeGen/releases/tag/2.44.1),
+verifies its pinned SHA-256, and keeps the binary and bundled setting presets in
+ignored `Build/Tools/XcodeGen/2.44.1`. It neither uses nor changes the Homebrew copy.
+The first invocation needs GitHub access; subsequent invocations use the local copy.
+
+An unpinned Homebrew install on the runner generated a different project, including
+string-valued `SystemCapabilities` instead of dictionaries. Keep the generated-file
+diff check: it catches drift, not just compilation errors. To upgrade XcodeGen,
+change the version and verified release digest together, regenerate locally, and
+review the generated diff before committing. Do not normalize away capability/type
+differences or relax this check just to accept a new generator's output.
 
 Events: push/PR targeting `main` or `dev`, plus manual dispatch. The token is
 read-only, checkout does not retain credentials, and there are no repository secrets,

@@ -65,7 +65,8 @@ the original blocking requirement; a manual retry starts a fresh attempt.
 ## Generation And Validation
 
 `project.yml` and `Scripts/configure-debugging.swift` are the sources of truth.
-Regenerate with `xcodegen generate`; do not edit the generated scheme by hand.
+Regenerate with `sh Scripts/xcodegen.sh generate` (checksum-pinned XcodeGen 2.44.1);
+do not edit the generated scheme by hand or use an unpinned system generator.
 The post-generation script merges workspace settings and sets the attach scheme's
 launch mode through an XML parser. **File > Project Settings** should show
 **Project-relative Location**, `Build`, with the resolved path inside this repository.
