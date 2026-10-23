@@ -52,7 +52,8 @@ jobs:
 
   build:
     name: Build macOS (${{ matrix.configuration }})
-    runs-on: macos-15
+    # Compile Icon Composer assets on Tahoe; keep package compatibility tests on macOS 15.
+    runs-on: macos-26
     timeout-minutes: 40
     strategy:
       fail-fast: false
@@ -65,7 +66,10 @@ jobs:
           persist-credentials: false
 
       - name: Show Xcode version
-        run: xcodebuild -version
+        run: |
+          sw_vers
+          xcodebuild -version
+          printf 'Commit: %s; attempt: %s\n' "$GITHUB_SHA" "$GITHUB_RUN_ATTEMPT"
 
       - name: Install build tools
         run: |
@@ -78,11 +82,24 @@ jobs:
           git diff --exit-code -- Harbor.xcodeproj App/Info.plist FinderExtension/Info.plist AppTests/Info.plist
 
       - name: Build without signing
+        shell: bash
         run: |
+          set -o pipefail
           mkdir -p Harbor.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
           cp Package.resolved Harbor.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+          mkdir -p "$RUNNER_TEMP/HarborDiagnostics"
           xcodebuild -project Harbor.xcodeproj -scheme Harbor \
             -configuration "${{ matrix.configuration }}" -destination 'generic/platform=macOS' \
             -derivedDataPath "$RUNNER_TEMP/HarborBuild" \
+            -resultBundlePath "$RUNNER_TEMP/HarborDiagnostics/Harbor.xcresult" \
             -onlyUsePackageVersionsFromResolvedFile \
-            CODE_SIGNING_ALLOWED=NO build
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee "$RUNNER_TEMP/HarborDiagnostics/build.log"
+
+      - name: Preserve build diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-diagnostics-${{ matrix.configuration }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/HarborDiagnostics/
+          if-no-files-found: ignore
+          retention-days: 7

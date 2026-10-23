@@ -299,6 +299,9 @@ extension has no test-only absolute-path read or testmanager Mach-lookup excepti
 GitHub CI is configured in `.github/workflows/build.yml`: strict lint, loopback
 SSH/SFTP/ProxyJump/tmux package tests, and unsigned Debug/Release app builds. No
 production secrets or Apple signing material belong in Git or ordinary PR jobs.
+Keep package tests on macOS 15 and compile Icon Composer resources on the macOS 26
+build host; neither changes the app's deployment target. Preserve asset compilation
+failures with pipefail and diagnostic artifacts, never by skipping icon/accent assets.
 Keep `Package.resolved`, vendored source/license notes, generated project and shared
 schemes tracked. Exclude build output, personal IDE state and `remote_development/`
 reference material. See `Docs/CI.md` and `Docs/TestFlight.md` for coverage/release gates.

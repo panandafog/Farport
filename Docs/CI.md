@@ -12,9 +12,17 @@ unsigned macOS build approach, with additional Harbor-specific checks.
 - **Build macOS (Debug/Release)** regenerates the checked-in project and requires
   no tracked diff, then builds the app and embedded Finder extension without signing.
 
-Both run on `macos-15` with Xcode 26.3 explicitly selected. This runner includes that
-toolchain, unlike its default Xcode 16.4, which cannot compile the Icon Composer asset.
-Toolchain inventory: [GitHub runner image](https://github.com/actions/runner-images/blob/main/images/macos/macos-15-Readme.md).
+Package tests run on `macos-15`; Debug/Release app builds run on `macos-26`, with
+Xcode 26.3 explicitly selected in both jobs. Build-host and app deployment target
+are independent: the app still targets macOS 15 and both CPU architectures.
+The newer build host avoids the macOS-15 Icon Composer/asset-distillation failure
+scenario. The reported Debug failure ended at `CompileAssetCatalogVariant` without
+its underlying actool diagnostic, so the exact original cause remains unconfirmed.
+Similar macOS-15 failures loading newer AVFCore/CoreMedia symbols during Icon Composer
+compilation are recorded in [Kaset's build script](https://github.com/sozercan/kaset/blob/main/Scripts/build-app.sh).
+Do not skip the icon/accent assets or silently replace failed compilation with
+prebuilt resources. Toolchain inventories: [macOS 15](https://github.com/actions/runner-images/blob/main/images/macos/macos-15-arm64-Readme.md),
+[macOS 26](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md).
 Review the selected Xcode path when updating the runner. Homebrew installs SwiftLint
 and tmux; XcodeGen is installed separately through `Scripts/xcodegen.sh`.
 
@@ -56,5 +64,9 @@ run these locally using the `Harbor` test scheme and an isolated library, then r
 normally to remove test-only signing exceptions. No signing material belongs in Git.
 
 Before a release, complete [TestFlight preparation](TestFlight.md), run the signed
-hosted suite, and manually verify the system integrations. CI logs appear in the
-Actions run; the workflow intentionally publishes neither app bundles nor test data.
+hosted suite, and manually verify the system integrations. Build output is captured
+in full with `tee` and `pipefail`, so a failed compiler cannot turn into a successful
+step. On failure, CI retains `build.log` and the build `.xcresult` in a configuration-
+and attempt-specific diagnostics artifact for seven days. It publishes neither app
+bundles nor test data. Inspect the first actool error there, not just xcodebuild's
+final failed-command summary. The job also logs host OS, Xcode version, and commit.
