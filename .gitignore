@@ -1,0 +1,52 @@
+# macOS
+.DS_Store
+._*
+
+# Build output (including vendored-package builds)
+.build/
+build/
+Build/
+DerivedData/
+*.xcarchive/
+*.xcresult/
+*.dSYM/
+*.dSYM.zip
+*.ipa
+*.pkg
+*.dmg
+*.hmap
+*.log
+
+# Personal Xcode / SwiftPM state; keep projects, shared schemes and lockfiles
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+*.xccheckout
+*.xcscmblueprint
+*.moved-aside
+
+# Local test environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.swiftlint_cache/
+
+# Signing and local configuration
+.env
+.env.*
+!.env.example
+*.p12
+*.p8
+*.mobileprovision
+*.provisionprofile
+*.keychain-db
+
+# User data and private reference material (not project sources)
+/remote_development/
+hosts.json
+hosts.*.json
+*.pem
+*.key
+id_rsa*
+id_ed25519*

@@ -1,0 +1,193 @@
+name: Harbor
+configs:
+  Debug: debug
+  Release: release
+  Local: debug
+options:
+  bundleIdPrefix: com.panandafog
+  postGenCommand: xcrun swift Scripts/configure-debugging.swift
+  fileTypes:
+    icon:
+      file: true
+      buildPhase: resources
+  deploymentTarget:
+    macOS: "15.0"
+packages:
+  HarborKit:
+    path: .
+  SwiftTerm:
+    url: https://github.com/migueldeicaza/SwiftTerm.git
+    exactVersion: 1.10.1
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    CODE_SIGN_IDENTITY: "Apple Development"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: 3HG9ZBM8AV
+    REGISTER_APP_GROUPS: YES
+    HARBOR_APP_GROUP: group.dev.harbor.shared.$(DEVELOPMENT_TEAM)
+    HARBOR_KEYCHAIN_GROUP: $(AppIdentifierPrefix)dev.harbor.shared
+    HARBOR_ICLOUD_CONTAINER: iCloud.com.panandafog.harbor
+targets:
+  Harbor:
+    type: application
+    platform: macOS
+    sources:
+      - App
+      - path: AppIcon.icon
+        type: file
+        buildPhase: resources
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Harbor
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        HarborAppGroup: $(HARBOR_APP_GROUP)
+        HarborKeychainGroup: $(HARBOR_KEYCHAIN_GROUP)
+        HarborCloudContainer: $(HARBOR_ICLOUD_CONTAINER)
+        NSLocalNetworkUsageDescription: Harbor connects to your saved SSH and SFTP servers on the local network, including folders you connect to Finder.
+        LSApplicationCategoryType: public.app-category.developer-tools
+    attributes:
+      SystemCapabilities:
+        com.apple.ApplicationGroups:
+          enabled: 1
+        com.apple.Keychain:
+          enabled: 1
+        com.apple.iCloud:
+          enabled: 1
+        com.apple.Push:
+          enabled: 1
+    preBuildScripts:
+      - name: SwiftLint
+        script: /bin/sh "$SRCROOT/Scripts/lint.sh"
+        basedOnDependencyAnalysis: false
+    dependencies:
+      - package: HarborKit
+        product: HarborCore
+      - package: HarborKit
+        product: HarborSecurity
+      - package: HarborKit
+        product: HarborCloud
+      - package: HarborKit
+        product: HarborSSH
+      - package: SwiftTerm
+      - package: HarborKit
+        product: HarborFinder
+      - target: HarborFinderExtension
+        embed: true
+    settings:
+      configs:
+        Local:
+          CODE_SIGN_ENTITLEMENTS: App/HarborLocal.entitlements
+          HARBOR_ICLOUD_CONTAINER: ""
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) DEBUG HARBOR_LOCAL
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.panandafog.harbor
+        PRODUCT_NAME: Harbor
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Harbor
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Harbor"
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        ENABLE_APP_SANDBOX: NO
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_ENTITLEMENTS: App/Harbor.entitlements
+  HarborFinderExtension:
+    type: app-extension
+    platform: macOS
+    sources: [FinderExtension]
+    attributes:
+      SystemCapabilities:
+        com.apple.ApplicationGroups:
+          enabled: 1
+        com.apple.Keychain:
+          enabled: 1
+    dependencies:
+      - package: HarborKit
+        product: HarborFinder
+      - package: HarborKit
+        product: HarborCore
+    info:
+      path: FinderExtension/Info.plist
+      properties:
+        CFBundleDisplayName: Harbor Files
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        HarborAppGroup: $(HARBOR_APP_GROUP)
+        HarborKeychainGroup: $(HARBOR_KEYCHAIN_GROUP)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.fileprovider-nonui
+          NSExtensionFileProviderDocumentGroup: $(HARBOR_APP_GROUP)
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).FileProviderExtension
+          NSExtensionFileProviderSupportsEnumeration: true
+          NSExtensionFileProviderDownloadPipelineDepth: 2
+          NSExtensionFileProviderUploadPipelineDepth: 1
+          NSExtensionFileProviderMetadataOnlyUploadPipelineDepth: 1
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.panandafog.harbor.finder
+        PRODUCT_NAME: HarborFinderExtension
+        CODE_SIGN_ENTITLEMENTS: FinderExtension/HarborFinder.entitlements
+        ENABLE_APP_SANDBOX: YES
+        ENABLE_HARDENED_RUNTIME: YES
+        SKIP_INSTALL: YES
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        LD_RUNPATH_SEARCH_PATHS: $(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks
+  HarborAppTests:
+    type: bundle.unit-test
+    platform: macOS
+    info:
+      path: AppTests/Info.plist
+      properties:
+        CFBundleDisplayName: Harbor Tests
+    sources:
+      - AppTests
+      - Tests/HarborCoreTests/FinderWriteFixture.swift
+      - Tests/HarborCoreTests/TestSecretStore.swift
+      - Tests/HarborSSHTests/FixtureTrust.swift
+      - path: FinderExtension
+        includes: ["*.swift"]
+    dependencies:
+      - target: Harbor
+      - package: HarborKit
+        product: HarborCloud
+      - package: HarborKit
+        product: HarborCore
+      - package: SwiftTerm
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  Harbor Attach:
+    build:
+      targets:
+        Harbor: [run]
+    run:
+      config: Debug
+  HarborLocal:
+    build:
+      targets:
+        Harbor: all
+    run:
+      config: Local
+    test:
+      config: Local
+      environmentVariables:
+        HARBOR_ISOLATED_TESTS: "1"
+      targets: [HarborAppTests]
+  Harbor:
+    build:
+      targets:
+        Harbor: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      environmentVariables:
+        HARBOR_ISOLATED_TESTS: "1"
+      targets: [HarborAppTests]

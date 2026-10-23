@@ -1,0 +1,23 @@
+# SwiftLint's maintained default rule set, plus focused checks for this SwiftUI app.
+# https://github.com/realm/SwiftLint#configuration
+included:
+  - App
+  - Sources
+  - Tests
+  - AppTests
+  - FinderExtension
+  - Scripts
+  - Package.swift
+excluded:
+  - Vendor
+  - Build
+  - .build
+  - .swiftpm
+opt_in_rules:
+  - empty_count
+  - empty_string
+  - sorted_imports
+  - private_swiftui_state
+  - force_unwrapping
+  - unneeded_parentheses_in_closure_argument
+reporter: xcode

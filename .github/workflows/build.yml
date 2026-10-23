@@ -1,0 +1,86 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+  HOMEBREW_NO_AUTO_UPDATE: "1"
+
+jobs:
+  tests:
+    name: Lint and Package Tests
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Install test tools
+        run: brew install swiftlint tmux
+
+      - name: SwiftLint
+        run: sh Scripts/lint.sh
+
+      - name: Prepare isolated SSH fixture
+        run: |
+          python3 -m venv "$RUNNER_TEMP/harbor-test-env"
+          "$RUNNER_TEMP/harbor-test-env/bin/pip" install -r Scripts/requirements-test.txt
+
+      - name: Test SSH, SFTP, ProxyJump, and tmux
+        run: |
+          swift package --force-resolved-versions resolve
+          "$RUNNER_TEMP/harbor-test-env/bin/python" Scripts/ssh_fixture.py --tmux --run-tests
+
+  build:
+    name: Build macOS (${{ matrix.configuration }})
+    runs-on: macos-15
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug, Release]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Install build tools
+        run: brew install swiftlint xcodegen
+
+      - name: Regenerate Xcode project
+        run: |
+          xcodegen generate
+          git diff --exit-code -- Harbor.xcodeproj App/Info.plist FinderExtension/Info.plist AppTests/Info.plist
+
+      - name: Build without signing
+        run: |
+          mkdir -p Harbor.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
+          cp Package.resolved Harbor.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+          xcodebuild -project Harbor.xcodeproj -scheme Harbor \
+            -configuration "${{ matrix.configuration }}" -destination 'generic/platform=macOS' \
+            -derivedDataPath "$RUNNER_TEMP/HarborBuild" \
+            -onlyUsePackageVersionsFromResolvedFile \
+            CODE_SIGNING_ALLOWED=NO build
