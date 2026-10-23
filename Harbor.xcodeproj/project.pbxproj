@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		024B566958A383AE050FED9B /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA96B0740AEF49D0806BF850 /* FileProviderExtension.swift */; };
 		06878A64916A93D8F07AC8B6 /* SystemTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0AF21C7CA82E322E2673962 /* SystemTerminalView.swift */; };
+		06914365A26C9DCE47C2585D /* AccentColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61076DD608EC3B9FB1F6434D /* AccentColorTests.swift */; };
 		07F7554EF1FF3A2B8EF35A88 /* FinderWriteFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6323741E79AD09D996FBD451 /* FinderWriteFixture.swift */; };
 		14AD66278FBFF00918958E4F /* HarborApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD132D433637D6A8E83D64C9 /* HarborApp.swift */; };
 		14AF534499C9779CAA27E0EA /* ServerTrustModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FFEB6B9A199A42E92067421 /* ServerTrustModel.swift */; };
@@ -46,6 +47,7 @@
 		A0AFE87B935801963F971536 /* HarborFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 8A299FF0297D850F63AAA0EB /* HarborFinder */; };
 		A6B23EF879922F65EEA34AB0 /* CloudSyncModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A213DB050E6AC530207B810B /* CloudSyncModel.swift */; };
 		A8A7257B7E4F68A86E465979 /* HarborCore in Frameworks */ = {isa = PBXBuildFile; productRef = 98EA2D80A397ADC5AB7B6829 /* HarborCore */; };
+		B680E35B0BF188F480CEBF99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 83501D14CB7BA88C60E88F45 /* Assets.xcassets */; };
 		B69D7B75AF42FFB665444E20 /* HarborFinderExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 91091A564E8C4EC4BE81E5B5 /* HarborFinderExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B7196766C2F6085782DEB200 /* LibraryRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491736C959F9001069F8A14D /* LibraryRoutingTests.swift */; };
 		C8CA828D9A5798CA8CFEDF5C /* HarborCore in Frameworks */ = {isa = PBXBuildFile; productRef = CB5A8D636E5903B68DF0B68B /* HarborCore */; };
@@ -111,10 +113,12 @@
 		528F66F76A3744D58A580D18 /* ServerTrustModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTrustModelTests.swift; sourceTree = "<group>"; };
 		535E9B6083F339C851706F69 /* ServerTrustViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTrustViews.swift; sourceTree = "<group>"; };
 		5C8F7190B265964B63E2B140 /* FinderWriteCallbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderWriteCallbackTests.swift; sourceTree = "<group>"; };
+		61076DD608EC3B9FB1F6434D /* AccentColorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentColorTests.swift; sourceTree = "<group>"; };
 		6323741E79AD09D996FBD451 /* FinderWriteFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderWriteFixture.swift; sourceTree = "<group>"; };
 		68AC39A97CF64EB600F5D630 /* HarborLocal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HarborLocal.entitlements; sourceTree = "<group>"; };
 		69BD91B1123FF0BE03ED4B47 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		7B7AE26E61175DFD37B94B3F /* FilesPane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesPane.swift; sourceTree = "<group>"; };
+		83501D14CB7BA88C60E88F45 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		882ED199F294E6B11A11D844 /* TerminalThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalThemeTests.swift; sourceTree = "<group>"; };
 		8E5FC2728D1BF7F42CB66FB2 /* HostEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostEditor.swift; sourceTree = "<group>"; };
 		91091A564E8C4EC4BE81E5B5 /* HarborFinderExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HarborFinderExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -207,6 +211,7 @@
 		5393D253E622FEDBF8E327E2 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				83501D14CB7BA88C60E88F45 /* Assets.xcassets */,
 				A213DB050E6AC530207B810B /* CloudSyncModel.swift */,
 				F5785B962F8E2F86C0FFC382 /* CloudSyncView.swift */,
 				D656E97BF6B25695503C1B76 /* ConnectionRequirement.swift */,
@@ -244,6 +249,7 @@
 		79D08B8ECEC57DD27F1DE4D9 /* AppTests */ = {
 			isa = PBXGroup;
 			children = (
+				61076DD608EC3B9FB1F6434D /* AccentColorTests.swift */,
 				BF2B7F2724EDEE739D7161DF /* CloudSyncModelTests.swift */,
 				140094F8426BD10E7EA01BDD /* ConnectionAccessTests.swift */,
 				F11A9A6434A4C45171A1D0E5 /* ConnectionOnboardingTests.swift */,
@@ -440,6 +446,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				53D7A3BC20B76EE534F455AC /* AppIcon.icon in Resources */,
+				B680E35B0BF188F480CEBF99 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -497,6 +504,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06914365A26C9DCE47C2585D /* AccentColorTests.swift in Sources */,
 				6F109A08B2143404EBBF8A9C /* CloudSyncModelTests.swift in Sources */,
 				FF5643BB4518E0ACBE05EEDB /* ConnectionAccessTests.swift in Sources */,
 				4D78EE49542C953F4B8875BC /* ConnectionOnboardingTests.swift in Sources */,
@@ -769,6 +777,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/Harbor.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -794,6 +803,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/HarborLocal.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -857,6 +867,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/Harbor.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;

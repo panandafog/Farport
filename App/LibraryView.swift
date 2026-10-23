@@ -23,7 +23,7 @@ struct LibraryView: View {
                         ForEach(model.filteredHosts) { host in
                             HStack(spacing: 10) {
                                 Image(systemName: "server.rack")
-                                    .font(.title3).foregroundStyle(.teal)
+                                    .font(.title3).foregroundStyle(Color.accentColor)
                                     .frame(width: 28)
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(host.profile.displayName).fontWeight(.medium).lineLimit(1)
@@ -61,10 +61,11 @@ struct LibraryView: View {
                     .id(ObjectIdentifier(workspace))
             } else {
                 VStack(spacing: 18) {
-                    Image(systemName: "terminal").font(.system(size: 46, weight: .light)).foregroundStyle(.teal)
+                    Image(systemName: "terminal").font(.system(size: 46, weight: .light))
+                        .foregroundStyle(Color.accentColor)
                     Text(model.hosts.isEmpty ? "No hosts yet" : "Select a host").font(.title2.weight(.medium))
                     Button("Add Host", systemImage: "plus") { model.editor = SavedHost() }
-                        .buttonStyle(.borderedProminent).tint(.teal)
+                        .buttonStyle(.borderedProminent).tint(.accentColor)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
@@ -179,7 +180,7 @@ struct TerminalPane: View {
                     Button("Cancel", systemImage: "xmark", action: model.disconnect)
                 } else if model.state == .disconnected {
                     Button(model.connectLabel, systemImage: "bolt.fill") { model.connect() }
-                        .tint(.teal).buttonStyle(.borderedProminent)
+                        .tint(.accentColor).buttonStyle(.borderedProminent)
                 } else {
                     Button(model.state == .connected ? model.disconnectLabel : "Cancel", systemImage: "stop.fill") {
                         model.disconnect()
@@ -215,7 +216,7 @@ struct TerminalPane: View {
     }
 
     private var statusColor: Color {
-        if let requirement = model.requirement { return requirement.isWarning ? .red : .teal }
+        if let requirement = model.requirement { return requirement.isWarning ? .red : .accentColor }
         return switch model.state {
         case .connected: .green
         case .connecting, .reconnecting, .checking, .suspended, .waitingForAccess: .orange

@@ -60,7 +60,7 @@ struct TerminalTabs: View {
         .frame(width: 172, height: 38)
         .background(selected ? Color.accentColor.opacity(0.1) : Color.clear)
         .overlay(alignment: .bottom) {
-            if selected { Rectangle().fill(.teal).frame(height: 2) }
+            if selected { Rectangle().fill(Color.accentColor).frame(height: 2) }
         }
         .overlay(alignment: .trailing) { Divider() }
         .contextMenu {

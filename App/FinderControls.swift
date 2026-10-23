@@ -55,7 +55,7 @@ struct FinderControls: View {
                         showingFolder = false
                         model.connect(host: host, library: hosts, folder: folder, access: access)
                     }
-                    .keyboardShortcut(.defaultAction).buttonStyle(.borderedProminent).tint(.teal)
+                    .keyboardShortcut(.defaultAction).buttonStyle(.borderedProminent).tint(.accentColor)
                 }
             }.padding(24).frame(width: 440)
         }

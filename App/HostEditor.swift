@@ -26,7 +26,7 @@ struct HostEditor: View {
             HStack {
                 Text(host.profile.hostname.isEmpty ? "New Host" : "Edit Host").font(.title2.weight(.semibold))
                 Spacer()
-                Image(systemName: "server.rack").font(.title2).foregroundStyle(.teal)
+                Image(systemName: "server.rack").font(.title2).foregroundStyle(Color.accentColor)
             }.padding(24)
             Divider()
             Form {
@@ -96,7 +96,7 @@ struct HostEditor: View {
             HStack {
                 Spacer()
                 Button("Cancel") { dismiss() }.keyboardShortcut(.cancelAction)
-                Button("Save Host", action: saveHost).buttonStyle(.borderedProminent).tint(.teal)
+                Button("Save Host", action: saveHost).buttonStyle(.borderedProminent).tint(.accentColor)
                     .keyboardShortcut(.defaultAction)
             }.padding(20)
         }

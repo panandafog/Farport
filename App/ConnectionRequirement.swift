@@ -33,7 +33,7 @@ struct ConnectionRequirementView: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: requirement.isWarning ? "exclamationmark.shield.fill" : "lock.shield")
-                .font(.title3).foregroundStyle(requirement.isWarning ? Color.red : .teal)
+                .font(.title3).foregroundStyle(requirement.isWarning ? Color.red : .accentColor)
             VStack(alignment: .leading, spacing: 6) {
                 Text(waiting ? "Waiting for Local Network" : requirement.title).font(.headline)
                 Text(message).font(.callout).foregroundStyle(.secondary)
@@ -48,13 +48,13 @@ struct ConnectionRequirementView: View {
                     }
                     if !waiting {
                         Button(actionLabel, systemImage: "arrow.right", action: review)
-                            .buttonStyle(.borderedProminent).tint(requirement.isWarning ? .red : .teal)
+                            .buttonStyle(.borderedProminent).tint(requirement.isWarning ? .red : .accentColor)
                     }
                 }.padding(.top, 4)
             }
             Spacer(minLength: 0)
         }.padding(16).frame(maxWidth: .infinity, alignment: .leading)
-            .background((requirement.isWarning ? Color.red : .teal).opacity(0.06))
+            .background((requirement.isWarning ? Color.red : .accentColor).opacity(0.06))
     }
 
     private var actionLabel: String {

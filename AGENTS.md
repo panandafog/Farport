@@ -23,6 +23,8 @@ iOS/iPadOS apps are planned, not implemented or verified.
   after project-configuration changes. Do not hand-edit generated project files.
 - `AppIcon.icon`: temporary Icon Composer artwork copied from MediaPlayer/Trackfold;
   replace before distribution. Requires Xcode 26.3+; keep it as one resource bundle.
+- `App/Assets.xcassets/AccentColor.colorset`: shared UI accent, with light/dark
+  variants. Use `Color.accentColor`; keep semantic status and terminal ANSI colors separate.
 
 ## Product Direction
 

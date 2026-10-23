@@ -19,14 +19,14 @@ struct FilesPane: View {
                 }
                 Spacer()
                 Image(systemName: "folder.badge.gearshape")
-                    .font(.system(size: 42, weight: .light)).foregroundStyle(.teal)
+                    .font(.system(size: 42, weight: .light)).foregroundStyle(Color.accentColor)
                 Text(model.busy ? model.activity : "SFTP").font(.title2.weight(.medium)).padding(.top, 12)
                 if model.busy {
                     ProgressView().controlSize(.small).padding()
                     Button("Cancel") { model.cancel() }
                 } else if model.requirement == nil {
                     Button("Connect", systemImage: "bolt.fill") { model.connect() }
-                        .buttonStyle(.borderedProminent).tint(.teal).padding(.top, 8)
+                        .buttonStyle(.borderedProminent).tint(.accentColor).padding(.top, 8)
                 }
                 Spacer()
             } else {
@@ -37,7 +37,7 @@ struct FilesPane: View {
                 Table(model.visibleEntries, selection: $model.selection) {
                     TableColumn("Name") { entry in
                         Label(entry.name, systemImage: icon(entry))
-                            .foregroundStyle(entry.kind == .directory ? Color.teal : Color.primary)
+                            .foregroundStyle(entry.kind == .directory ? Color.accentColor : Color.primary)
                     }.width(min: 160, ideal: 340)
                     TableColumn("Size") { entry in
                         Text(formattedSize(entry))
@@ -87,7 +87,7 @@ struct FilesPane: View {
                         if let entry = renaming { model.rename(entry, name: name) } else { model.createDirectory(name) }
                         editingName = false
                     }
-                    .buttonStyle(.borderedProminent).tint(.teal)
+                    .buttonStyle(.borderedProminent).tint(.accentColor)
                     .keyboardShortcut(.defaultAction).disabled(name.isEmpty)
                 }
             }.padding(24).frame(width: 360)
