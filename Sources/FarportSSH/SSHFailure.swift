@@ -1,5 +1,6 @@
 import Citadel
 import FarportCore
+import FarportLocalization
 import NIOSSH
 
 enum SSHFailure {
@@ -19,7 +20,9 @@ enum SSHFailure {
             case .invalidHostKeyForKeyExchange, .invalidExchangeHashSignature, .invalidCertificate:
                 return TerminalConnectionError.hostKeyRejected
             case .keyExchangeNegotiationFailure, .unsupportedVersion, .protocolViolation, .channelSetupRejected:
-                return TerminalConnectionError.configuration("SSH negotiation failed: \(error)")
+                return TerminalConnectionError.configuration(
+                    L10n.text("SSH negotiation failed: %@", String(describing: error))
+                )
             default: break
             }
         }

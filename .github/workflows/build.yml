@@ -56,6 +56,22 @@ jobs:
           swift package --force-resolved-versions resolve
           "$RUNNER_TEMP/harbor-test-env/bin/python" Scripts/ssh_fixture.py --tmux --run-tests
 
+  ios-compatibility:
+    name: Compile Shared Modules for iOS
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Check package lockfiles
+        run: xcrun swift Scripts/verify-package-locks.swift
+
+      - name: Compile shared sessions and adapters
+        run: sh Scripts/verify-ios.sh "$RUNNER_TEMP/FarportIOS"
+
   build:
     name: Build macOS (${{ matrix.configuration }})
     # Compile Icon Composer assets on Tahoe; keep package compatibility tests on macOS 15.

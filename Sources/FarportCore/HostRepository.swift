@@ -1,3 +1,4 @@
+import FarportLocalization
 import Foundation
 
 public protocol HostRepository {
@@ -20,7 +21,7 @@ public struct JSONHostRepository: HostRepository {
         guard FileManager.default.fileExists(atPath: url.path) else { return [] }
         let document = try JSONDecoder().decode(Document.self, from: Data(contentsOf: url))
         guard (1...3).contains(document.schemaVersion) else {
-            throw HarborError.message("This host library was saved by a newer version of Farport.")
+            throw HarborError.message(L10n.text("This host library was saved by a newer version of Farport."))
         }
         return document.hosts
     }

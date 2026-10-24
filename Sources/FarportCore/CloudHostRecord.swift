@@ -1,3 +1,4 @@
+import FarportLocalization
 import Foundation
 
 public struct ProfileRevision: Codable, Equatable, Comparable, Sendable {
@@ -23,10 +24,12 @@ public struct CloudHostRecord: Codable, Equatable, Sendable {
 
     public func validate() throws {
         guard schemaVersion == 1, revision.counter > 0, revision.counter < UInt64.max,
-              profile == nil || profile?.id == id else { throw HarborError.message("Unsupported iCloud host record.") }
+              profile == nil || profile?.id == id else {
+                  throw HarborError.message(L10n.text("Unsupported iCloud host record."))
+              }
         try profile?.validate()
         guard try JSONEncoder().encode(self).count <= 256 * 1024 else {
-            throw HarborError.message("A host profile exceeds the 256 KB iCloud limit.")
+            throw HarborError.message(L10n.text("A host profile exceeds the 256 KB iCloud limit."))
         }
     }
 }

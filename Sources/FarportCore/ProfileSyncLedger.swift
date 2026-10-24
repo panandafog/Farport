@@ -1,3 +1,4 @@
+import FarportLocalization
 import Foundation
 
 public struct ProfileSyncLedger: Codable, Sendable {
@@ -16,22 +17,24 @@ public struct ProfileSyncLedger: Codable, Sendable {
     public func validate() throws {
         guard pending.isSubset(of: Set(records.keys)), conflicts.count <= 50,
               Set(conflicts.map(\.id)).count == conflicts.count else {
-            throw HarborError.message("Inconsistent iCloud sync index.")
+            throw HarborError.message(L10n.text("Inconsistent iCloud sync index."))
         }
         for (id, record) in records {
             try record.validate()
             guard id == record.id, counter >= record.revision.counter else {
-                throw HarborError.message("Inconsistent iCloud host revision.")
+                throw HarborError.message(L10n.text("Inconsistent iCloud host revision."))
             }
         }
         for (id, profile) in baseline {
             try profile.validate()
-            guard id == profile.id else { throw HarborError.message("Inconsistent iCloud profile baseline.") }
+            guard id == profile.id else {
+                throw HarborError.message(L10n.text("Inconsistent iCloud profile baseline."))
+            }
         }
         for conflict in conflicts {
             try conflict.record.validate()
             guard conflict.profile != nil, counter >= conflict.record.revision.counter else {
-                throw HarborError.message("Inconsistent iCloud recovery copy.")
+                throw HarborError.message(L10n.text("Inconsistent iCloud recovery copy."))
             }
         }
     }
@@ -74,7 +77,9 @@ public struct ProfileSyncLedger: Codable, Sendable {
         }
         guard current != incoming else { pending.remove(incoming.id); return }
         guard current.revision != incoming.revision else {
-            throw HarborError.message("An iCloud host revision contains inconsistent data. Sync was stopped.")
+            throw HarborError.message(L10n.text(
+                "An iCloud host revision contains inconsistent data. Sync was stopped."
+            ))
         }
         let winner: CloudHostRecord
         if current.deleted != incoming.deleted { winner = current.deleted ? current : incoming } else {
@@ -108,7 +113,9 @@ public struct ProfileSyncLedger: Codable, Sendable {
     }
 
     private mutating func nextRevision() throws -> ProfileRevision {
-        guard counter < UInt64.max - 1 else { throw HarborError.message("The iCloud revision counter is exhausted.") }
+        guard counter < UInt64.max - 1 else {
+            throw HarborError.message(L10n.text("The iCloud revision counter is exhausted."))
+        }
         counter += 1
         return ProfileRevision(counter: counter, device: deviceID)
     }
@@ -121,7 +128,9 @@ public struct ProfileSyncLedger: Codable, Sendable {
     }
 
     private func indexed(_ profiles: [HostProfile]) throws -> [UUID: HostProfile] {
-        guard Set(profiles.map(\.id)).count == profiles.count else { throw HarborError.message("Duplicate host IDs.") }
+        guard Set(profiles.map(\.id)).count == profiles.count else {
+            throw HarborError.message(L10n.text("Duplicate host IDs."))
+        }
         try profiles.forEach { try $0.validate() }
         return Dictionary(uniqueKeysWithValues: profiles.map { ($0.id, $0) })
     }

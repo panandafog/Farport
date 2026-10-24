@@ -1,4 +1,5 @@
 import FarportCore
+import FarportLocalization
 import SwiftUI
 
 @main
@@ -15,22 +16,23 @@ struct FarportApp: App {
         .defaultSize(width: 1120, height: 740)
         .commands {
             CommandMenu("iCloud") {
-                Button("Host Sync") { model.cloud?.showingSettings = true }.disabled(model.cloud == nil)
+                Button(L10n.text("Host Sync")) { model.cloud?.showingSettings = true }.disabled(model.cloud == nil)
             }
             CommandGroup(replacing: .newItem) {
-                Button("New Host") { model.editor = SavedHost() }
+                Button(L10n.text("New Host")) { model.editor = SavedHost() }
                     .keyboardShortcut("n")
-                Button("New Terminal Tab") { model.selectedWorkspace?.addTerminal() }
+                Button(L10n.text("New Terminal Tab")) { model.selectedWorkspace?.addTerminal() }
                     .keyboardShortcut("t").disabled(model.selectedWorkspace == nil)
             }
-            CommandMenu("Terminal") {
-                Button("Next Tab") { model.selectedWorkspace?.selectNextTerminal(offset: 1) }
+            CommandMenu(L10n.text("Terminal")) {
+                Button(L10n.text("Next Tab")) { model.selectedWorkspace?.selectNextTerminal(offset: 1) }
                     .keyboardShortcut("]", modifiers: [.command, .shift])
-                Button("Previous Tab") { model.selectedWorkspace?.selectNextTerminal(offset: -1) }
+                Button(L10n.text("Previous Tab")) { model.selectedWorkspace?.selectNextTerminal(offset: -1) }
                     .keyboardShortcut("[", modifiers: [.command, .shift])
             }
-            CommandMenu("Security") {
-                Button("Server Keys") { model.trust?.showKeys(hosts: model.hosts) }.disabled(model.trust == nil)
+            CommandMenu(L10n.text("Security")) {
+                Button(L10n.text("Server Keys")) { model.trust?.showKeys(hosts: model.hosts) }
+                    .disabled(model.trust == nil)
             }
         }
     }
@@ -60,7 +62,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func application(_ application: NSApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        model?.cloud?.error = "iCloud push updates are unavailable. Sync Now still works. " + error.localizedDescription
+        model?.cloud?.error = L10n.text("iCloud push updates are unavailable. Sync Now still works. %@",
+                                       error.localizedDescription)
     }
 
     func applicationWillTerminate(_ notification: Notification) {

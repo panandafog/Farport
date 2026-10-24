@@ -1,4 +1,5 @@
 import FarportCore
+import FarportLocalization
 import SwiftUI
 
 struct TerminalTabs: View {
@@ -25,7 +26,7 @@ struct TerminalTabs: View {
             }
             Button { model.addTerminal() } label: { Image(systemName: "plus") }
                 .buttonStyle(.plain).frame(width: 40, height: 38)
-                .help("New terminal tab (Command-T)").accessibilityLabel("New terminal tab")
+                .help(L10n.text("New terminal tab (Command-T)")).accessibilityLabel(L10n.text("New terminal tab"))
         }
         .frame(height: 38)
         .background(.bar)
@@ -55,7 +56,7 @@ struct TerminalTabs: View {
             .accessibilityLabel(tab.title).accessibilityAddTraits(selected ? [.isSelected] : [])
             Button { model.closeTerminal(tab.id) } label: { Image(systemName: "xmark").font(.caption) }
                 .buttonStyle(.plain).frame(width: 30, height: 38)
-                .help("Close \(tab.title)").accessibilityLabel("Close \(tab.title)")
+                .help(L10n.text("Close %@", tab.title)).accessibilityLabel(L10n.text("Close %@", tab.title))
         }
         .frame(width: 172, height: 38)
         .background(selected ? Color.accentColor.opacity(0.1) : Color.clear)
@@ -64,8 +65,8 @@ struct TerminalTabs: View {
         }
         .overlay(alignment: .trailing) { Divider() }
         .contextMenu {
-            Button("Rename", systemImage: "pencil") { renaming = tab }
-            Button("Close Tab", systemImage: "xmark") { model.closeTerminal(tab.id) }
+            Button(L10n.text("Rename"), systemImage: "pencil") { renaming = tab }
+            Button(L10n.text("Close Tab"), systemImage: "xmark") { model.closeTerminal(tab.id) }
         }
     }
 
@@ -83,12 +84,12 @@ private struct RenameTerminalSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Rename Terminal").font(.headline)
-            TextField("Name", text: $name).textFieldStyle(.roundedBorder).onSubmit(rename)
+            Text(L10n.text("Rename Terminal")).font(.headline)
+            TextField(L10n.text("Name"), text: $name).textFieldStyle(.roundedBorder).onSubmit(rename)
             HStack {
                 Spacer()
-                Button("Cancel", role: .cancel) { dismiss() }
-                Button("Save", action: rename).keyboardShortcut(.defaultAction)
+                Button(L10n.text("Cancel"), role: .cancel) { dismiss() }
+                Button(L10n.text("Save"), action: rename).keyboardShortcut(.defaultAction)
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
         }

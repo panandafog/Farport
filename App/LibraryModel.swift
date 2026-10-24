@@ -1,4 +1,5 @@
 import FarportCore
+import FarportLocalization
 import FarportSSH
 import SwiftUI
 
@@ -20,36 +21,6 @@ final class LibraryModel: ObservableObject {
     private var workspaceLoadFailed = false
     private var ready = false
 
-    convenience init() {
-        let root = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("Harbor", isDirectory: true)
-        var libraryURL = root.appendingPathComponent("hosts.json")
-        #if DEBUG
-        if ProcessInfo.processInfo.environment["HARBOR_ISOLATED_TESTS"] == "1" {
-            libraryURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-                .appendingPathComponent("hosts.json")
-        }
-        if let index = ProcessInfo.processInfo.arguments.firstIndex(of: "--host-library"),
-           ProcessInfo.processInfo.arguments.count > index + 1 {
-            libraryURL = URL(fileURLWithPath: ProcessInfo.processInfo.arguments[index + 1])
-        }
-        #endif
-        let secrets = AppSecretStore()
-        let trust = ServerTrustModel(secrets: secrets)
-        let cloud = libraryURL == root.appendingPathComponent("hosts.json") ? CloudSyncModel(
-            url: root.appendingPathComponent("hosts.icloud.json"),
-            containerIdentifier: Bundle.main.object(forInfoDictionaryKey: "HarborCloudContainer") as? String ?? ""
-        ) : nil
-        self.init(repository: ProtectedHostRepository(url: libraryURL, secrets: secrets),
-                  workspaceRepository: JSONWorkspaceRepository(
-                    url: libraryURL.deletingPathExtension().appendingPathExtension("workspace.json")
-                  ), finder: FinderModel(hostKeyVerifier: trust.verifier, trust: trust), trust: trust, cloud: cloud)
-        if libraryURL == root.appendingPathComponent("hosts.json") {
-            finder?.reload()
-            if let issue = finder?.error { error = "Finder migration: " + issue }
-        }
-    }
-
     init(repository: any HostRepository, workspaceRepository: any WorkspaceRepository,
          provider: (any ConnectionProvider)? = nil, finder: FinderModel? = nil, trust: ServerTrustModel? = nil,
          cloud: CloudSyncModel? = nil) {
@@ -63,7 +34,7 @@ final class LibraryModel: ObservableObject {
             hosts = try repository.load()
         } catch {
             loadFailed = true
-            self.error = "Could not load the host library. \(error.localizedDescription)"
+            self.error = L10n.text("Could not load the host library. %@", error.localizedDescription)
         }
         var saved = WorkspaceSnapshot()
         do {
@@ -71,8 +42,8 @@ final class LibraryModel: ObservableObject {
             try saved.validate()
         } catch {
             workspaceLoadFailed = true
-            self.error = "Could not restore the workspace. The saved file will not be overwritten. " +
-                error.localizedDescription
+            self.error = L10n.text("Could not restore the workspace. The saved file will not be overwritten. %@",
+                                   error.localizedDescription)
         }
         for host in hosts {
             installWorkspace(for: host, snapshot: saved.hosts.first { $0.hostID == host.id })
@@ -94,7 +65,7 @@ final class LibraryModel: ObservableObject {
         let route = try? ConnectionRoute(to: host, library: hosts)
         let names = route?.hosts.dropLast().map { $0.profile.displayName }
         let summary = host.profile.jumpHostIDs.isEmpty ? nil :
-            names.map { "via " + $0.joined(separator: " > ") } ?? "ProxyJump route unavailable"
+            names.map { L10n.text("via %@", $0.joined(separator: " > ")) } ?? L10n.text("ProxyJump route unavailable")
         let provider = connectionProvider()
         if let workspace = workspaces[host.id] {
             workspace.reconfigure(host: host, provider: provider, routeSummary: summary)
@@ -114,7 +85,7 @@ final class LibraryModel: ObservableObject {
 
     func save(_ host: SavedHost) throws {
         guard !loadFailed else {
-            throw HarborError.message("Resolve the host library read error before saving changes.")
+            throw HarborError.message(L10n.text("Resolve the host library read error before saving changes."))
         }
         try host.profile.validate()
         if host.credentialsConfigured { try host.validate() }
@@ -144,10 +115,10 @@ final class LibraryModel: ObservableObject {
         do {
             let dependents = hosts.filter { ConnectionRoute.depends($0, on: host.id, library: hosts) }
             guard dependents.isEmpty else {
-                throw HarborError.message(
-                    "This jump host is used by: " + dependents.map { $0.profile.displayName }.joined(separator: ", ") +
-                    ". Change their connection routes before deleting it."
-                )
+                throw HarborError.message(L10n.text(
+                    "This jump host is used by: %@. Change their connection routes before deleting it.",
+                    dependents.map { $0.profile.displayName }.joined(separator: ", ")
+                ))
             }
             let updated = hosts.filter { $0.id != host.id }
             try finder?.revoke(hostIDs: [host.id])
@@ -184,6 +155,6 @@ final class LibraryModel: ObservableObject {
         workspaces.values.forEach { $0.close() }
     }
 
-    func systemWillSleep() { workspaces.values.forEach { $0.systemWillSleep() } }
-    func systemDidWake() { workspaces.values.forEach { $0.systemDidWake() } }
+    func systemWillSleep() { workspaces.values.forEach { $0.suspend() } }
+    func systemDidWake() { workspaces.values.forEach { $0.resume() } }
 }

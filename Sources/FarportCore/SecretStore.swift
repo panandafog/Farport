@@ -1,3 +1,4 @@
+import FarportLocalization
 import Foundation
 
 public protocol SecretStore: Sendable {
@@ -15,7 +16,9 @@ public struct ProtectedHost: Codable, Sendable {
     public func resolve(using secrets: any SecretStore) throws -> SavedHost {
         try validateReference()
         guard let data = try secrets.data(for: credentialReference) else {
-            throw HarborError.message("Credentials are missing from Keychain. The saved profile was not changed.")
+            throw HarborError.message(L10n.text(
+                "Credentials are missing from Keychain. The saved profile was not changed."
+            ))
         }
         return SavedHost(profile: profile, credentials: try JSONDecoder().decode(HostCredentials.self, from: data),
                          credentialsConfigured: configured ?? true)
@@ -33,7 +36,7 @@ public struct ProtectedHost: Codable, Sendable {
             let account = "credentials." + UUID().uuidString
             try secrets.insert(data, for: account)
             guard try secrets.data(for: account) == data else {
-                throw HarborError.message("Keychain verification failed. The original file was not changed.")
+                throw HarborError.message(L10n.text("Keychain verification failed. The original file was not changed."))
             }
             return ProtectedHost(profile: host.profile, credentialReference: account,
                                  configured: host.credentialsConfigured)
@@ -56,7 +59,7 @@ public struct ProtectedHost: Codable, Sendable {
     private func validateReference() throws {
         guard credentialReference.hasPrefix("credentials."),
               UUID(uuidString: String(credentialReference.dropFirst("credentials.".count))) != nil else {
-            throw HarborError.message("Invalid saved credential reference. The file was not changed.")
+            throw HarborError.message(L10n.text("Invalid saved credential reference. The file was not changed."))
         }
     }
 }

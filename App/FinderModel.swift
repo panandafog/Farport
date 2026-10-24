@@ -1,6 +1,7 @@
 import AppKit
 import FarportCore
 import FarportFinder
+import FarportLocalization
 import FarportSSH
 import FileProvider
 
@@ -98,8 +99,8 @@ final class FinderModel: ObservableObject {
                 do {
                     _ = try await NSFileProviderManager.remove(domain(location), mode: .preserveDownloadedUserData)
                 } catch {
-                    self.error = "Finder connection was revoked, but could not be removed. " +
-                        error.localizedDescription
+                    self.error = L10n.text("Finder connection was revoked, but could not be removed. %@",
+                                           error.localizedDescription)
                 }
             }
         }
@@ -108,14 +109,17 @@ final class FinderModel: ObservableObject {
     private func reveal(_ location: FinderLocation) async throws {
         guard let manager = NSFileProviderManager(for: domain(location)) else { throw FinderReadError.disabled }
         let url = try await manager.getUserVisibleURL(for: .rootContainer)
-        guard NSWorkspace.shared.open(url) else { throw HarborError.message("Could not open the Finder location.") }
+        guard NSWorkspace.shared.open(url) else {
+            throw HarborError.message(L10n.text("Could not open the Finder location."))
+        }
     }
 
     private func domain(_ location: FinderLocation) -> NSFileProviderDomain {
-        let folder = location.rootPath == "/" ? "Root" : (location.rootPath as NSString).lastPathComponent
+        let folder = location.rootPath == "/" ? L10n.text("Root") : (location.rootPath as NSString).lastPathComponent
+        let name = location.name + " (" + folder + ")"
         return NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(location.id.uuidString),
-                                    displayName: location.name + " (" + folder +
-                                        (location.access == .readOnly ? ", Read Only)" : ")"))
+                                    displayName: location.access == .readOnly ?
+                                        L10n.text("%@ (Read Only)", name) : name)
     }
 
     private func perform(_ operation: @escaping () async throws -> Void) {

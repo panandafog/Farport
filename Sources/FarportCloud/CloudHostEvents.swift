@@ -1,5 +1,6 @@
 import CloudKit
 import FarportCore
+import FarportLocalization
 import Foundation
 
 extension CloudHostSync: CKSyncEngineDelegate {
@@ -11,7 +12,7 @@ extension CloudHostSync: CKSyncEngineDelegate {
             // Never persist a newer change token after failing to decode or durably store a received record.
             stopEngine()
             document.enabled = false
-            status = "Sync stopped: " + error.localizedDescription
+            status = L10n.text("Sync stopped: %@", error.localizedDescription)
             document.pauseReason = status
             try? file.save(document)
             publish()
@@ -24,7 +25,9 @@ extension CloudHostSync: CKSyncEngineDelegate {
         case .accountChange(let value): try accountChanged(value)
         case .fetchedDatabaseChanges(let value):
             if value.deletions.contains(where: { $0.zoneID == CloudHostCodec.zoneID }) {
-                try pause("The iCloud host library was reset. Enable sync again to merge local hosts.", reset: true)
+                try pause(L10n.text(
+                    "The iCloud host library was reset. Enable sync again to merge local hosts."
+                ), reset: true)
             }
         case .fetchedRecordZoneChanges(let value): try received(value)
         case .sentRecordZoneChanges(let value): try sent(value)
@@ -37,7 +40,9 @@ extension CloudHostSync: CKSyncEngineDelegate {
     private func accountChanged(_ value: CKSyncEngine.Event.AccountChange) throws {
         switch value.changeType {
         case .signIn(let user) where user.recordName == document.accountID: break
-        default: try pause("iCloud account changed. Local hosts kept; enable sync again to continue.", reset: true)
+        default: try pause(L10n.text(
+            "iCloud account changed. Local hosts kept; enable sync again to continue."
+        ), reset: true)
         }
     }
 
@@ -47,7 +52,7 @@ extension CloudHostSync: CKSyncEngineDelegate {
         }
         for deletion in value.deletions where deletion.recordID.zoneID == CloudHostCodec.zoneID {
             guard let id = UUID(uuidString: deletion.recordID.recordName) else {
-                throw HarborError.message("Unsupported iCloud host identifier.")
+                throw HarborError.message(L10n.text("Unsupported iCloud host identifier."))
             }
             document.serverFields.removeValue(forKey: id.uuidString)
             try document.ledger.serverDeleted(id)
@@ -69,10 +74,12 @@ extension CloudHostSync: CKSyncEngineDelegate {
 
     private func progress(_ event: CKSyncEngine.Event) {
         switch event {
-        case .willFetchChanges: status = "Fetching changes"; publish()
-        case .willSendChanges: status = "Sending changes"; publish()
+        case .willFetchChanges: status = L10n.text("Fetching changes"); publish()
+        case .willSendChanges: status = L10n.text("Sending changes"); publish()
         case .didSendChanges:
-            if issue == nil { status = document.ledger.pending.isEmpty ? "Up to date" : "Changes queued" }
+            if issue == nil {
+                status = document.ledger.pending.isEmpty ? L10n.text("Up to date") : L10n.text("Changes queued")
+            }
             publish()
         case .didFetchRecordZoneChanges(let value):
             if let error = value.error { report(error) }
@@ -141,6 +148,6 @@ extension CloudHostSync: CKSyncEngineDelegate {
         default: break
         }
         // Retain the durable queue, but do not repeatedly submit a rejected record or zone.
-        try pause("iCloud upload paused: " + error.localizedDescription + " Enable sync again to retry.")
+        try pause(L10n.text("iCloud upload paused: %@ Enable sync again to retry.", error.localizedDescription))
     }
 }

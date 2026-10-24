@@ -1,5 +1,6 @@
 import Citadel
 import FarportCore
+import FarportLocalization
 import Foundation
 import NIO
 import NIOSSH
@@ -18,7 +19,7 @@ public struct SSHConnectionProvider: ConnectionProvider {
 
     public func terminal(for host: SavedHost, sessionID: UUID) async throws -> any TerminalSession {
         guard host.profile.terminalProvider == "ssh" else {
-            throw HarborError.message("Unsupported terminal protocol.")
+            throw HarborError.message(L10n.text("Unsupported terminal protocol."))
         }
         return CitadelTerminalSession(
             connection: try await connector.connect(host),
@@ -27,7 +28,9 @@ public struct SSHConnectionProvider: ConnectionProvider {
     }
 
     public func files(for host: SavedHost) async throws -> any RemoteFileSession {
-        guard host.profile.fileProvider == "sftp" else { throw HarborError.message("Unsupported file protocol.") }
+        guard host.profile.fileProvider == "sftp" else {
+            throw HarborError.message(L10n.text("Unsupported file protocol."))
+        }
         return CitadelFileSession(connection: try await connector.connect(host))
     }
 
@@ -57,14 +60,20 @@ actor CitadelTerminalSession: TerminalSession {
         defer { writer = nil }
         do {
             try await runPTY(size: size, onReady: onReady, onOutput: onOutput)
-            if !closed, !client.isConnected { throw TerminalConnectionError.transport("SSH transport closed.") }
+            if !closed, !client.isConnected {
+                throw TerminalConnectionError.transport(L10n.text("SSH transport closed."))
+            }
         } catch let error as SSHClient.CommandFailed where launch.command != nil && error.exitCode == 127 {
             throw TerminalConnectionError.configuration(
-                "tmux is not installed or not available in the server's PATH. " +
-                "Install tmux on the server or select Standard SSH in the host settings."
+                L10n.text(
+                    "tmux is not installed or not available in the server's PATH. Install tmux on the " +
+                    "server or select Standard SSH in the host settings."
+                )
             )
         } catch let error as SSHClient.CommandFailed {
-            throw TerminalConnectionError.configuration("Remote terminal exited with status \(error.exitCode).")
+            throw TerminalConnectionError.configuration(
+                L10n.text("Remote terminal exited with status %lld.", Int64(error.exitCode))
+            )
         } catch {
             if closed { throw CancellationError() }
             throw SSHFailure.connection(error)
@@ -92,7 +101,7 @@ actor CitadelTerminalSession: TerminalSession {
     private func setWriter(_ writer: TTYStdinWriter) { self.writer = writer }
 
     func send(_ data: Data) async throws {
-        guard let writer, !closed else { throw HarborError.message("Terminal is disconnected.") }
+        guard let writer, !closed else { throw HarborError.message(L10n.text("Terminal is disconnected.")) }
         do { try await writer.write(ByteBuffer(bytes: data)) } catch { throw SSHFailure.connection(error) }
     }
 

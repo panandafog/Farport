@@ -1,3 +1,4 @@
+import FarportLocalization
 import Foundation
 
 public enum AuthenticationKind: String, Codable, CaseIterable, Sendable {
@@ -74,11 +75,13 @@ public struct HostProfile: Identifiable, Codable, Equatable, Sendable {
         guard !hostname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               !hostname.contains(where: { $0.isWhitespace }), !hostname.contains("://"),
               !hostname.contains("/"), !hostname.contains("\0") else {
-            throw HarborError.message("Enter a hostname or IP address, without a URL scheme or path.")
+            throw HarborError.message(L10n.text("Enter a hostname or IP address, without a URL scheme or path."))
         }
-        guard (1...65535).contains(port) else { throw HarborError.message("Port must be between 1 and 65535.") }
+        guard (1...65535).contains(port) else {
+            throw HarborError.message(L10n.text("Port must be between 1 and 65535."))
+        }
         guard !username.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-              !username.contains("\0") else { throw HarborError.message("Enter a username.") }
+              !username.contains("\0") else { throw HarborError.message(L10n.text("Enter a username.")) }
     }
 }
 
@@ -120,10 +123,10 @@ public struct SavedHost: Identifiable, Codable, Equatable, Sendable {
     public func validate() throws {
         try profile.validate()
         guard credentialsConfigured else {
-            throw HarborError.message("Set credentials for this host on this device before connecting.")
+            throw HarborError.message(L10n.text("Set credentials for this host on this device before connecting."))
         }
         if profile.authentication == .privateKey && credentials.privateKey.isEmpty {
-            throw HarborError.message("Import or paste an OpenSSH private key.")
+            throw HarborError.message(L10n.text("Import or paste an OpenSSH private key."))
         }
     }
 }

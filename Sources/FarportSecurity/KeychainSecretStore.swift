@@ -1,4 +1,5 @@
 import FarportCore
+import FarportLocalization
 import Foundation
 import LocalAuthentication
 import Security
@@ -14,7 +15,9 @@ public struct KeychainSecretStore: SecretStore {
     public static func shared(bundle: Bundle = .main) throws -> KeychainSecretStore {
         guard let group = bundle.object(forInfoDictionaryKey: "HarborKeychainGroup") as? String,
               !group.isEmpty, !group.contains("$(") else {
-            throw HarborError.message("Shared Keychain is not configured. Build the signed Farport application.")
+            throw HarborError.message(L10n.text(
+                "Shared Keychain is not configured. Build the signed Farport application."
+            ))
         }
         return KeychainSecretStore(accessGroup: group)
     }
@@ -30,7 +33,7 @@ public struct KeychainSecretStore: SecretStore {
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         if status == errSecItemNotFound { return nil }
         try check(status)
-        guard let data = result as? Data else { throw HarborError.message("Invalid Keychain item data.") }
+        guard let data = result as? Data else { throw HarborError.message(L10n.text("Invalid Keychain item data.")) }
         return data
     }
 
@@ -58,7 +61,7 @@ public struct KeychainSecretStore: SecretStore {
         try check(SecItemCopyMatching(request as CFDictionary, &result))
         guard let item = result as? [CFString: Any], item[kSecValueData] as? Data == expected,
               let reference = item[kSecValuePersistentRef] as? Data else {
-            throw HarborError.message("The Keychain item changed. Nothing was removed.")
+            throw HarborError.message(L10n.text("The Keychain item changed. Nothing was removed."))
         }
         // Delete this immutable item identity, not a newly inserted pin at the same account.
         let deletion: [CFString: Any] = [kSecClass: kSecClassGenericPassword,
@@ -73,8 +76,10 @@ public struct KeychainSecretStore: SecretStore {
 
     private func check(_ status: OSStatus) throws {
         guard status == errSecSuccess else {
-            let detail = SecCopyErrorMessageString(status, nil) as String? ?? "Unknown error"
-            throw HarborError.message("Keychain is unavailable (\(status)): \(detail). No plaintext fallback was used.")
+            let detail = SecCopyErrorMessageString(status, nil) as String? ?? L10n.text("Unknown error")
+            throw HarborError.message(L10n.text(
+                "Keychain is unavailable (%lld): %@. No plaintext fallback was used.", Int64(status), detail
+            ))
         }
     }
 }

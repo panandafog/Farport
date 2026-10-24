@@ -1,4 +1,5 @@
 import CryptoKit
+import FarportLocalization
 import Foundation
 
 public struct ServerEndpoint: Codable, Equatable, Hashable, Sendable {
@@ -33,9 +34,11 @@ public struct HostKeyChallenge: Error, LocalizedError, Identifiable, Equatable, 
         self.endpoint = endpoint; self.presented = presented; self.trusted = trusted
     }
     public var errorDescription: String? {
-        let reason = trusted == nil ? "Unknown server key" : "SERVER KEY CHANGED"
-        return "\(reason) for \(endpoint.displayName). \(presented.algorithm) \(presented.fingerprint). " +
-            "Connection blocked. Verify this fingerprint in Farport before connecting again."
+        let reason = trusted == nil ? L10n.text("Unknown server key") : L10n.text("SERVER KEY CHANGED")
+        return L10n.text(
+            "%@ for %@. %@ %@. Connection blocked. Verify this fingerprint in Farport before connecting again.",
+            reason, endpoint.displayName, presented.algorithm, presented.fingerprint
+        )
     }
 }
 
@@ -58,7 +61,9 @@ public struct KnownHostRepository: Sendable {
 
     public func trust(_ challenge: HostKeyChallenge) throws {
         guard challenge.trusted == nil else {
-            throw HarborError.message("A changed server key cannot be accepted over an existing trusted key.")
+            throw HarborError.message(L10n.text(
+                "A changed server key cannot be accepted over an existing trusted key."
+            ))
         }
         if let current = try key(for: challenge.endpoint) {
             guard current == challenge.presented else { throw HostKeyChallenge(
@@ -77,7 +82,7 @@ public struct KnownHostRepository: Sendable {
     public func forget(_ endpoint: ServerEndpoint, expected: ServerHostKey) throws {
         guard let data = try secrets.data(for: endpoint.account),
               try JSONDecoder().decode(ServerHostKey.self, from: data) == expected else {
-            throw HarborError.message("The stored server key changed.")
+            throw HarborError.message(L10n.text("The stored server key changed."))
         }
         try secrets.remove(endpoint.account, matching: data)
     }

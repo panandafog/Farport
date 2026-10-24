@@ -1,22 +1,24 @@
+import Combine
 import FarportCore
+import FarportLocalization
 import Foundation
 
 @MainActor
-final class FilesModel: ObservableObject {
-    @Published private(set) var connected = false
-    @Published private(set) var busy = false
-    @Published private(set) var entries: [RemoteEntry] = []
-    @Published private(set) var path = ""
-    @Published var pathInput = ""
-    @Published var selection: String?
-    @Published var error: String?
-    @Published private(set) var requirement: ConnectionRequirement?
-    @Published private(set) var waitingForAccess = false
-    @Published private(set) var activity = ""
-    @Published private(set) var progress: Double?
-    @Published private(set) var transferred: UInt64 = 0
-    @Published private(set) var total: UInt64 = 0
-    @Published var showHidden = false
+public final class FilesModel: ObservableObject {
+    @Published public private(set) var connected = false
+    @Published public private(set) var busy = false
+    @Published public private(set) var entries: [RemoteEntry] = []
+    @Published public private(set) var path = ""
+    @Published public var pathInput = ""
+    @Published public var selection: String?
+    @Published public var error: String?
+    @Published public private(set) var requirement: ConnectionRequirement?
+    @Published public private(set) var waitingForAccess = false
+    @Published public private(set) var activity = ""
+    @Published public private(set) var progress: Double?
+    @Published public private(set) var transferred: UInt64 = 0
+    @Published public private(set) var total: UInt64 = 0
+    @Published public var showHidden = false
     private var host: SavedHost
     private var provider: any ConnectionProvider
     private var session: (any RemoteFileSession)?
@@ -25,24 +27,29 @@ final class FilesModel: ObservableObject {
     private var operationID = UUID()
     private let trust: ServerTrustModel?
 
-    init(host: SavedHost, provider: any ConnectionProvider, trust: ServerTrustModel? = nil) {
+    private struct OperationToken {
+        let connection: UUID
+        let operation: UUID
+    }
+
+    public init(host: SavedHost, provider: any ConnectionProvider, trust: ServerTrustModel? = nil) {
         self.host = host; self.provider = provider
         self.trust = trust
     }
 
-    var visibleEntries: [RemoteEntry] { entries.filter { showHidden || !$0.name.hasPrefix(".") } }
-    var selectedEntry: RemoteEntry? { entries.first { $0.id == selection } }
+    public var visibleEntries: [RemoteEntry] { entries.filter { showHidden || !$0.name.hasPrefix(".") } }
+    public var selectedEntry: RemoteEntry? { entries.first { $0.id == selection } }
 
-    func reconfigure(host: SavedHost, provider: any ConnectionProvider) {
+    public func reconfigure(host: SavedHost, provider: any ConnectionProvider) {
         disconnect()
         self.host = host
         self.provider = provider
     }
 
-    func connect() {
+    public func connect() {
         guard !busy, !connected else { return }
         busy = true
-        activity = "Connecting"
+        activity = L10n.text("Connecting")
         error = nil
         requirement = nil
         let token = UUID()
@@ -59,18 +66,18 @@ final class FilesModel: ObservableObject {
                 guard generation == token, !Task.isCancelled else { await connection.close(); return }
                 path = directory; pathInput = directory; entries = items
                 connected = true
-                activity = "Connected"
+                activity = L10n.text("Connected")
             } catch {
                 guard generation == token else { return }
                 await session?.close()
                 guard generation == token else { return }
                 session = nil
                 if Task.isCancelled {
-                    activity = "Cancelled"
+                    activity = L10n.text("Cancelled")
                 } else {
                     requirement = ConnectionRequirement(error)
                     self.error = requirement == nil ? error.localizedDescription : nil
-                    activity = requirement?.title ?? "Connection failed"
+                    activity = requirement?.title ?? L10n.text("Connection failed")
                 }
             }
             if generation == token { busy = false; waitingForAccess = false }
@@ -78,18 +85,18 @@ final class FilesModel: ObservableObject {
         }
     }
 
-    func navigate(_ directory: String) {
-        perform("Loading folder") { connection in
+    public func navigate(_ directory: String) {
+        perform(L10n.text("Loading folder")) { connection, token in
             let canonical = try await connection.canonicalPath(directory)
             let items = try await connection.list(canonical)
-            try Task.checkCancellation()
+            try self.checkCurrent(token)
             self.path = canonical; self.pathInput = canonical; self.entries = items; self.selection = nil
         }
     }
 
-    func refresh() { navigate(path) }
+    public func refresh() { navigate(path) }
 
-    func reviewRequirement() {
+    public func reviewRequirement() {
         guard let requirement else { return }
         if case .serverKey(let key) = requirement {
             let token = generation
@@ -99,102 +106,122 @@ final class FilesModel: ObservableObject {
             })
         } else { connect() }
     }
-    func home() { navigate(host.profile.initialDirectory.isEmpty ? "." : host.profile.initialDirectory) }
-    func up() { navigate(RemotePath.parent(of: path)) }
+    public func home() { navigate(host.profile.initialDirectory.isEmpty ? "." : host.profile.initialDirectory) }
+    public func up() { navigate(RemotePath.parent(of: path)) }
 
-    func createDirectory(_ name: String) {
-        perform("Creating folder", refresh: true) { connection in
+    public func createDirectory(_ name: String) {
+        perform(L10n.text("Creating folder"), refresh: true) { connection, _ in
             try await connection.createDirectory(RemotePath.appending(name, to: self.path))
         }
     }
 
-    func rename(_ entry: RemoteEntry, name: String) {
-        perform("Renaming", refresh: true) { connection in
+    public func rename(_ entry: RemoteEntry, name: String) {
+        perform(L10n.text("Renaming"), refresh: true) { connection, _ in
             try await connection.rename(entry.path, to: RemotePath.appending(name, to: self.path))
         }
     }
 
-    func remove(_ entry: RemoteEntry) {
-        perform("Deleting", refresh: true) { try await $0.remove(entry) }
+    public func remove(_ entry: RemoteEntry) {
+        perform(L10n.text("Deleting"), refresh: true) { connection, _ in try await connection.remove(entry) }
     }
 
-    func upload(_ urls: [URL]) {
+    public func upload(_ urls: [URL]) {
         let directory = path
-        perform("Uploading", refresh: true) { connection in
+        perform(L10n.text("Uploading"), refresh: true) { connection, token in
             for url in urls {
-                try Task.checkCancellation()
+                try self.checkCurrent(token)
                 let scoped = url.startAccessingSecurityScopedResource()
                 defer { if scoped { url.stopAccessingSecurityScopedResource() } }
                 guard try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true else {
-                    throw HarborError.message("Select individual files. Folder upload is not included in this MVP.")
+                    throw HarborError.message(L10n.text(
+                        "Select individual files. Folder upload is not included in this MVP."
+                    ))
                 }
                 let destination = try RemotePath.appending(url.lastPathComponent, to: directory)
                 let existing = try await connection.list(directory)
+                try self.checkCurrent(token)
                 guard !existing.contains(where: { $0.path == destination }) else {
-                    throw HarborError.message("'\(url.lastPathComponent)' already exists. Rename it before uploading.")
+                    throw HarborError.message(L10n.text(
+                        "'%@' already exists. Rename it before uploading.", url.lastPathComponent
+                    ))
                 }
-                self.activity = "Uploading \(url.lastPathComponent)"
-                try await connection.upload(url, to: destination, progress: self.progressHandler())
+                self.activity = L10n.text("Uploading %@", url.lastPathComponent)
+                try await connection.upload(url, to: destination, progress: self.progressHandler(token))
             }
         }
     }
 
-    func download(_ entry: RemoteEntry, to destination: URL) {
-        perform("Downloading \(entry.name)") { connection in
+    public func download(_ entry: RemoteEntry, to destination: URL) {
+        perform(L10n.text("Downloading %@", entry.name)) { connection, token in
             let scoped = destination.startAccessingSecurityScopedResource()
             defer { if scoped { destination.stopAccessingSecurityScopedResource() } }
-            try await connection.download(entry.path, to: destination, progress: self.progressHandler())
+            try await connection.download(entry.path, to: destination, progress: self.progressHandler(token))
         }
     }
 
-    private func progressHandler() -> TransferProgress {
-        let token = generation
+    private func progressHandler(_ token: OperationToken) -> TransferProgress {
         return { [weak self] completed, total in
             await self?.updateProgress(completed: completed, total: total, token: token)
         }
     }
 
-    private func updateProgress(completed: UInt64, total: UInt64, token: UUID) {
-        guard token == generation else { return }
+    private func updateProgress(completed: UInt64, total: UInt64, token: OperationToken) {
+        guard isCurrent(token), busy else { return }
         self.transferred = completed; self.total = total
         progress = total == 0 ? 1 : min(1, Double(completed) / Double(total))
     }
 
     private func perform(_ label: String, refresh: Bool = false,
-                         operation: @escaping (any RemoteFileSession) async throws -> Void) {
+                         operation: @escaping (any RemoteFileSession, OperationToken) async throws -> Void) {
         guard !busy, let session else { return }
         busy = true; activity = label; error = nil; progress = nil
         operationID = UUID()
-        let token = generation
+        transferred = 0
+        total = 0
+        let token = OperationToken(connection: generation, operation: operationID)
         task = Task {
             do {
-                try await operation(session)
-                try Task.checkCancellation()
+                try await operation(session, token)
+                try checkCurrent(token)
                 if refresh {
                     let items = try await session.list(path)
-                    try Task.checkCancellation()
-                    guard generation == token else { return }
+                    try checkCurrent(token)
                     entries = items; selection = nil
                 }
-                activity = "Completed"
+                activity = L10n.text("Completed")
             } catch {
-                guard generation == token else { return }
+                guard isCurrent(token) else { return }
                 if Task.isCancelled {
-                    activity = "Cancelled"
+                    activity = L10n.text("Cancelled")
                 } else {
                     self.error = error.localizedDescription
-                    activity = "Failed"
+                    activity = L10n.text("Failed")
+                    if error is TerminalConnectionError {
+                        self.session = nil
+                        connected = false
+                        activity = L10n.text("Disconnected")
+                        Task { await session.close() }
+                    }
                 }
             }
-            if generation == token { busy = false; progress = nil }
+            if isCurrent(token) { busy = false; progress = nil }
         }
     }
 
-    func cancel() {
-        if waitingForAccess { disconnect(); activity = "Cancelled"; return }
+    private func isCurrent(_ token: OperationToken) -> Bool {
+        token.connection == generation && token.operation == operationID
+    }
+
+    private func checkCurrent(_ token: OperationToken) throws {
+        try Task.checkCancellation()
+        guard isCurrent(token) else { throw CancellationError() }
+    }
+
+    public func cancel() {
+        if waitingForAccess { disconnect(); activity = L10n.text("Cancelled"); return }
         guard busy else { return }
         task?.cancel()
-        activity = "Cancelling"
+        activity = L10n.text("Cancelling")
         let operation = operationID
         let token = generation
         // Give transfers time to remove staging files, then unblock a stalled network read.
@@ -202,11 +229,11 @@ final class FilesModel: ObservableObject {
             try? await Task.sleep(for: .seconds(2))
             guard let self, self.busy, self.operationID == operation, self.generation == token else { return }
             self.disconnect()
-            self.activity = "Cancelled"
+            self.activity = L10n.text("Cancelled")
         }
     }
 
-    func disconnect() {
+    public func disconnect() {
         requirement = nil
         waitingForAccess = false
         generation = UUID()
@@ -214,7 +241,7 @@ final class FilesModel: ObservableObject {
         let previous = session
         session = nil
         connected = false; busy = false; progress = nil
-        activity = "Disconnected"
+        activity = L10n.text("Disconnected")
         Task { await previous?.close() }
     }
 }
@@ -225,12 +252,12 @@ extension FilesModel {
             guard token == generation, !Task.isCancelled,
                   (error as? TerminalConnectionError)?.requiresLocalNetworkPermission == true else { throw error }
             waitingForAccess = true
-            activity = "Waiting for Local Network"
+            activity = L10n.text("Waiting for Local Network")
             let available = await provider.waitForAccess(for: host)
             guard token == generation, !Task.isCancelled else { throw CancellationError() }
             waitingForAccess = false
             guard available else { throw error }
-            activity = "Connecting"
+            activity = L10n.text("Connecting")
             return try await provider.files(for: host)
         }
     }

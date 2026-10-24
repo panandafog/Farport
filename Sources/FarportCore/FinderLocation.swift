@@ -1,3 +1,4 @@
+import FarportLocalization
 import Foundation
 
 public struct FinderLocation: Codable, Equatable, Identifiable, Sendable {
@@ -25,7 +26,7 @@ public struct FinderLocation: Codable, Equatable, Identifiable, Sendable {
 
     public func validate() throws {
         try FinderPath.validateRoot(rootPath)
-        guard let host else { throw HarborError.message("Finder host is unavailable.") }
+        guard let host else { throw HarborError.message(L10n.text("Finder host is unavailable.")) }
         try hosts.forEach { try $0.validate() }
         _ = try ConnectionRoute(to: host, library: hosts)
     }
@@ -45,7 +46,7 @@ public struct FinderLocationRepository: Sendable {
     public func load(_ id: UUID) throws -> FinderLocation {
         let document = try JSONDecoder().decode(Document.self, from: Data(contentsOf: url(id)))
         guard document.schemaVersion == 1, document.location.id == id else {
-            throw HarborError.message("Unsupported Finder connection configuration.")
+            throw HarborError.message(L10n.text("Unsupported Finder connection configuration."))
         }
         try document.location.validate()
         return document.location
@@ -57,7 +58,7 @@ public struct FinderLocationRepository: Sendable {
             .filter { $0.pathExtension == "json" }
             .map { file in
                 guard let id = UUID(uuidString: file.deletingPathExtension().lastPathComponent) else {
-                    throw HarborError.message("Unexpected Finder configuration file.")
+                    throw HarborError.message(L10n.text("Unexpected Finder configuration file."))
                 }
                 return try load(id)
             }
@@ -93,7 +94,7 @@ public enum FinderPath {
         guard root.hasPrefix("/"), root == "/" || !root.hasSuffix("/"),
               !root.contains("\0"), !root.contains("//"),
               !root.split(separator: "/").contains(where: { $0 == "." || $0 == ".." }) else {
-            throw HarborError.message("Finder requires a canonical absolute remote folder.")
+            throw HarborError.message(L10n.text("Finder requires a canonical absolute remote folder."))
         }
     }
 

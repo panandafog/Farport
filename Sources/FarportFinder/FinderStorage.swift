@@ -1,5 +1,6 @@
 #if os(macOS)
 import FarportCore
+import FarportLocalization
 import FarportSecurity
 import FarportSSH
 import FileProvider
@@ -13,7 +14,7 @@ public enum FinderStorage {
             forSecurityApplicationGroupIdentifier: groupIdentifier
         ) else {
             throw HarborError.message(
-                "Finder requires Farport and its extension to be signed with the shared App Group."
+                L10n.text("Finder requires Farport and its extension to be signed with the shared App Group.")
             )
         }
         return url.appendingPathComponent("Finder", isDirectory: true)

@@ -1,5 +1,5 @@
 import FarportCore
-import FarportSSH
+@testable import FarportSSH
 import XCTest
 
 final class SSHIntegrationTests: XCTestCase {
@@ -37,6 +37,20 @@ final class SSHIntegrationTests: XCTestCase {
             await session.close()
             XCTFail("Authentication should fail")
         } catch { }
+    }
+
+    func testDroppedFileTransportProducesAConnectionFailure() async throws {
+        let connection = try await FixtureTrust.provider().files(for: fixtureHost())
+        let session = try XCTUnwrap(connection as? CitadelFileSession)
+        _ = try await session.list("/")
+        await session.connection.close()
+        do {
+            _ = try await session.list("/")
+            XCTFail("A dropped SFTP transport must fail")
+        } catch {
+            XCTAssertTrue(error is TerminalConnectionError, "Expected a typed transport error: \(error)")
+        }
+        await session.close()
     }
 
     func testTerminalReturnsWhenServerClosesShell() async throws {

@@ -1,3 +1,4 @@
+import FarportLocalization
 import Foundation
 
 public struct ProtectedHostRepository: HostRepository {
@@ -22,7 +23,7 @@ public struct ProtectedHostRepository: HostRepository {
             return hosts
         }
         guard (1...3).contains(version) else {
-            throw HarborError.message("Unsupported host library. The file was not changed.")
+            throw HarborError.message(L10n.text("Unsupported host library. The file was not changed."))
         }
         let hosts = try JSONHostRepository(url: url).load()
         try save(hosts)
@@ -43,7 +44,7 @@ public struct ProtectedHostRepository: HostRepository {
         let data = try Data(contentsOf: url)
         let version = try JSONDecoder().decode(Header.self, from: data).schemaVersion
         if (4...5).contains(version) { return try JSONDecoder().decode(Document.self, from: data).hosts }
-        guard (1...3).contains(version) else { throw HarborError.message("Unsupported host library.") }
+        guard (1...3).contains(version) else { throw HarborError.message(L10n.text("Unsupported host library.")) }
         _ = try JSONHostRepository(url: url).load()
         return []
     }

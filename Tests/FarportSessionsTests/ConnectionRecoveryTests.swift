@@ -1,5 +1,5 @@
-@testable import Farport
 import FarportCore
+import FarportSessions
 import XCTest
 
 @MainActor
@@ -13,11 +13,11 @@ final class ConnectionRecoveryTests: XCTestCase {
         try await waitUntil { model.state == .connected }
         await first.emit("retained-history\r\n")
         try await waitUntil { self.history(model).contains("retained-history") }
-        model.send(source: model.view, data: Array("before".utf8)[...])
+        model.send(Data("before".utf8))
         try await waitUntil { await first.sent == Data("before".utf8) }
         await first.end(.transport("Lost link"))
         try await waitUntil { model.state == .reconnecting }
-        model.send(source: model.view, data: Array("do-not-replay".utf8)[...])
+        model.send(Data("do-not-replay".utf8))
         try await waitUntil { await provider.attempts == 2 && model.state == .connected }
         XCTAssertTrue(history(model).contains("retained-history"))
         let replayed = await second.sent
@@ -34,8 +34,8 @@ final class ConnectionRecoveryTests: XCTestCase {
         await first.end(.transport("Lost link"))
         try await waitUntil { model.state == .reconnecting }
         model.disconnect()
-        model.systemWillSleep()
-        model.systemDidWake()
+        model.suspend()
+        model.resume()
         try await Task.sleep(for: .milliseconds(150))
         let attempts = await provider.attempts
         XCTAssertEqual(attempts, 1)
@@ -102,7 +102,7 @@ final class ConnectionRecoveryTests: XCTestCase {
     func testStandardSSHHeartbeatFailureDoesNotStartAnotherShell() async throws {
         let first = RecoveryTerminal(probeError: .heartbeatTimeout)
         let provider = RecoveryProvider([.success(first)])
-        let model = TerminalModel(host: SavedHost(), provider: provider,
+        let model = RecordingTerminal(host: SavedHost(), provider: provider,
                                   policy: .init(heartbeatInterval: 0.01, heartbeatTimeout: 0.01))
         model.connect()
         try await waitUntil { model.state == .disconnected }
@@ -117,12 +117,12 @@ final class ConnectionRecoveryTests: XCTestCase {
         let model = makeModel(provider)
         model.connect()
         try await waitUntil { model.state == .connected }
-        model.systemWillSleep()
+        model.suspend()
         XCTAssertEqual(model.state, .suspended)
-        model.send(source: model.view, data: Array("sleep-input".utf8)[...])
-        model.systemDidWake()
+        model.send(Data("sleep-input".utf8))
+        model.resume()
         XCTAssertEqual(model.state, .checking)
-        model.send(source: model.view, data: Array("wake-input".utf8)[...])
+        model.send(Data("wake-input".utf8))
         try await waitUntil { model.state == .connected }
         let attempts = await provider.attempts
         let sent = await first.sent
@@ -139,23 +139,23 @@ final class ConnectionRecoveryTests: XCTestCase {
         try await waitUntil { model.state == .connected }
         await first.end(.transport("Lost link"))
         try await waitUntil { model.state == .reconnecting }
-        model.systemWillSleep()
+        model.suspend()
         try await Task.sleep(for: .milliseconds(150))
         let sleepingAttempts = await provider.attempts
         XCTAssertEqual(sleepingAttempts, 1)
-        model.systemDidWake()
+        model.resume()
         try await waitUntil { await provider.attempts == 2 && model.state == .connected }
         model.disconnect()
     }
 
     private func makeModel(_ provider: RecoveryProvider, delays: [TimeInterval] = [0.01],
-                           interval: TimeInterval = 5) -> TerminalModel {
-        TerminalModel(host: SavedHost(profile: HostProfile(terminalResumeStrategy: .tmux)), provider: provider,
+                           interval: TimeInterval = 5) -> RecordingTerminal {
+        RecordingTerminal(host: SavedHost(profile: HostProfile(terminalResumeStrategy: .tmux)), provider: provider,
                       policy: .init(heartbeatInterval: interval, heartbeatTimeout: 0.05, retryDelays: delays))
     }
 
-    private func history(_ model: TerminalModel) -> String {
-        String(data: model.view.getTerminal().getBufferAsData(), encoding: .utf8) ?? ""
+    private func history(_ model: RecordingTerminal) -> String {
+        String(data: model.screen.data, encoding: .utf8) ?? ""
     }
 
     private func waitUntil(_ predicate: () async -> Bool) async throws {

@@ -1,24 +1,13 @@
+import Combine
 import FarportCore
-import FarportSecurity
-import SwiftUI
-
-struct AppSecretStore: SecretStore {
-    func data(for account: String) throws -> Data? { try KeychainSecretStore.shared().data(for: account) }
-    func insert(_ data: Data, for account: String) throws {
-        try KeychainSecretStore.shared().insert(data, for: account)
-    }
-    func remove(_ account: String) throws { try KeychainSecretStore.shared().remove(account) }
-    func remove(_ account: String, matching expected: Data) throws {
-        try KeychainSecretStore.shared().remove(account, matching: expected)
-    }
-}
+import Foundation
 
 @MainActor
-final class ServerTrustModel: ObservableObject {
-    @Published var challenge: HostKeyChallenge?
-    @Published var showingKeys = false
-    @Published var error: String?
-    @Published private(set) var keys: [ServerEndpoint: ServerHostKey] = [:]
+public final class ServerTrustModel: ObservableObject {
+    @Published public var challenge: HostKeyChallenge?
+    @Published public var showingKeys = false
+    @Published public var error: String?
+    @Published public private(set) var keys: [ServerEndpoint: ServerHostKey] = [:]
     private struct Continuation {
         let endpoint: ServerEndpoint
         let retry: () -> Void
@@ -28,16 +17,16 @@ final class ServerTrustModel: ObservableObject {
     private var queued: [HostKeyChallenge] = []
     private var afterDismiss: (() -> Void)?
 
-    init(secrets: any SecretStore) { repository = KnownHostRepository(secrets: secrets) }
+    public init(secrets: any SecretStore) { repository = KnownHostRepository(secrets: secrets) }
 
-    var verifier: HostKeyVerifier {
+    public var verifier: HostKeyVerifier {
         let repository = repository
         return { endpoint, key in try repository.verify(endpoint, key: key) }
     }
 
-    var canContinue: Bool { challenge.map { $0.trusted == nil && continuations[$0.id] != nil } ?? false }
+    public var canContinue: Bool { challenge.map { $0.trusted == nil && continuations[$0.id] != nil } ?? false }
 
-    func present(_ value: HostKeyChallenge, retry: (() -> Void)? = nil) {
+    public func present(_ value: HostKeyChallenge, retry: (() -> Void)? = nil) {
         if let retry, continuations[value.id] == nil {
             continuations[value.id] = Continuation(endpoint: value.endpoint, retry: retry)
         }
@@ -46,7 +35,7 @@ final class ServerTrustModel: ObservableObject {
         if challenge == nil, !showingKeys { challenge = value } else { queued.append(value) }
     }
 
-    func nextChallenge() {
+    public func nextChallenge() {
         if challenge == nil { continuations = continuations.filter { entry in queued.contains { $0.id == entry.key } } }
         guard challenge == nil, !showingKeys else { return }
         let retry = afterDismiss
@@ -55,7 +44,7 @@ final class ServerTrustModel: ObservableObject {
         if !queued.isEmpty { challenge = queued.removeFirst() }
     }
 
-    func trust(_ value: HostKeyChallenge, continueConnection: Bool = false) {
+    public func trust(_ value: HostKeyChallenge, continueConnection: Bool = false) {
         error = nil
         do {
             try repository.trust(value)
@@ -66,12 +55,12 @@ final class ServerTrustModel: ObservableObject {
         } catch { self.error = error.localizedDescription }
     }
 
-    func cancelChallenge() {
+    public func cancelChallenge() {
         if let challenge { continuations.removeValue(forKey: challenge.id) }
         challenge = nil
     }
 
-    func showKeys(hosts: [SavedHost]) {
+    public func showKeys(hosts: [SavedHost]) {
         error = nil
         do {
             var loaded: [ServerEndpoint: ServerHostKey] = [:]
@@ -84,9 +73,9 @@ final class ServerTrustModel: ObservableObject {
         showingKeys = true
     }
 
-    func storedKey(_ endpoint: ServerEndpoint) throws -> ServerHostKey? { try repository.key(for: endpoint) }
+    public func storedKey(_ endpoint: ServerEndpoint) throws -> ServerHostKey? { try repository.key(for: endpoint) }
 
-    func forget(_ endpoint: ServerEndpoint, key: ServerHostKey) {
+    public func forget(_ endpoint: ServerEndpoint, key: ServerHostKey) {
         error = nil
         do {
             try repository.forget(endpoint, expected: key)

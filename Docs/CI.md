@@ -14,9 +14,11 @@ unsigned macOS build approach, with additional Farport-specific checks.
 - **Build macOS (Debug/Release)** regenerates the checked-in project and requires
   no tracked diff, checks generation under different checkout names, then builds the
   app and embedded Finder extension without signing.
+- **Compile Shared Modules for iOS** builds the reusable session, transport and
+  security libraries for iOS Simulator, without launching an iOS application.
 
 Package tests run on `macos-15`; Debug/Release app builds run on `macos-26`, with
-Xcode 26.3 explicitly selected in both jobs. Build-host and app deployment target
+Xcode 26.3 explicitly selected in all jobs. Build-host and app deployment target
 are independent: the app still targets macOS 15 and both CPU architectures.
 The newer build host avoids the macOS-15 Icon Composer/asset-distillation failure
 scenario. The reported Debug failure ended at `CompileAssetCatalogVariant` without
@@ -96,3 +98,12 @@ step. On failure, CI retains `build.log` and the build `.xcresult` in a configur
 and attempt-specific diagnostics artifact for seven days. It publishes neither app
 bundles nor test data. Inspect the first actool error there, not just xcodebuild's
 final failed-command summary. The job also logs host OS, Xcode version, and commit.
+
+## Shared Modules And Localization
+
+The package test job also exercises platform-independent terminal recovery, file-operation
+generation guards, workspace identity and English/Russian catalog/format consistency.
+The separate iOS compatibility job runs `sh Scripts/verify-ios.sh`, compiling Sessions,
+SSH and Security (including Core, Cloud and Localization) against the iOS Simulator SDK
+with the committed Xcode lockfile. It builds libraries only; no iOS app or simulator
+runtime is installed or launched. macOS UI tests remain separate from this check.

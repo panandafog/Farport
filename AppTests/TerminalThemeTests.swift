@@ -1,10 +1,19 @@
 import AppKit
 @testable import Farport
+import FarportCore
 import SwiftTerm
 import XCTest
 
 @MainActor
 final class TerminalThemeTests: XCTestCase {
+    func testNewDisconnectedTerminalHidesCursorAfterFontAndThemeSetup() {
+        let model = TerminalModel(host: SavedHost(), provider: ThemeTestProvider())
+        let recorder = ThemeOutputRecorder()
+        model.view.terminalDelegate = recorder
+        XCTAssertEqual(model.state, .disconnected)
+        XCTAssertTrue(query("\u{1b}[?25$p", view: model.view, recorder: recorder).contains("?25;2$y"))
+    }
+
     func testSystemColorsCursorAndSelectionHaveContrastInBothAppearances() throws {
         let view = SystemTerminalView(frame: NSRect(x: 0, y: 0, width: 800, height: 500))
         for name in [NSAppearance.Name.aqua, .darkAqua] {
@@ -144,6 +153,16 @@ final class TerminalThemeTests: XCTestCase {
         }
         let values = try [luminance(first), luminance(second)].sorted()
         return (values[1] + 0.05) / (values[0] + 0.05)
+    }
+}
+
+private struct ThemeTestProvider: ConnectionProvider {
+    func terminal(for host: SavedHost, sessionID: UUID) async throws -> any TerminalSession {
+        throw HarborError.message("Theme tests do not connect")
+    }
+
+    func files(for host: SavedHost) async throws -> any RemoteFileSession {
+        throw HarborError.message("Theme tests do not connect")
     }
 }
 

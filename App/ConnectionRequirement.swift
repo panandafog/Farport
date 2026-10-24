@@ -1,29 +1,6 @@
 import FarportCore
+import FarportLocalization
 import SwiftUI
-
-enum ConnectionRequirement {
-    case localNetwork
-    case serverKey(HostKeyChallenge)
-
-    init?(_ error: Error) {
-        guard let failure = error as? TerminalConnectionError else { return nil }
-        if failure.requiresLocalNetworkPermission { self = .localNetwork } else if let key = failure.hostKeyChallenge {
-            self = .serverKey(key)
-        } else { return nil }
-    }
-
-    var title: String {
-        switch self {
-        case .localNetwork: "Local Network Access"
-        case .serverKey(let key): key.trusted == nil ? "Verify Server Identity" : "Server Key Changed"
-        }
-    }
-
-    var isWarning: Bool {
-        if case .serverKey(let key) = self { return key.trusted != nil }
-        return false
-    }
-}
 
 struct ConnectionRequirementView: View {
     let requirement: ConnectionRequirement
@@ -35,11 +12,11 @@ struct ConnectionRequirementView: View {
             Image(systemName: requirement.isWarning ? "exclamationmark.shield.fill" : "lock.shield")
                 .font(.title3).foregroundStyle(requirement.isWarning ? Color.red : .accentColor)
             VStack(alignment: .leading, spacing: 6) {
-                Text(waiting ? "Waiting for Local Network" : requirement.title).font(.headline)
+                Text(waiting ? L10n.text("Waiting for Local Network") : requirement.title).font(.headline)
                 Text(message).font(.callout).foregroundStyle(.secondary)
                 HStack {
                     if case .localNetwork = requirement {
-                        Button("Open Settings", systemImage: "gearshape") {
+                        Button(L10n.text("Open Settings"), systemImage: "gearshape") {
                             let link = "x-apple.systempreferences:com.apple.preference.security?Privacy_LocalNetwork"
                             if let url = URL(string: link) {
                                 NSWorkspace.shared.open(url)
@@ -58,21 +35,28 @@ struct ConnectionRequirementView: View {
     }
 
     private var actionLabel: String {
-        if case .localNetwork = requirement { return "Retry Connection" }
-        return "Review Fingerprint"
+        if case .localNetwork = requirement { return L10n.text("Retry Connection") }
+        return L10n.text("Review Fingerprint")
     }
 
     private var message: String {
         switch requirement {
         case .localNetwork:
-            waiting ? "Allow Farport in the macOS prompt or in Privacy & Security > Local Network. " +
-                "The connection will continue when access becomes available. You can cancel this attempt." :
-                "macOS blocked the last connection attempt. Allow Farport in Privacy & Security > Local Network, " +
-                "then retry. If access is already enabled but retry is still blocked, quit and reopen Farport. " +
-                "If you have multiple builds, reopen the same app copy."
-        case .serverKey(let key): key.trusted == nil ?
-            "The server's identity needs your confirmation before sign-in." :
-            "The server's key differs from the trusted key. Verify the change independently before reconnecting."
+            return waiting ? L10n.text(
+                "Allow Farport in the macOS prompt or in Privacy & Security > Local Network. The " +
+                "connection will continue when access becomes available. You can cancel this attempt."
+            ) :
+                L10n.text(
+                    "macOS blocked the last connection attempt. Allow Farport in Privacy & Security > " +
+                    "Local Network, then retry. If access is already enabled but retry is still blocked, " +
+                    "quit and reopen Farport. If you have multiple builds, reopen the same app copy."
+                )
+        case .serverKey(let key): return key.trusted == nil ?
+            L10n.text("The server's identity needs your confirmation before sign-in.") :
+            L10n.text(
+                "The server's key differs from the trusted key. Verify the change independently before " +
+                "reconnecting."
+            )
         }
     }
 }

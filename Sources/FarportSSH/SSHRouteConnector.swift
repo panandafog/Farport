@@ -1,6 +1,7 @@
 import Citadel
 import Crypto
 import FarportCore
+import FarportLocalization
 import Foundation
 import NIO
 import NIOSSH
@@ -46,14 +47,14 @@ struct SSHRouteConnector {
                 let cause = await failure(error, endpoint: endpoint, direct: index == 0)
                 if Task.isCancelled { throw CancellationError() }
                 guard route.hosts.count > 1 else { throw cause }
-                let stage = index == route.hosts.count - 1 ? "Destination" : "Jump host"
+                let stage = index == route.hosts.count - 1 ? L10n.text("Destination") : L10n.text("Jump host")
                 throw TerminalConnectionError.route(
                     stage: "\(stage) '\(endpoint.profile.displayName)' (\(endpoint.profile.address))", cause: cause
                 )
             }
         }
         guard let client = clients.popLast() else {
-            throw TerminalConnectionError.configuration("The connection route is empty.")
+            throw TerminalConnectionError.configuration(L10n.text("The connection route is empty."))
         }
         return SSHConnection(client: client, parents: clients)
     }
@@ -86,12 +87,15 @@ struct SSHRouteConnector {
         } catch {
             if Task.isCancelled { throw CancellationError() }
             if ContinuousClock.now >= deadline {
-                throw TerminalConnectionError.transport("Timed out opening the SSH connection through the jump host.")
+                throw TerminalConnectionError.transport(L10n.text(
+                    "Timed out opening the SSH connection through the jump host."
+                ))
             }
             if let rejection = error as? NIOSSHError, rejection.type == .channelSetupRejected {
                 throw TerminalConnectionError.configuration(
-                    "The jump host rejected TCP forwarding to \(settings.host):\(settings.port). " +
-                    "Check forwarding permissions and destination reachability. \(rejection)"
+                    L10n.text("The jump host rejected TCP forwarding to %@:%lld. " +
+                              "Check forwarding permissions and destination reachability. %@",
+                              settings.host, settings.port, String(describing: rejection))
                 )
             }
             throw error
@@ -132,7 +136,7 @@ struct SSHRouteConnector {
                 username: username, privateKey: try Insecure.RSA.PrivateKey(sshRsa: key, decryptionKey: passphrase)
             )
         default:
-            throw HarborError.message("This MVP supports Ed25519 and RSA keys in OpenSSH format.")
+            throw HarborError.message(L10n.text("This MVP supports Ed25519 and RSA keys in OpenSSH format."))
         }
     }
 }

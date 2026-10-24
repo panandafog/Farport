@@ -1,9 +1,10 @@
+import FarportLocalization
 import Foundation
 
 public enum SyncedProfileImport {
     public static func apply(_ profiles: [HostProfile], to hosts: [SavedHost]) throws -> [SavedHost] {
         guard Set(profiles.map(\.id)).count == profiles.count else {
-            throw HarborError.message("Duplicate cloud host IDs.")
+            throw HarborError.message(L10n.text("Duplicate cloud host IDs."))
         }
         return try profiles.map { profile in
             try profile.validate()

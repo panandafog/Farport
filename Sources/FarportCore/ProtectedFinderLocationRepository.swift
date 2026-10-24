@@ -1,3 +1,4 @@
+import FarportLocalization
 import Foundation
 
 public struct ProtectedFinderLocationRepository: Sendable {
@@ -23,15 +24,15 @@ public struct ProtectedFinderLocationRepository: Sendable {
         let version = try JSONDecoder().decode(Header.self, from: data).schemaVersion
         if version == 1 {
             guard migrateLegacy else {
-                throw HarborError.message("Open Farport to migrate this Finder connection to Keychain.")
+                throw HarborError.message(L10n.text("Open Farport to migrate this Finder connection to Keychain."))
             }
             let location = try FinderLocationRepository(directory: directory).load(id)
             try save(location)
             return location
         }
-        guard version == 2 else { throw HarborError.message("Unsupported Finder connection configuration.") }
+        guard version == 2 else { throw HarborError.message(L10n.text("Unsupported Finder connection configuration.")) }
         let document = try JSONDecoder().decode(Document.self, from: data)
-        guard document.id == id else { throw HarborError.message("Invalid Finder connection identifier.") }
+        guard document.id == id else { throw HarborError.message(L10n.text("Invalid Finder connection identifier.")) }
         let hosts = try document.hosts.map { try $0.resolve(using: secrets) }
         guard let host = hosts.first(where: { $0.id == document.hostID }) else { throw FinderReadError.disabled }
         return try FinderLocation(id: id, host: host, library: hosts, rootPath: document.rootPath,
@@ -43,7 +44,7 @@ public struct ProtectedFinderLocationRepository: Sendable {
         return try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
             .filter { $0.pathExtension == "json" }.map { file in
                 guard let id = UUID(uuidString: file.deletingPathExtension().lastPathComponent) else {
-                    throw HarborError.message("Unexpected Finder configuration file.")
+                    throw HarborError.message(L10n.text("Unexpected Finder configuration file."))
                 }
                 return try load(id)
             }
@@ -77,7 +78,7 @@ public struct ProtectedFinderLocationRepository: Sendable {
             let document = try JSONDecoder().decode(Document.self, from: data)
             guard document.id == id else { throw FinderReadError.disabled }
             return document.hosts
-        default: throw HarborError.message("Unsupported Finder connection configuration.")
+        default: throw HarborError.message(L10n.text("Unsupported Finder connection configuration."))
         }
     }
 

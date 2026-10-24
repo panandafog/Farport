@@ -9,19 +9,20 @@
 /* Begin PBXBuildFile section */
 		0C0EAEB467C804C3DC7007DD /* WorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA7371ADED7390F5A3CECD2 /* WorkspaceTests.swift */; };
 		0E94902301B1ECF322841D24 /* LibraryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 736FD4EF519F74C65A8A7C74 /* LibraryModel.swift */; };
-		10F7B42B764E6F3E98FDA132 /* FarportSecurity in Frameworks */ = {isa = PBXBuildFile; productRef = C581A12AA03318734C3ABC69 /* FarportSecurity */; };
-		15C6601F5EFE59F63C910E76 /* FarportCloud in Frameworks */ = {isa = PBXBuildFile; productRef = 7CEC566B51336461AD40CDD0 /* FarportCloud */; };
+		10F7B42B764E6F3E98FDA132 /* FarportSessions in Frameworks */ = {isa = PBXBuildFile; productRef = DC2CF2A41D2F30E3FA5CAEC4 /* FarportSessions */; };
+		15C6601F5EFE59F63C910E76 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8DA980B4E0DE67141A3383FB /* FarportCore */; };
 		1761A1CB024B34C663EFF472 /* TerminalThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E72DB3B2C3AFE7043D4CE62 /* TerminalThemeTests.swift */; };
 		196E08BC07CBC25D68F48342 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 46B89A7269B4CA50899BE7E1 /* FarportCore */; };
 		214993804A312079C7DCA7F7 /* FarportApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761DDB6688A35191D74242B0 /* FarportApp.swift */; };
 		2241672700E92B651A5FD90C /* SystemTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C5C988E605379A3A07F3CD /* SystemTerminalView.swift */; };
 		29A636D5499086FB1EDC89B8 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 886D25B3FEF9744284698F95 /* FarportCore */; };
-		2A4FCB06807381E48A91995A /* FarportSSH in Frameworks */ = {isa = PBXBuildFile; productRef = EC47AA53AC832EAAEAA937A7 /* FarportSSH */; };
+		2A4FCB06807381E48A91995A /* FarportSecurity in Frameworks */ = {isa = PBXBuildFile; productRef = C581A12AA03318734C3ABC69 /* FarportSecurity */; };
+		2D50FFF2BF42EFEBF057C763 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3C80BC311C2CCE60E152469E /* InfoPlist.strings */; };
 		2F6DA869F8A60D1BB82F9E75 /* TerminalTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80E500ACAB636356D455EA3 /* TerminalTabs.swift */; };
 		3DFEFE2D6813F59E454DB8F2 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = C0C23B8FBAF68C1F25E0D56A /* SwiftTerm */; };
+		4592FD0B134AC6794953A02C /* LibraryEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9DFFF8D38649FE0085D100 /* LibraryEnvironment.swift */; };
 		47F7790D5F40482E9A54CBE1 /* ConnectionRequirement.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF50FD53F435051F2A847A24 /* ConnectionRequirement.swift */; };
 		4BC11C1CE68B5BF271981E33 /* FinderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302C18F0CEC7B2F86E342330 /* FinderModel.swift */; };
-		4BED0F37E3C75D7930E19860 /* ServerTrustModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC58192F49909E1BCF7A7857 /* ServerTrustModel.swift */; };
 		4C2D6CDF3177B303C0FA8640 /* FinderControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCAFB7DE0B755F5303EF959C /* FinderControls.swift */; };
 		4F42C2374FA16E0B2DE4AF34 /* FarportFinderExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 783F52CB198258C012C39CA3 /* FarportFinderExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		54C60B457A8E8D2AEFBCAF0C /* FinderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C12B5B869AC8247908B362 /* FinderEnumerator.swift */; };
@@ -30,25 +31,27 @@
 		60C85A0B9C0426E00996EB73 /* FinderWriteFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BEF0BBA828F1BE4ACAD278 /* FinderWriteFixture.swift */; };
 		64009EABA53C0623DBBCD4B8 /* AccentColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B41D6E65605D27DDFC7E53E7 /* AccentColorTests.swift */; };
 		6FC3D2073BBAF9071A8F6E44 /* KeychainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F95A9C427995CEA839BA4B /* KeychainTests.swift */; };
-		7A616C6DC45735DF38AAAB11 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = BF9E1B9BF9A81579AEDC9B13 /* SwiftTerm */; };
-		7D40E39A85E040CFFBC4990E /* FilesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CC3FD4070A60424111AD8F /* FilesModel.swift */; };
+		764F3143CD6905322EDA07FC /* SessionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D3DC3938EDB35366EC3E1A /* SessionModels.swift */; };
+		7A616C6DC45735DF38AAAB11 /* FarportCloud in Frameworks */ = {isa = PBXBuildFile; productRef = 7CEC566B51336461AD40CDD0 /* FarportCloud */; };
 		7FD7E511A8BA9A951A0C89EC /* FixtureTrust.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4906A02D27C6C3AD68364BF /* FixtureTrust.swift */; };
-		80AACED59B34919A5B90DC76 /* WorkspaceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B126142D07C9534CC603627 /* WorkspaceModel.swift */; };
 		83B4A2B19CF84CF5B00D8990 /* TestSecretStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D0E9F5D401E1277006689 /* TestSecretStore.swift */; };
 		86FC7C04D4EBD26C85D0384F /* LibraryWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA7391F5C0F7DFB0258BE1D /* LibraryWindowTests.swift */; };
 		8776FDBADB825EB23DFA2465 /* HostEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1F6C7DE4FC3D77FE0372B2 /* HostEditor.swift */; };
 		8793D93BDDEE287F86FA2592 /* FilesPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE2726307EB806A91F33FC1 /* FilesPane.swift */; };
 		8D0764952ECA94488BA17AEE /* BrandingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73BE6B45D1E289F15B665A5 /* BrandingTests.swift */; };
-		908010DCCBD144F3B9F8A505 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8DA980B4E0DE67141A3383FB /* FarportCore */; };
+		908010DCCBD144F3B9F8A505 /* FarportLocalization in Frameworks */ = {isa = PBXBuildFile; productRef = 7A9D282A73C8162443F32BA1 /* FarportLocalization */; };
 		946B54DD013E24F16D41F0B0 /* TerminalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB0D50D1FD8A9586EF6ED12 /* TerminalModel.swift */; };
 		9AA635655DA8FFBEE8608B69 /* ConnectionOnboardingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D83B1917D9142525DA82D9A /* ConnectionOnboardingTests.swift */; };
 		9F1D4AE67AC91DFA72B698D3 /* LiveConnectionRecoveryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4993D4658EB4EAE21780A1A7 /* LiveConnectionRecoveryTests.swift */; };
 		A70213362A9DCA090D16232B /* ServerTrustViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F78FA38AD8115924E744C26 /* ServerTrustViews.swift */; };
 		AA9D9B34EE7F4ADA076FC646 /* LibraryRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14541ECB73BEEBE0A6941355 /* LibraryRoutingTests.swift */; };
 		AE3CA87FBDADD3D5CDAC00F6 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4348599A9A0976C9529D95AE /* LibraryView.swift */; };
+		B13228E46A1A058852528BDF /* AppSecretStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C48520FB35467E6864429DBC /* AppSecretStore.swift */; };
 		B4AFD0212ADB354DDA794112 /* LibraryCloudChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7472502072D3A00A52C1C6C7 /* LibraryCloudChanges.swift */; };
 		C6FB6D381F5EECA45E21A99F /* container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = F835DC4D9DAF1826E7F72E03 /* container-migration.plist */; };
 		C977B0C69DF4D0F6AA6A5F0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C6E6C72BF2D4B11553855AB /* Assets.xcassets */; };
+		D0FADBBBF27D885505FF80C2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2FBCD3EF99F1DF2323E300B6 /* InfoPlist.strings */; };
+		D16FD4EAF7C415FF6A6DDBA9 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = BF9E1B9BF9A81579AEDC9B13 /* SwiftTerm */; };
 		D4424DFA435E91C5935A883A /* FinderExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7DAF8DEA638B840F37776A /* FinderExtensionTests.swift */; };
 		D6C300586F08CA8366DC4BD4 /* CloudSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CA99A9417D7FA0546B68C2 /* CloudSyncView.swift */; };
 		DB7050DE86A3CA831056BBB9 /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */; };
@@ -59,10 +62,9 @@
 		E9C69113AE138FDA1B6F64DE /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */; };
 		EF1995EC576DD11894187CC9 /* FarportFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 9DC3FA68A450554696260A9D /* FarportFinder */; };
 		F54AD2B54BA70C29B59A9BFD /* FinderWriteCallbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED59DC3EEF392EEEA10C399D /* FinderWriteCallbackTests.swift */; };
-		F86C9F6872B85D2E5ED5B02A /* CloudSyncModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6204F68DA86FCC04F460FA4 /* CloudSyncModel.swift */; };
-		F8D0CE240E49B3C26B8184D4 /* FarportFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 423A63DD5D61CFB78800F657 /* FarportFinder */; };
+		F8D0CE240E49B3C26B8184D4 /* FarportSSH in Frameworks */ = {isa = PBXBuildFile; productRef = EC47AA53AC832EAAEAA937A7 /* FarportSSH */; };
 		F9DF8613AB2ED09A63770F21 /* ConnectionAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F757F6A071818553721AF3A /* ConnectionAccessTests.swift */; };
-		FEDD2CE049415531A3DFEFAD /* ConnectionRecoveryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A073451FA11B3B5D7E4F7D4 /* ConnectionRecoveryTests.swift */; };
+		FBF7237A069297A5C1782B52 /* FarportFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 423A63DD5D61CFB78800F657 /* FarportFinder */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,16 +101,20 @@
 /* Begin PBXFileReference section */
 		14541ECB73BEEBE0A6941355 /* LibraryRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryRoutingTests.swift; sourceTree = "<group>"; };
 		16C12B5B869AC8247908B362 /* FinderEnumerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderEnumerator.swift; sourceTree = "<group>"; };
-		1B126142D07C9534CC603627 /* WorkspaceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceModel.swift; sourceTree = "<group>"; };
+		2FA6C1B441041FF4B2B38ABD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		302C18F0CEC7B2F86E342330 /* FinderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderModel.swift; sourceTree = "<group>"; };
 		3D83B1917D9142525DA82D9A /* ConnectionOnboardingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionOnboardingTests.swift; sourceTree = "<group>"; };
+		3E9DFFF8D38649FE0085D100 /* LibraryEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryEnvironment.swift; sourceTree = "<group>"; };
 		3FB0D50D1FD8A9586EF6ED12 /* TerminalModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalModel.swift; sourceTree = "<group>"; };
 		4348599A9A0976C9529D95AE /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		4993D4658EB4EAE21780A1A7 /* LiveConnectionRecoveryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveConnectionRecoveryTests.swift; sourceTree = "<group>"; };
 		49CA99A9417D7FA0546B68C2 /* CloudSyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncView.swift; sourceTree = "<group>"; };
 		4F757F6A071818553721AF3A /* ConnectionAccessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionAccessTests.swift; sourceTree = "<group>"; };
 		51C5C988E605379A3A07F3CD /* SystemTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTerminalView.swift; sourceTree = "<group>"; };
+		51F28F72A0A18E5600DE89A3 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		55A93F5CBE5D34E73E53E0F8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5C6E6C72BF2D4B11553855AB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5F8986076C008A405B4766BF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6BE2726307EB806A91F33FC1 /* FilesPane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesPane.swift; sourceTree = "<group>"; };
 		736FD4EF519F74C65A8A7C74 /* LibraryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryModel.swift; sourceTree = "<group>"; };
 		7472502072D3A00A52C1C6C7 /* LibraryCloudChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryCloudChanges.swift; sourceTree = "<group>"; };
@@ -119,11 +125,10 @@
 		7F1F6C7DE4FC3D77FE0372B2 /* HostEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostEditor.swift; sourceTree = "<group>"; };
 		7F78FA38AD8115924E744C26 /* ServerTrustViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTrustViews.swift; sourceTree = "<group>"; };
 		892A338EC32AF1BF1379D65D /* FarportAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FarportAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8A073451FA11B3B5D7E4F7D4 /* ConnectionRecoveryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionRecoveryTests.swift; sourceTree = "<group>"; };
 		8CA7391F5C0F7DFB0258BE1D /* LibraryWindowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryWindowTests.swift; sourceTree = "<group>"; };
+		93D3DC3938EDB35366EC3E1A /* SessionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionModels.swift; sourceTree = "<group>"; };
 		98AEDA753A2F94570449C062 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9E72DB3B2C3AFE7043D4CE62 /* TerminalThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalThemeTests.swift; sourceTree = "<group>"; };
-		A0CC3FD4070A60424111AD8F /* FilesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesModel.swift; sourceTree = "<group>"; };
 		A1F95A9C427995CEA839BA4B /* KeychainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainTests.swift; sourceTree = "<group>"; };
 		A3BEF0BBA828F1BE4ACAD278 /* FinderWriteFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderWriteFixture.swift; sourceTree = "<group>"; };
 		A4906A02D27C6C3AD68364BF /* FixtureTrust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureTrust.swift; sourceTree = "<group>"; };
@@ -132,6 +137,7 @@
 		B7B7744095D0E37D4852CCA0 /* FarportFinder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FarportFinder.entitlements; sourceTree = "<group>"; };
 		BF49EA2F8CA0319C7774C4A0 /* Farport */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Farport; path = .; sourceTree = SOURCE_ROOT; };
 		C43A17C9E2E1FD4C069F9178 /* ServerTrustModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTrustModelTests.swift; sourceTree = "<group>"; };
+		C48520FB35467E6864429DBC /* AppSecretStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSecretStore.swift; sourceTree = "<group>"; };
 		CBC9B8EDFC64AF78C8E3925E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CCAFB7DE0B755F5303EF959C /* FinderControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderControls.swift; sourceTree = "<group>"; };
 		CEA7371ADED7390F5A3CECD2 /* WorkspaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTests.swift; sourceTree = "<group>"; };
@@ -140,9 +146,7 @@
 		D6126881A37BF9383E62CE1F /* Farport.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Farport.entitlements; sourceTree = "<group>"; };
 		D73BE6B45D1E289F15B665A5 /* BrandingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandingTests.swift; sourceTree = "<group>"; };
 		D80E500ACAB636356D455EA3 /* TerminalTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalTabs.swift; sourceTree = "<group>"; };
-		DC58192F49909E1BCF7A7857 /* ServerTrustModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTrustModel.swift; sourceTree = "<group>"; };
 		DF50FD53F435051F2A847A24 /* ConnectionRequirement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionRequirement.swift; sourceTree = "<group>"; };
-		E6204F68DA86FCC04F460FA4 /* CloudSyncModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncModel.swift; sourceTree = "<group>"; };
 		E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
 		ED3D0E9F5D401E1277006689 /* TestSecretStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSecretStore.swift; sourceTree = "<group>"; };
 		ED59DC3EEF392EEEA10C399D /* FinderWriteCallbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderWriteCallbackTests.swift; sourceTree = "<group>"; };
@@ -156,12 +160,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				908010DCCBD144F3B9F8A505 /* FarportCore in Frameworks */,
-				10F7B42B764E6F3E98FDA132 /* FarportSecurity in Frameworks */,
-				15C6601F5EFE59F63C910E76 /* FarportCloud in Frameworks */,
-				2A4FCB06807381E48A91995A /* FarportSSH in Frameworks */,
-				7A616C6DC45735DF38AAAB11 /* SwiftTerm in Frameworks */,
-				F8D0CE240E49B3C26B8184D4 /* FarportFinder in Frameworks */,
+				908010DCCBD144F3B9F8A505 /* FarportLocalization in Frameworks */,
+				10F7B42B764E6F3E98FDA132 /* FarportSessions in Frameworks */,
+				15C6601F5EFE59F63C910E76 /* FarportCore in Frameworks */,
+				2A4FCB06807381E48A91995A /* FarportSecurity in Frameworks */,
+				7A616C6DC45735DF38AAAB11 /* FarportCloud in Frameworks */,
+				F8D0CE240E49B3C26B8184D4 /* FarportSSH in Frameworks */,
+				D16FD4EAF7C415FF6A6DDBA9 /* SwiftTerm in Frameworks */,
+				FBF7237A069297A5C1782B52 /* FarportFinder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,6 +200,7 @@
 				E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */,
 				16C12B5B869AC8247908B362 /* FinderEnumerator.swift */,
 				CBC9B8EDFC64AF78C8E3925E /* Info.plist */,
+				2FBCD3EF99F1DF2323E300B6 /* InfoPlist.strings */,
 			);
 			path = FinderExtension;
 			sourceTree = "<group>";
@@ -201,29 +208,29 @@
 		5CA06B77E9A50CA4FA00EF7B /* App */ = {
 			isa = PBXGroup;
 			children = (
+				C48520FB35467E6864429DBC /* AppSecretStore.swift */,
 				5C6E6C72BF2D4B11553855AB /* Assets.xcassets */,
-				E6204F68DA86FCC04F460FA4 /* CloudSyncModel.swift */,
 				49CA99A9417D7FA0546B68C2 /* CloudSyncView.swift */,
 				DF50FD53F435051F2A847A24 /* ConnectionRequirement.swift */,
 				F835DC4D9DAF1826E7F72E03 /* container-migration.plist */,
 				D6126881A37BF9383E62CE1F /* Farport.entitlements */,
 				761DDB6688A35191D74242B0 /* FarportApp.swift */,
 				F19CC199D3C3F3D472431C17 /* FarportLocal.entitlements */,
-				A0CC3FD4070A60424111AD8F /* FilesModel.swift */,
 				6BE2726307EB806A91F33FC1 /* FilesPane.swift */,
 				CCAFB7DE0B755F5303EF959C /* FinderControls.swift */,
 				302C18F0CEC7B2F86E342330 /* FinderModel.swift */,
 				7F1F6C7DE4FC3D77FE0372B2 /* HostEditor.swift */,
 				AD53E68F1973AF203485C05C /* Info.plist */,
+				3C80BC311C2CCE60E152469E /* InfoPlist.strings */,
 				7472502072D3A00A52C1C6C7 /* LibraryCloudChanges.swift */,
+				3E9DFFF8D38649FE0085D100 /* LibraryEnvironment.swift */,
 				736FD4EF519F74C65A8A7C74 /* LibraryModel.swift */,
 				4348599A9A0976C9529D95AE /* LibraryView.swift */,
-				DC58192F49909E1BCF7A7857 /* ServerTrustModel.swift */,
 				7F78FA38AD8115924E744C26 /* ServerTrustViews.swift */,
+				93D3DC3938EDB35366EC3E1A /* SessionModels.swift */,
 				51C5C988E605379A3A07F3CD /* SystemTerminalView.swift */,
 				3FB0D50D1FD8A9586EF6ED12 /* TerminalModel.swift */,
 				D80E500ACAB636356D455EA3 /* TerminalTabs.swift */,
-				1B126142D07C9534CC603627 /* WorkspaceModel.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -287,7 +294,6 @@
 				7AA0A3B7977544B614CCF0B4 /* CloudSyncModelTests.swift */,
 				4F757F6A071818553721AF3A /* ConnectionAccessTests.swift */,
 				3D83B1917D9142525DA82D9A /* ConnectionOnboardingTests.swift */,
-				8A073451FA11B3B5D7E4F7D4 /* ConnectionRecoveryTests.swift */,
 				CF7DAF8DEA638B840F37776A /* FinderExtensionTests.swift */,
 				ED59DC3EEF392EEEA10C399D /* FinderWriteCallbackTests.swift */,
 				98AEDA753A2F94570449C062 /* Info.plist */,
@@ -345,6 +351,8 @@
 			);
 			name = Farport;
 			packageProductDependencies = (
+				7A9D282A73C8162443F32BA1 /* FarportLocalization */,
+				DC2CF2A41D2F30E3FA5CAEC4 /* FarportSessions */,
 				8DA980B4E0DE67141A3383FB /* FarportCore */,
 				C581A12AA03318734C3ABC69 /* FarportSecurity */,
 				7CEC566B51336461AD40CDD0 /* FarportCloud */,
@@ -361,6 +369,7 @@
 			buildConfigurationList = 30A2F539A1984E4938DD269D /* Build configuration list for PBXNativeTarget "FarportFinderExtension" */;
 			buildPhases = (
 				9B9C073D1C3BD07FAF1B628B /* Sources */,
+				BBA21A1070315E57248E5CFB /* Resources */,
 				B7DF755F2DF12DDC3E446F88 /* Frameworks */,
 			);
 			buildRules = (
@@ -431,6 +440,7 @@
 			knownRegions = (
 				Base,
 				en,
+				ru,
 			);
 			mainGroup = BD8427E53854C9C5F82975DD;
 			minimizedProjectReferenceProxies = 1;
@@ -450,12 +460,21 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		BBA21A1070315E57248E5CFB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0FADBBBF27D885505FF80C2 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D5EDC8435A0A46E3A5E232BC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				E1644EDAD02EA89A72FAD708 /* AppIcon.icon in Resources */,
 				C977B0C69DF4D0F6AA6A5F0B /* Assets.xcassets in Resources */,
+				2D50FFF2BF42EFEBF057C763 /* InfoPlist.strings in Resources */,
 				C6FB6D381F5EECA45E21A99F /* container-migration.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -489,24 +508,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F86C9F6872B85D2E5ED5B02A /* CloudSyncModel.swift in Sources */,
+				B13228E46A1A058852528BDF /* AppSecretStore.swift in Sources */,
 				D6C300586F08CA8366DC4BD4 /* CloudSyncView.swift in Sources */,
 				47F7790D5F40482E9A54CBE1 /* ConnectionRequirement.swift in Sources */,
 				214993804A312079C7DCA7F7 /* FarportApp.swift in Sources */,
-				7D40E39A85E040CFFBC4990E /* FilesModel.swift in Sources */,
 				8793D93BDDEE287F86FA2592 /* FilesPane.swift in Sources */,
 				4C2D6CDF3177B303C0FA8640 /* FinderControls.swift in Sources */,
 				4BC11C1CE68B5BF271981E33 /* FinderModel.swift in Sources */,
 				8776FDBADB825EB23DFA2465 /* HostEditor.swift in Sources */,
 				B4AFD0212ADB354DDA794112 /* LibraryCloudChanges.swift in Sources */,
+				4592FD0B134AC6794953A02C /* LibraryEnvironment.swift in Sources */,
 				0E94902301B1ECF322841D24 /* LibraryModel.swift in Sources */,
 				AE3CA87FBDADD3D5CDAC00F6 /* LibraryView.swift in Sources */,
-				4BED0F37E3C75D7930E19860 /* ServerTrustModel.swift in Sources */,
 				A70213362A9DCA090D16232B /* ServerTrustViews.swift in Sources */,
+				764F3143CD6905322EDA07FC /* SessionModels.swift in Sources */,
 				2241672700E92B651A5FD90C /* SystemTerminalView.swift in Sources */,
 				946B54DD013E24F16D41F0B0 /* TerminalModel.swift in Sources */,
 				2F6DA869F8A60D1BB82F9E75 /* TerminalTabs.swift in Sources */,
-				80AACED59B34919A5B90DC76 /* WorkspaceModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -528,7 +546,6 @@
 				DDC08949A89485E56535C695 /* CloudSyncModelTests.swift in Sources */,
 				F9DF8613AB2ED09A63770F21 /* ConnectionAccessTests.swift in Sources */,
 				9AA635655DA8FFBEE8608B69 /* ConnectionOnboardingTests.swift in Sources */,
-				FEDD2CE049415531A3DFEFAD /* ConnectionRecoveryTests.swift in Sources */,
 				DB7050DE86A3CA831056BBB9 /* FileProviderExtension.swift in Sources */,
 				54C60B457A8E8D2AEFBCAF0C /* FinderEnumerator.swift in Sources */,
 				D4424DFA435E91C5935A883A /* FinderExtensionTests.swift in Sources */,
@@ -561,6 +578,27 @@
 			targetProxy = 43CF2F7CEDE33A35F301160A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		2FBCD3EF99F1DF2323E300B6 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5F8986076C008A405B4766BF /* en */,
+				51F28F72A0A18E5600DE89A3 /* ru */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		3C80BC311C2CCE60E152469E /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				55A93F5CBE5D34E73E53E0F8 /* en */,
+				2FA6C1B441041FF4B2B38ABD /* ru */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		05F56433527022EBADB6AA07 /* Local */ = {
@@ -1035,6 +1073,10 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = FarportCore;
 		};
+		7A9D282A73C8162443F32BA1 /* FarportLocalization */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportLocalization;
+		};
 		7CEC566B51336461AD40CDD0 /* FarportCloud */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FarportCloud;
@@ -1068,6 +1110,10 @@
 		C581A12AA03318734C3ABC69 /* FarportSecurity */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FarportSecurity;
+		};
+		DC2CF2A41D2F30E3FA5CAEC4 /* FarportSessions */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportSessions;
 		};
 		EC47AA53AC832EAAEAA937A7 /* FarportSSH */ = {
 			isa = XCSwiftPackageProductDependency;

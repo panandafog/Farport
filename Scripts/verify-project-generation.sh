@@ -8,7 +8,9 @@ temporary=$(mktemp -d "$ROOT/Build/GenerationCheck.XXXXXX")
 trap 'rm -rf "$temporary"' EXIT
 
 # Snapshot only version-controlled inputs and new non-ignored files, never user data/build caches.
-git ls-files --cached --others --exclude-standard -z | tar -c -f "$temporary/source.tar" --null -T -
+git ls-files --cached --others --exclude-standard -z |
+    ruby -e 'paths = STDIN.read.split("\0").uniq; paths.each { |p| STDOUT.write(p + "\0") if File.file?(p) || File.symlink?(p) }' |
+    tar -c -f "$temporary/source.tar" --null -T -
 for name in Farport Harbor 'checkout with spaces'; do
     checkout="$temporary/$name"
     mkdir -p "$checkout/Build/Tools/XcodeGen"

@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+cd "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+build_directory=${1:-Build/iOSCompatibility}
+
+# Sessions includes Core, Cloud and Localization; the other adapters must compile independently.
+for scheme in FarportSessions FarportSSH FarportSecurity; do
+    xcodebuild -quiet -project Farport.xcodeproj -scheme "$scheme" \
+        -configuration Debug -destination 'generic/platform=iOS Simulator' \
+        -derivedDataPath "$build_directory" -onlyUsePackageVersionsFromResolvedFile \
+        CODE_SIGNING_ALLOWED=NO build
+done

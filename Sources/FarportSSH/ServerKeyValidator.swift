@@ -1,4 +1,5 @@
 import FarportCore
+import FarportLocalization
 import Foundation
 import NIO
 import NIOSSH
@@ -23,7 +24,7 @@ struct ServerKeyValidator: NIOSSHClientServerAuthenticationDelegate {
                 validationCompletePromise.fail(TerminalConnectionError.serverTrust(challenge))
             } catch {
                 validationCompletePromise.fail(TerminalConnectionError.configuration(
-                    "Cannot verify the server key: " + error.localizedDescription
+                    L10n.text("Cannot verify the server key: %@", error.localizedDescription)
                 ))
             }
         }

@@ -3,8 +3,11 @@ import PackageDescription
 
 let package = Package(
     name: "FarportKit",
+    defaultLocalization: "en",
     platforms: [.macOS("15.0"), .iOS(.v17)],
     products: [
+        .library(name: "FarportLocalization", targets: ["FarportLocalization"]),
+        .library(name: "FarportSessions", targets: ["FarportSessions"]),
         .library(name: "FarportCore", targets: ["FarportCore"]),
         .library(name: "FarportSSH", targets: ["FarportSSH"]),
         .library(name: "FarportSecurity", targets: ["FarportSecurity"]),
@@ -18,16 +21,22 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-crypto.git", from: "3.12.3")
     ],
     targets: [
-        .target(name: "FarportCore"),
-        .target(name: "FarportCloud", dependencies: ["FarportCore"]),
-        .target(name: "FarportSecurity", dependencies: ["FarportCore"]),
+        .target(name: "FarportLocalization", resources: [.process("Resources")]),
+        .target(name: "FarportSessions", dependencies: ["FarportCore", "FarportCloud", "FarportLocalization"]),
+        .target(name: "FarportCore", dependencies: ["FarportLocalization"]),
+        .target(name: "FarportCloud", dependencies: ["FarportCore", "FarportLocalization"]),
+        .target(name: "FarportSecurity", dependencies: ["FarportCore", "FarportLocalization"]),
         .target(name: "FarportSSH", dependencies: [
-            "FarportCore", .product(name: "Citadel", package: "Citadel"),
+            "FarportCore", "FarportLocalization", .product(name: "Citadel", package: "Citadel"),
             .product(name: "NIO", package: "swift-nio"),
             .product(name: "NIOSSH", package: "swift-nio-ssh"),
             .product(name: "Crypto", package: "swift-crypto")
         ]),
-        .target(name: "FarportFinder", dependencies: ["FarportCore", "FarportSSH", "FarportSecurity"]),
+        .target(name: "FarportFinder", dependencies: [
+            "FarportCore", "FarportSSH", "FarportSecurity", "FarportLocalization"
+        ]),
+        .testTarget(name: "FarportSessionsTests", dependencies: ["FarportSessions", "FarportCore"]),
+        .testTarget(name: "FarportLocalizationTests", dependencies: ["FarportLocalization"]),
         .testTarget(name: "FarportFinderTests", dependencies: ["FarportFinder", "FarportCore"]),
         .testTarget(name: "FarportCoreTests", dependencies: ["FarportCore"]),
         .testTarget(name: "FarportCloudTests", dependencies: ["FarportCloud", "FarportCore"]),

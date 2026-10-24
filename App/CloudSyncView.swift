@@ -1,4 +1,5 @@
 import FarportCore
+import FarportLocalization
 import SwiftUI
 
 struct CloudSyncPresentation: View {
@@ -16,10 +17,15 @@ struct CloudSyncStatus: View {
         Button { model.showingSettings = true } label: {
             HStack {
                 Image(systemName: model.pendingChanges ? "icloud.and.arrow.down" : "icloud")
-                Text(model.pendingChanges ? "iCloud Updates" : model.snapshot.enabled ? "iCloud Hosts" : "iCloud Off")
+                Text(statusTitle)
                 Spacer()
             }
         }.buttonStyle(.borderless).padding(.horizontal, 14).padding(.top, 10)
+    }
+
+    private var statusTitle: String {
+        if model.pendingChanges { return L10n.text("iCloud Updates") }
+        return model.snapshot.enabled ? L10n.text("iCloud Hosts") : L10n.text("iCloud Off")
     }
 }
 
@@ -30,32 +36,37 @@ struct CloudSyncView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Label("iCloud Hosts", systemImage: "icloud").font(.title2)
-            Toggle("Sync host profiles", isOn: Binding(get: { model.snapshot.enabled }, set: {
+            Label(L10n.text("iCloud Hosts"), systemImage: "icloud").font(.title2)
+            Toggle(L10n.text("Sync host profiles"), isOn: Binding(get: { model.snapshot.enabled }, set: {
                 if $0 { enabling = true } else { model.setEnabled(false) }
             })).disabled(model.busy || !model.available)
-            LabeledContent("Status", value: model.snapshot.status)
-            LabeledContent("Queued changes", value: String(model.snapshot.pendingCount))
-            if let date = model.snapshot.lastContact { LabeledContent("Last contact") { Text(date, style: .time) } }
+            LabeledContent(L10n.text("Status"), value: model.snapshot.status)
+            LabeledContent(L10n.text("Queued changes"), value: String(model.snapshot.pendingCount))
+            if let date = model.snapshot.lastContact {
+                LabeledContent(L10n.text("Last contact")) { Text(date, style: .time) }
+            }
             if model.pendingChanges {
                 HStack {
-                    Label("Host updates available", systemImage: "arrow.triangle.2.circlepath")
+                    Label(L10n.text("Host updates available"), systemImage: "arrow.triangle.2.circlepath")
                     Spacer()
-                    Button("Apply Changes") { applying = true }
+                    Button(L10n.text("Apply Changes")) { applying = true }
                 }
             }
             if let error = model.error { Text(error).foregroundStyle(.red).textSelection(.enabled) }
             if !model.snapshot.conflicts.isEmpty {
-                Text("Recovered Versions").font(.headline)
+                Text(L10n.text("Recovered Versions")).font(.headline)
                 ScrollView {
                     VStack(spacing: 12) {
                         ForEach(model.snapshot.conflicts) { conflict in
                             HStack {
-                                Text(conflict.profile?.displayName ?? "Host").lineLimit(2)
+                                Text(conflict.profile?.displayName ?? L10n.text("Host")).lineLimit(2)
                                 Spacer()
-                                Button("Restore Copy", systemImage: "arrow.uturn.backward") { model.restore(conflict) }
+                                Button(L10n.text("Restore Copy"), systemImage: "arrow.uturn.backward") {
+                                    model.restore(conflict)
+                                }
                                 Button { model.dismissConflict(conflict) } label: { Image(systemName: "xmark") }
-                                    .help("Dismiss recovered version").accessibilityLabel("Dismiss recovered version")
+                                    .help(L10n.text("Dismiss recovered version"))
+                                    .accessibilityLabel(L10n.text("Dismiss recovered version"))
                             }
                         }
                     }
@@ -63,25 +74,32 @@ struct CloudSyncView: View {
             }
             HStack {
                 if model.busy { ProgressView().controlSize(.small) }
-                Button("Sync Now", systemImage: "arrow.clockwise", action: model.refresh)
+                Button(L10n.text("Sync Now"), systemImage: "arrow.clockwise", action: model.refresh)
                     .disabled(!model.snapshot.enabled || model.busy)
                 Spacer()
-                Button("Done") { model.showingSettings = false }.keyboardShortcut(.cancelAction)
+                Button(L10n.text("Done")) { model.showingSettings = false }.keyboardShortcut(.cancelAction)
             }
         }
         .padding(24).frame(width: 590)
-        .confirmationDialog("Sync host profiles with your current iCloud account?", isPresented: $enabling,
+        .confirmationDialog(L10n.text("Sync host profiles with your current iCloud account?"), isPresented: $enabling,
                             titleVisibility: .visible) {
-            Button("Enable iCloud Sync") { model.setEnabled(true) }
+            Button(L10n.text("Enable iCloud Sync")) { model.setEnabled(true) }
         } message: {
-            Text("Hostnames, usernames, notes and ProxyJump routes will be merged with this account. " +
-                 "Passwords, private keys, server trust, Finder locations and terminal history stay on this device.")
+            Text(L10n.text(
+                "Hostnames, usernames, notes and ProxyJump routes will be merged with this account. " +
+                "Passwords, private keys, server trust, Finder locations and terminal history stay on " +
+                "this device."
+            ))
         }
-        .confirmationDialog("Apply iCloud host changes?", isPresented: $applying, titleVisibility: .visible) {
-            Button("Apply Changes") { model.applyChanges() }
+        .confirmationDialog(L10n.text("Apply iCloud host changes?"), isPresented: $applying,
+                            titleVisibility: .visible) {
+            Button(L10n.text("Apply Changes")) { model.applyChanges() }
         } message: {
-            Text("Affected connections and Finder locations will disconnect. Updated terminal tabs keep their " +
-                 "buffers; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed.")
+            Text(L10n.text(
+                "Affected connections and Finder locations will disconnect. Updated terminal tabs keep " +
+                "their buffers; deleted hosts close their tabs. Changed endpoints require credentials " +
+                "to be reviewed."
+            ))
         }
     }
 }

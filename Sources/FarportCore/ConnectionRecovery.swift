@@ -1,3 +1,4 @@
+import FarportLocalization
 import Foundation
 
 public enum TerminalConnectionError: LocalizedError, Sendable {
@@ -36,14 +37,17 @@ public enum TerminalConnectionError: LocalizedError, Sendable {
 
     public var errorDescription: String? {
         switch self {
-        case .transport(let detail): "Connection lost. \(detail)"
-        case .heartbeatTimeout: "The server did not respond to the connection check."
-        case .authentication: "Authentication failed. Check the username, password or private key."
-        case .hostKeyRejected: "The server's host key could not be verified."
+        case .transport(let detail): L10n.text("Connection lost. %@", detail)
+        case .heartbeatTimeout: L10n.text("The server did not respond to the connection check.")
+        case .authentication: L10n.text("Authentication failed. Check the username, password or private key.")
+        case .hostKeyRejected: L10n.text("The server's host key could not be verified.")
         case .serverTrust(let challenge): challenge.localizedDescription
         case .configuration(let detail): detail
         case .localNetworkPermission:
-            "Local Network access required. Allow Farport in Privacy & Security > Local Network, then continue."
+            L10n.text(
+                "Local Network access required. Allow Farport in Privacy & Security > Local Network, " +
+                "then continue."
+            )
         case .route(let stage, let cause): "\(stage): \(cause.localizedDescription)"
         }
     }

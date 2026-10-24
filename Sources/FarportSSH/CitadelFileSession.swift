@@ -1,5 +1,6 @@
 import Citadel
 import FarportCore
+import FarportLocalization
 import Foundation
 import NIO
 
@@ -13,25 +14,33 @@ actor CitadelFileSession: RemoteFileSession {
 
     // Scope each operation to a subsystem channel; this also releases server-side directory handles.
     func withSFTP<T>(_ action: (SFTPClient) async throws -> T) async throws -> T {
-        guard !closed else { throw HarborError.message("Files are disconnected.") }
-        let sftp = try await client.openSFTP()
+        guard !closed else { throw TerminalConnectionError.transport(L10n.text("Files are disconnected.")) }
+        let sftp: SFTPClient
+        do { sftp = try await client.openSFTP() } catch { throw SSHFailure.connection(error) }
         do {
             let value = try await action(sftp)
             try? await sftp.close()
             return value
         } catch {
             try? await sftp.close()
-            if let status = error as? SFTPMessage.Status {
-                switch status.errorCode {
-                case .noSuchFile: throw RemoteFileFailure.missing
-                case .permissionDenied: throw RemoteFileFailure.permissionDenied
-                case .unsupportedOperation: throw RemoteFileFailure.unsupported
-                case .failure, .badMessage, .unknown: throw RemoteFileFailure.rejected
-                default: break
-                }
-            }
-            throw error
+            throw fileFailure(error)
         }
+    }
+
+    private func fileFailure(_ error: Error) -> Error {
+        if let status = error as? SFTPMessage.Status {
+            switch status.errorCode {
+            case .noSuchFile: return RemoteFileFailure.missing
+            case .permissionDenied: return RemoteFileFailure.permissionDenied
+            case .unsupportedOperation: return RemoteFileFailure.unsupported
+            case .noConnection, .connectionLost: return SSHFailure.connection(error)
+            case .failure, .badMessage, .unknown: return RemoteFileFailure.rejected
+            default: break
+            }
+        }
+        if error is CancellationError { return error }
+        if !client.isConnected || error is ChannelError || error is IOError { return SSHFailure.connection(error) }
+        return error
     }
 
     func canonicalPath(_ path: String) async throws -> String {
@@ -79,7 +88,7 @@ actor CitadelFileSession: RemoteFileSession {
         defer { try? FileManager.default.removeItem(at: scratch) }
         let staging = scratch.appendingPathComponent("download.part")
         guard FileManager.default.createFile(atPath: staging.path, contents: nil) else {
-            throw HarborError.message("Cannot create a temporary download file.")
+            throw HarborError.message(L10n.text("Cannot create a temporary download file."))
         }
         let local = try FileHandle(forWritingTo: staging)
         do {

@@ -1,5 +1,6 @@
 import CloudKit
 import FarportCore
+import FarportLocalization
 import Foundation
 
 public actor CloudHostSync: HostSyncService {
@@ -12,7 +13,7 @@ public actor CloudHostSync: HostSyncService {
     var latestProfiles: [HostProfile] = []
     var generation = UUID()
     var connecting = false
-    var status = "Off"
+    var status = L10n.text("Off")
     var issue: String?
 
     public init(url: URL, containerIdentifier: String,
@@ -22,7 +23,7 @@ public actor CloudHostSync: HostSyncService {
         document = saved
         self.containerIdentifier = containerIdentifier
         self.changed = changed
-        status = saved.pauseReason ?? (saved.enabled ? "Waiting for iCloud" : "Off")
+        status = saved.pauseReason ?? (saved.enabled ? L10n.text("Waiting for iCloud") : L10n.text("Off"))
     }
 
     public func resume(profiles: [HostProfile]) async {
@@ -32,7 +33,7 @@ public actor CloudHostSync: HostSyncService {
     }
 
     public func enable(profiles: [HostProfile]) async throws {
-        guard !connecting else { throw HarborError.message("iCloud is already connecting.") }
+        guard !connecting else { throw HarborError.message(L10n.text("iCloud is already connecting.")) }
         latestProfiles = profiles
         let token = generation
         let container = CKContainer(identifier: containerIdentifier)
@@ -53,7 +54,7 @@ public actor CloudHostSync: HostSyncService {
         document.enabled = false
         document.pauseReason = nil
         stopEngine()
-        status = "Off - local hosts and iCloud data kept"
+        status = L10n.text("Off - local hosts and iCloud data kept")
         try checkpoint()
     }
 
@@ -67,7 +68,9 @@ public actor CloudHostSync: HostSyncService {
             let user = try await account(in: container)
             guard token == generation else { throw CancellationError() }
             guard document.accountID == user else {
-                try pause("iCloud account changed. Enable sync again to merge with this account.", reset: true)
+                try pause(L10n.text(
+                    "iCloud account changed. Enable sync again to merge with this account."
+                ), reset: true)
                 return
             }
             try await connect(container: container)
@@ -97,7 +100,7 @@ public actor CloudHostSync: HostSyncService {
     func connect(container: CKContainer) async throws {
         connecting = true
         defer { connecting = false }
-        status = "Connecting to iCloud"
+        status = L10n.text("Connecting to iCloud")
         issue = nil
         publish()
         let active: CKSyncEngine
@@ -124,14 +127,16 @@ public actor CloudHostSync: HostSyncService {
             enqueue()
             try await active.sendChanges()
             guard engine === active else { return }
-            if issue == nil { status = document.ledger.pending.isEmpty ? "Up to date" : "Changes queued" }
+            if issue == nil {
+                status = document.ledger.pending.isEmpty ? L10n.text("Up to date") : L10n.text("Changes queued")
+            }
             publish()
         } catch { report(error); throw error }
     }
 
     private func account(in container: CKContainer) async throws -> String {
         guard try await container.accountStatus() == .available else {
-            throw HarborError.message("iCloud is unavailable. Check your Apple Account and iCloud settings.")
+            throw HarborError.message(L10n.text("iCloud is unavailable. Check your Apple Account and iCloud settings."))
         }
         return try await container.userRecordID().recordName
     }
@@ -162,7 +167,7 @@ public actor CloudHostSync: HostSyncService {
     func report(_ error: Error) {
         if !(error is CancellationError) {
             issue = error.localizedDescription
-            status = "Sync needs attention: " + error.localizedDescription
+            status = L10n.text("Sync needs attention: %@", error.localizedDescription)
             publish()
         }
     }

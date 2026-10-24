@@ -1,5 +1,6 @@
 import CloudKit
 import FarportCore
+import FarportLocalization
 import Foundation
 
 public struct HostSyncSnapshot: Sendable {
@@ -13,7 +14,7 @@ public struct HostSyncSnapshot: Sendable {
     public var lastContact: Date?
 
     public init(enabled: Bool = false, initialized: Bool = false, profiles: [HostProfile] = [], pendingCount: Int = 0,
-                conflicts: [CloudProfileConflict] = [], status: String = "Off", lastContact: Date? = nil,
+                conflicts: [CloudProfileConflict] = [], status: String = L10n.text("Off"), lastContact: Date? = nil,
                 baseline: [HostProfile] = []) {
         self.enabled = enabled; self.initialized = initialized; self.profiles = profiles
         self.pendingCount = pendingCount; self.conflicts = conflicts; self.status = status
@@ -49,7 +50,7 @@ struct CloudSyncFile {
     func load() throws -> CloudSyncDocument {
         guard FileManager.default.fileExists(atPath: url.path) else { return CloudSyncDocument() }
         let value = try JSONDecoder().decode(CloudSyncDocument.self, from: Data(contentsOf: url))
-        guard value.schemaVersion == 1 else { throw HarborError.message("Unsupported iCloud sync index.") }
+        guard value.schemaVersion == 1 else { throw HarborError.message(L10n.text("Unsupported iCloud sync index.")) }
         try value.ledger.validate()
         return value
     }

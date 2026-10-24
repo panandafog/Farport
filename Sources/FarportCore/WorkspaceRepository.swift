@@ -1,3 +1,4 @@
+import FarportLocalization
 import Foundation
 
 public enum WorkspaceMode: String, Codable, CaseIterable, Sendable {
@@ -26,7 +27,7 @@ public struct HostWorkspace: Codable, Equatable, Sendable {
     public init(hostID: UUID) {
         self.hostID = hostID
         // Reuse the pre-tabs tmux identity for the first terminal on an existing host.
-        terminals = [TerminalTab(id: hostID, title: "Terminal 1")]
+        terminals = [TerminalTab(id: hostID, title: L10n.text("Terminal %lld", 1))]
         selectedTerminalID = hostID
         mode = .terminal
     }
@@ -44,7 +45,7 @@ public struct WorkspaceSnapshot: Codable, Equatable, Sendable {
 
     public func validate() throws {
         guard schemaVersion == 1 else {
-            throw HarborError.message("This workspace was saved by a newer version of Farport.")
+            throw HarborError.message(L10n.text("This workspace was saved by a newer version of Farport."))
         }
         let tabs = hosts.flatMap(\.terminals)
         guard Set(hosts.map(\.hostID)).count == hosts.count,
@@ -54,7 +55,7 @@ public struct WorkspaceSnapshot: Codable, Equatable, Sendable {
                   if let selected = host.selectedTerminalID { return host.terminals.contains { $0.id == selected } }
                   return host.terminals.isEmpty
               }) else {
-            throw HarborError.message("The saved workspace contains invalid or duplicate tabs.")
+            throw HarborError.message(L10n.text("The saved workspace contains invalid or duplicate tabs."))
         }
     }
 }

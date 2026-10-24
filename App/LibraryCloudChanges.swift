@@ -1,4 +1,5 @@
 import FarportCore
+import FarportLocalization
 import Foundation
 
 extension LibraryModel {
@@ -11,7 +12,7 @@ extension LibraryModel {
 
     func applySyncedProfiles(_ profiles: [HostProfile]) throws {
         guard !loadFailed, editor == nil else {
-            throw HarborError.message("Close the host editor before applying sync.")
+            throw HarborError.message(L10n.text("Close the host editor before applying sync."))
         }
         let updated = try SyncedProfileImport.apply(profiles, to: hosts)
         let affected = changedHostIDs(profiles)

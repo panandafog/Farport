@@ -4,6 +4,7 @@ configs:
   Release: release
   Local: debug
 options:
+  developmentLanguage: en
   bundleIdPrefix: com.panandafog
   postGenCommand: xcrun swift Scripts/configure-debugging.swift
   fileTypes:
@@ -43,6 +44,7 @@ targets:
       path: App/Info.plist
       properties:
         CFBundleDisplayName: Farport
+        CFBundleLocalizations: [en, ru]
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         HarborAppGroup: $(HARBOR_APP_GROUP)
@@ -67,6 +69,10 @@ targets:
         script: /bin/sh "$SRCROOT/Scripts/lint.sh"
         basedOnDependencyAnalysis: false
     dependencies:
+      - package: FarportKit
+        product: FarportLocalization
+      - package: FarportKit
+        product: FarportSessions
       - package: FarportKit
         product: FarportCore
       - package: FarportKit
@@ -122,6 +128,7 @@ targets:
       path: FinderExtension/Info.plist
       properties:
         CFBundleDisplayName: Farport Files
+        CFBundleLocalizations: [en, ru]
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         HarborAppGroup: $(HARBOR_APP_GROUP)

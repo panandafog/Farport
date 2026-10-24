@@ -1,3 +1,4 @@
+import FarportLocalization
 import Foundation
 
 public struct TerminalSize: Sendable {
@@ -64,7 +65,7 @@ public extension ConnectionProvider {
 public enum RemotePath {
     public static func appending(_ name: String, to directory: String) throws -> String {
         guard !name.isEmpty, name != ".", name != "..", !name.contains("/"), !name.contains("\0") else {
-            throw HarborError.message("Use a file name without slashes, '.' or '..'.")
+            throw HarborError.message(L10n.text("Use a file name without slashes, '.' or '..'."))
         }
         return (directory == "/" ? "" : directory) + "/" + name
     }

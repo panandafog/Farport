@@ -1,4 +1,5 @@
 import FarportCore
+import FarportLocalization
 import Foundation
 import NIO
 
@@ -22,7 +23,7 @@ enum TCPConnectionFailure {
             "\(failure.target): \(detail(failure.error))"
         }
         if !attempts.isEmpty {
-            let message = "Could not connect to \(target). " + attempts.joined(separator: "; ")
+            let message = L10n.text("Could not connect to %@. %@", target, attempts.joined(separator: "; "))
             let denied = error.connectionErrors.allSatisfy { failure in
                 (failure.error as? IOError).map { permissionDenied($0.errnoCode) } == true
             }
@@ -33,8 +34,9 @@ enum TCPConnectionFailure {
             return .transport(message + (unreachable ? " " + reachabilityHint : ""))
         }
         let dns = [error.dnsAError, error.dnsAAAAError].compactMap { $0 }.map(detail)
-        let message = dns.isEmpty ? String(describing: error) : "DNS lookup failed: " + dns.joined(separator: "; ")
-        return .transport("Could not resolve or connect to \(target). " + message)
+        let message = dns.isEmpty ? String(describing: error) :
+            L10n.text("DNS lookup failed: %@", dns.joined(separator: "; "))
+        return .transport(L10n.text("Could not resolve or connect to %@. %@", target, message))
     }
 
     private static func io(_ error: IOError) -> TerminalConnectionError {
@@ -52,15 +54,22 @@ enum TCPConnectionFailure {
 
     private static var accessHint: String {
         #if os(macOS)
-        "Network access was denied. For a local server, allow Farport in System Settings > " +
+        L10n.text(
+            "Network access was denied. For a local server, allow Farport in System Settings > " +
             "Privacy & Security > Local Network, then connect again. Also check firewall or VPN rules."
+        )
         #else
-        "Network access was denied. For a local server, allow Farport in Settings > " +
-            "Privacy & Security > Local Network, then connect again. Also check firewall or VPN rules."
+        L10n.text(
+            "Network access was denied. For a local server, allow Farport in Settings > Privacy & " +
+            "Security > Local Network, then connect again. Also check firewall or VPN rules."
+        )
         #endif
     }
 
     private static var reachabilityHint: String {
-        "Check the server address, network and VPN. For a local server, also check Farport's Local Network permission."
+        L10n.text(
+            "Check the server address, network and VPN. For a local server, also check Farport's " +
+            "Local Network permission."
+        )
     }
 }

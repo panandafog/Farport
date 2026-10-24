@@ -1,4 +1,5 @@
 import CryptoKit
+import FarportLocalization
 import Foundation
 
 public struct RemoteFileRevision: Codable, Equatable, Sendable {
@@ -40,10 +41,12 @@ public enum FinderWriteError: Error, Sendable {
 
     public var message: String {
         switch self {
-        case .conflict: "The server item changed. The local change has not replaced the server version."
-        case .unsupportedReplacement: "The server does not support atomic SFTP replacement. The original was preserved."
-        case .pendingOperation: "A previous file operation still needs to be reconciled."
-        default: "The file operation could not be completed."
+        case .conflict: L10n.text("The server item changed. The local change has not replaced the server version.")
+        case .unsupportedReplacement: L10n.text(
+            "The server does not support atomic SFTP replacement. The original was preserved."
+        )
+        case .pendingOperation: L10n.text("A previous file operation still needs to be reconciled.")
+        default: L10n.text("The file operation could not be completed.")
         }
     }
 }
@@ -53,10 +56,10 @@ public enum RemoteFileFailure: Error, Sendable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .missing: "The remote item no longer exists."
-        case .permissionDenied: "The server denied permission for this file operation."
-        case .unsupported: "The server does not support this file operation."
-        case .rejected: "The server rejected this file operation."
+        case .missing: L10n.text("The remote item no longer exists.")
+        case .permissionDenied: L10n.text("The server denied permission for this file operation.")
+        case .unsupported: L10n.text("The server does not support this file operation.")
+        case .rejected: L10n.text("The server rejected this file operation.")
         }
     }
 }

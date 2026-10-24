@@ -6,7 +6,8 @@ Farport is a native macOS SSH/SFTP client MVP, inspired by the basic host-librar
 terminal, and file-browser workflow of Termius. Optional read-only/read-write Finder access
 uses Apple's replicated File Provider, not a synchronous mounted SFTP volume.
 Minimum OS: macOS 15. Shared-package deployment declarations also include iOS 17;
-iOS/iPadOS apps are planned, not implemented or verified.
+iOS/iPadOS apps are planned, not implemented. Shared targets are compiled against the
+iOS Simulator SDK by `sh Scripts/verify-ios.sh`; device runtime behavior is not yet verified.
 
 Project, targets, schemes, package and module names use Farport. Keep
 `com.panandafog.harbor` / `.finder`, CloudKit container/zone/record names, App Group,
@@ -15,7 +16,9 @@ Keychain services/keys, Application Support/Harbor, tmux `harbor-` names and det
 HARBOR_* build/environment variables. The app product and module are Farport; the
 repository directory and Xcode project are Farport and Farport.xcodeproj.
 
-- `App/`: SwiftUI interface, AppKit file panels, SwiftTerm terminal, UI models.
+- `App/`: macOS composition, SwiftUI interface, AppKit panels and SwiftTerm adapter.
+- `Sources/FarportSessions/`: shared observable terminal/files/trust/workspace/cloud models.
+- `Sources/FarportLocalization/`: English/Russian strings shared by UI and package errors.
 - `Sources/FarportCore/`: portable models and storage/connection/session contracts.
 - `Sources/FarportSSH/`: Citadel/SwiftNIO SSH and SFTP adapter.
 - `Sources/FarportSecurity/`: shared Data Protection Keychain adapter.
@@ -45,6 +48,13 @@ Preserve the boundaries between UI, storage, and transport. Core must not import
 AppKit/UIKit or depend on SSH-specific types. Keep terminal and file capabilities
 separate. Additional protocols should use provider/session adapters and explicit
 capabilities rather than SSH assumptions in file-browser views.
+
+Keep FarportSessions free of AppKit, UIKit, SwiftUI, SwiftTerm and Citadel. Inject
+TerminalOutput, the workspace terminal factory and push registration. Lifecycle uses
+suspend/resume, with platform event handling in the app. See Docs/Architecture.md.
+Localize all application-owned visible text with FarportLocalization.L10n, including
+dynamic model strings. Keep en/ru catalogs and format arguments aligned. Never localize
+storage IDs, persisted enum raw values, commands, paths, user labels or remote output.
 
 The application uses ProtectedHostRepository: profiles/references in schema-5 JSON,
 password/private-key/passphrase bundles in the shared Keychain. JSONHostRepository
@@ -214,6 +224,7 @@ xcodebuild -quiet -project Farport.xcodeproj -scheme Farport \
 xcodebuild -quiet -project Farport.xcodeproj -scheme Farport \
   -configuration Debug -destination 'platform=macOS' -derivedDataPath Build test
 swift test
+sh Scripts/verify-ios.sh
 ```
 
 The Farport scheme requires a CloudKit-capable profile for `iCloud.com.panandafog.harbor` and
@@ -330,7 +341,8 @@ extension has no test-only absolute-path read or testmanager Mach-lookup excepti
 ## Verification Expectations
 
 GitHub CI is configured in `.github/workflows/build.yml`: strict lint, loopback
-SSH/SFTP/ProxyJump/tmux package tests, and unsigned Debug/Release app builds. No
+SSH/SFTP/ProxyJump/tmux and shared-session/localization tests, iOS shared-module compilation,
+and unsigned Debug/Release app builds. No
 production secrets or Apple signing material belong in Git or ordinary PR jobs.
 Keep package tests on macOS 15 and compile Icon Composer resources on the macOS 26
 build host; neither changes the app's deployment target. Preserve asset compilation

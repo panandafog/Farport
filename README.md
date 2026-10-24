@@ -12,6 +12,7 @@ optional persistent tmux sessions, and Finder integration.
 - Native multi-hop ProxyJump for SSH, SFTP, and Finder.
 - Keychain credentials and explicit server-key fingerprint verification.
 - Opt-in iCloud host-profile sync. Credentials and server-key trust stay on the device.
+- English and Russian interface, connection prompts and application error messages.
 
 ## Requirements
 
@@ -21,6 +22,8 @@ optional persistent tmux sessions, and Finder integration.
 - Apple Development signing with matching App Group, Keychain, CloudKit, and Push capabilities.
 
 iOS/iPadOS clients and additional file protocols are planned, not included.
+Shared session, storage and transport modules are compiled for iOS Simulator in CI;
+the native iOS interface and device integration remain future work.
 
 ## Run
 
@@ -57,6 +60,7 @@ before public distribution.
 ```sh
 sh Scripts/lint.sh
 swift test
+sh Scripts/verify-ios.sh
 xcodebuild -project Farport.xcodeproj -scheme Farport \
   -configuration Debug -destination 'platform=macOS' -derivedDataPath Build test
 ```
@@ -71,8 +75,8 @@ python3 -m venv /private/tmp/harbor-test-env
 /private/tmp/harbor-test-env/bin/python Scripts/ssh_fixture.py --tmux --run-tests
 ```
 
-GitHub Actions runs strict SwiftLint, the package suite with this fixture, and unsigned
-Debug/Release app builds on pushes to `main`/`dev` and pull requests. It needs no
+GitHub Actions runs strict SwiftLint, the package suite with this fixture, iOS shared-module
+compilation and unsigned Debug/Release app builds on pushes to `main`/`dev` and pull requests. It needs no
 Apple credentials and does not upload to TestFlight. Hosted AppKit/Keychain tests
 remain a separate signed local check. See [CI](Docs/CI.md).
 
@@ -90,6 +94,7 @@ not a synchronous mounted SFTP disk. Persistent remote history requires server-s
 ## Documentation
 
 - [Usage and implementation](Docs/Usage.md)
+- [Shared architecture and localization](Docs/Architecture.md)
 - [Security and storage](Docs/Security.md)
 - [Finder access and limits](Docs/Finder.md)
 - [ProxyJump](Docs/ProxyJump.md)

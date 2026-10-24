@@ -1,4 +1,5 @@
 import FarportCore
+import FarportLocalization
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -24,69 +25,72 @@ struct HostEditor: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text(host.profile.hostname.isEmpty ? "New Host" : "Edit Host").font(.title2.weight(.semibold))
+                Text(host.profile.hostname.isEmpty ? L10n.text("New Host") : L10n.text("Edit Host"))
+                    .font(.title2.weight(.semibold))
                 Spacer()
                 Image(systemName: "server.rack").font(.title2).foregroundStyle(Color.accentColor)
             }.padding(24)
             Divider()
             Form {
-                Section("Connection") {
-                    TextField("Name", text: $host.profile.name, prompt: Text("Development server"))
-                    TextField("Hostname", text: $host.profile.hostname, prompt: Text("server.example.com"))
-                    TextField("Port", text: $port)
-                    TextField("Username", text: $host.profile.username)
-                    Picker("Connect through", selection: jumpSelection) {
-                        Text("Direct connection").tag(UUID?.none)
+                Section(L10n.text("Connection")) {
+                    TextField(L10n.text("Name"), text: $host.profile.name,
+                              prompt: Text(L10n.text("Development server")))
+                    TextField(L10n.text("Hostname"), text: $host.profile.hostname, prompt: Text("server.example.com"))
+                    TextField(L10n.text("Port"), text: $port)
+                    TextField(L10n.text("Username"), text: $host.profile.username)
+                    Picker(L10n.text("Connect through"), selection: jumpSelection) {
+                        Text(L10n.text("Direct connection")).tag(UUID?.none)
                         ForEach(jumpOptions) { jump in
                             Text(jump.profile.displayName).tag(Optional(jump.id))
                         }
                         if let id = host.profile.jumpHostIDs.first, !jumpOptions.contains(where: { $0.id == id }) {
-                            Text("Unavailable jump host").tag(Optional(id))
+                            Text(L10n.text("Unavailable jump host")).tag(Optional(id))
                         }
                     }
                 }
-                Section("Authentication") {
-                    Picker("Method", selection: $host.profile.authentication) {
-                        Text("Password").tag(AuthenticationKind.password)
-                        Text("Private Key").tag(AuthenticationKind.privateKey)
+                Section(L10n.text("Authentication")) {
+                    Picker(L10n.text("Method"), selection: $host.profile.authentication) {
+                        Text(L10n.text("Password")).tag(AuthenticationKind.password)
+                        Text(L10n.text("Private Key")).tag(AuthenticationKind.privateKey)
                     }
                     if host.profile.authentication == .password {
-                        SecureField("Password", text: $host.credentials.password)
+                        SecureField(L10n.text("Password"), text: $host.credentials.password)
                         if !host.credentialsConfigured && host.credentials.password.isEmpty {
-                            Toggle("Use an empty password", isOn: $emptyPasswordConfirmed)
+                            Toggle(L10n.text("Use an empty password"), isOn: $emptyPasswordConfirmed)
                         }
                     } else {
                         HStack {
                             Label(
-                                host.credentials.privateKey.isEmpty ? "No key selected" : "Private key saved",
+                                host.credentials.privateKey.isEmpty ?
+                                    L10n.text("No key selected") : L10n.text("Private key saved"),
                                 systemImage: "key"
                             )
                             Spacer()
-                            Button("Import Key", systemImage: "square.and.arrow.down", action: importKey)
+                            Button(L10n.text("Import Key"), systemImage: "square.and.arrow.down", action: importKey)
                         }
-                        DisclosureGroup("Key contents", isExpanded: $keyExpanded) {
+                        DisclosureGroup(L10n.text("Key contents"), isExpanded: $keyExpanded) {
                             TextEditor(text: $host.credentials.privateKey)
                                 .font(.system(.caption, design: .monospaced))
                                 .frame(height: 110)
                         }
-                        SecureField("Passphrase", text: $host.credentials.passphrase)
+                        SecureField(L10n.text("Passphrase"), text: $host.credentials.passphrase)
                     }
                 }
-                Section("Terminal") {
-                    Picker("Session", selection: $host.profile.terminalResumeStrategy) {
-                        Text("Standard SSH").tag(TerminalResumeStrategy.none)
-                        Text("Persistent (tmux)").tag(TerminalResumeStrategy.tmux)
+                Section(L10n.text("Terminal")) {
+                    Picker(L10n.text("Session"), selection: $host.profile.terminalResumeStrategy) {
+                        Text(L10n.text("Standard SSH")).tag(TerminalResumeStrategy.none)
+                        Text(L10n.text("Persistent (tmux)")).tag(TerminalResumeStrategy.tmux)
                     }
                     if host.profile.terminalResumeStrategy == .tmux {
-                        Text("Requires tmux on the server. Detaching keeps remote programs running.")
+                        Text(L10n.text("Requires tmux on the server. Detaching keeps remote programs running."))
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 }
-                Section("Files") {
-                    TextField("Initial directory", text: $host.profile.initialDirectory, prompt: Text("."))
+                Section(L10n.text("Files")) {
+                    TextField(L10n.text("Initial directory"), text: $host.profile.initialDirectory, prompt: Text("."))
                 }
-                Section("Notes") {
-                    TextField("Notes", text: $host.profile.notes, axis: .vertical).lineLimit(2...4)
+                Section(L10n.text("Notes")) {
+                    TextField(L10n.text("Notes"), text: $host.profile.notes, axis: .vertical).lineLimit(2...4)
                         .labelsHidden()
                 }
             }
@@ -95,8 +99,8 @@ struct HostEditor: View {
             Divider()
             HStack {
                 Spacer()
-                Button("Cancel") { dismiss() }.keyboardShortcut(.cancelAction)
-                Button("Save Host", action: saveHost).buttonStyle(.borderedProminent).tint(.accentColor)
+                Button(L10n.text("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)
+                Button(L10n.text("Save Host"), action: saveHost).buttonStyle(.borderedProminent).tint(.accentColor)
                     .keyboardShortcut(.defaultAction)
             }.padding(20)
         }
@@ -117,7 +121,7 @@ struct HostEditor: View {
     }
 
     private func saveHost() {
-        guard let value = Int(port) else { error = "Enter a valid port number."; return }
+        guard let value = Int(port) else { error = L10n.text("Enter a valid port number."); return }
         host.profile.port = value
         host.profile.hostname = host.profile.hostname.trimmingCharacters(in: .whitespacesAndNewlines)
         host.profile.username = host.profile.username.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -135,7 +139,7 @@ struct HostEditor: View {
         panel.canChooseDirectories = false
         panel.allowsMultipleSelection = false
         panel.showsHiddenFiles = true
-        panel.message = "Select an OpenSSH private key"
+        panel.message = L10n.text("Select an OpenSSH private key")
         panel.begin { response in
             guard response == .OK, let url = panel.url else { return }
             do {

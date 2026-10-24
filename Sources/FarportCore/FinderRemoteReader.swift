@@ -1,3 +1,4 @@
+import FarportLocalization
 import Foundation
 
 public actor FinderRemoteReader {
@@ -19,11 +20,15 @@ public actor FinderRemoteReader {
         if FileManager.default.fileExists(atPath: catalogURL.path) {
             var saved = try JSONDecoder().decode(FinderCatalog.self, from: Data(contentsOf: catalogURL))
             guard (1...2).contains(saved.schemaVersion), saved.rootPath == rootPath else {
-                throw HarborError.message("Unsupported Finder index. Disconnect and reconnect this Finder location.")
+                throw HarborError.message(L10n.text(
+                    "Unsupported Finder index. Disconnect and reconnect this Finder location."
+                ))
             }
             let paths = saved.allItems.map(\.relativePath)
             guard Set(paths).count == paths.count, Set(saved.allItems.map(\.identifier)).count == paths.count else {
-                throw HarborError.message("The Finder index contains duplicate paths or IDs. Reconnect this location.")
+                throw HarborError.message(L10n.text(
+                    "The Finder index contains duplicate paths or IDs. Reconnect this location."
+                ))
             }
             saved.schemaVersion = 2
             catalog = saved
