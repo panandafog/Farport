@@ -12,7 +12,8 @@ unsigned macOS build approach, with additional Farport-specific checks.
   `Scripts/verify-sandbox.swift` also checks Boolean sandbox/network/selected-file
   entitlements and the narrow legacy-data migration manifest without signing credentials.
 - **Build macOS (Debug/Release)** regenerates the checked-in project and requires
-  no tracked diff, then builds the app and embedded Finder extension without signing.
+  no tracked diff, checks generation under different checkout names, then builds the
+  app and embedded Finder extension without signing.
 
 Package tests run on `macos-15`; Debug/Release app builds run on `macos-26`, with
 Xcode 26.3 explicitly selected in both jobs. Build-host and app deployment target
@@ -42,6 +43,20 @@ diff check: it catches drift, not just compilation errors. To upgrade XcodeGen,
 change the version and verified release digest together, regenerate locally, and
 review the generated diff before committing. Do not normalize away capability/type
 differences or relax this check just to accept a new generator's output.
+
+The pinned generator also derives the root local-package navigator folder's name
+and GUID from the checkout basename, not the package manifest name
+([upstream implementation](https://github.com/yonaskolb/XcodeGen/blob/2.44.1/Sources/XcodeGenKit/SourceGenerator.swift#L50-L74)).
+GitHub checks this repository out as `Harbor`, while local clones may be `Farport`.
+The post-generation script canonicalizes only that cosmetic file reference, its
+GUID references and object ordering. The actual local package reference (`path: .`),
+products, application/storage identifiers and capabilities are unchanged.
+
+Run `sh Scripts/verify-project-generation.sh` after generation changes. This check
+snapshots tracked/new non-ignored files into disposable directories named `Farport`,
+`Harbor` and `checkout with spaces`, reuses the pinned generator, and compares the
+complete generated project, shared schemes, workspace settings and Info.plists.
+It is also a CI build step; a display-name workaround must not hide unrelated diffs.
 
 Events: push/PR targeting `main` or `dev`, plus manual dispatch. The token is
 read-only, checkout does not retain credentials, and there are no repository secrets,

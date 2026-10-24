@@ -84,6 +84,9 @@ jobs:
           sh Scripts/xcodegen.sh generate
           git diff --exit-code -- Farport.xcodeproj App/Info.plist FinderExtension/Info.plist AppTests/Info.plist
 
+      - name: Check checkout-name independence
+        run: sh Scripts/verify-project-generation.sh
+
       - name: Build without signing
         shell: bash
         run: |

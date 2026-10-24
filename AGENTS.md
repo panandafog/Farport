@@ -251,6 +251,12 @@ waits for an external launch; keep it as a manual fallback, not the default work
 See `Docs/Debugging.md` for the shared build path and both workflows.
 XcodeGen's post-generation Swift script owns the shared/current-user project
 workspace settings and wait-for-launch scheme override; keep it reproducible.
+It also canonicalizes only the root local-package navigator entry's cosmetic name,
+GUID and ordering: pinned XcodeGen derives those from the checkout directory name.
+Do not change the actual XCLocalSwiftPackageReference or package dependencies to
+fix that display entry. Run `sh Scripts/verify-project-generation.sh` after generator
+changes; it compares generated files in Farport, Harbor and a checkout with spaces.
+Keep this regression check and CI's generated-file diff gate enabled.
 Use Xcode Default (`UseAppPreferences`), never Legacy (`UseTargetSettings`) or
 custom SYMROOT/OBJROOT overrides: SPM rejects legacy build locations. CLI commands
 still need `-derivedDataPath Build`; they do not read the IDE's location preference.
