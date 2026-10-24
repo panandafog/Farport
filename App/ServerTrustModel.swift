@@ -1,5 +1,5 @@
-import HarborCore
-import HarborSecurity
+import FarportCore
+import FarportSecurity
 import SwiftUI
 
 struct AppSecretStore: SecretStore {

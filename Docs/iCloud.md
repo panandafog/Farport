@@ -19,7 +19,7 @@ Trust every server/gateway independently on each device as before.
 
 ## Storage And Reconciliation
 
-`HarborCloud` uses Apple's [CKSyncEngine](https://developer.apple.com/documentation/cloudkit/cksyncengine-4b4w9)
+`FarportCloud` uses Apple's [CKSyncEngine](https://developer.apple.com/documentation/cloudkit/cksyncengine-4b4w9)
 in container `iCloud.com.panandafog.harbor`, private database, custom zone `HarborHosts`.
 Each `HarborHost` record has a UUID record name and one Data field `profile` written
 only through [encryptedValues](https://developer.apple.com/documentation/cloudkit/ckrecord/encryptedvalues).
@@ -73,10 +73,10 @@ The Finder extension does not access CloudKit.
 1. Sign in to Xcode with the configured development Team. Ensure the account can
    manage identifiers, containers and profiles for that Team.
 2. Enable iCloud/CloudKit with `iCloud.com.panandafog.harbor` and Push Notifications on the
-   Harbor app identifier/target. Keep its existing App Group and Keychain group.
+   Farport app target. Keep its existing app identifier, App Group and Keychain group.
    The Finder extension retains only its existing capabilities.
-3. Regenerate with `sh Scripts/xcodegen.sh generate` after changing `project.yml`. The Harbor
-   scheme uses the cloud entitlement file; HarborLocal/Local deliberately does not.
+3. Regenerate with `sh Scripts/xcodegen.sh generate` after changing `project.yml`. The Farport
+   scheme uses the cloud entitlement file; FarportLocal/Local deliberately does not.
 4. Build with `-allowProvisioningUpdates`. A successful signature must include the
    container, CloudKit service and APNS environment as well as the original groups.
    An Apple ID signed into macOS iCloud is also needed for runtime sync.
@@ -85,7 +85,7 @@ The Finder extension does not access CloudKit.
    signed app, deploy/verify that schema in CloudKit Console's production environment
    and configure production APNS/provisioning. The current MVP signing is development.
 
-Use **HarborLocal**, configuration **Local**, when developing without cloud-capable
+Use **FarportLocal**, configuration **Local**, when developing without cloud-capable
 provisioning. The UI explicitly says iCloud is unavailable; this is not cloud success.
 
 ## Verification Boundaries

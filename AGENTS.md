@@ -1,19 +1,26 @@
-# Harbor Contributor Guide
+# Farport Contributor Guide
 
 ## Project
 
-Harbor is a native macOS SSH/SFTP client MVP, inspired by the basic host-library,
+Farport is a native macOS SSH/SFTP client MVP, inspired by the basic host-library,
 terminal, and file-browser workflow of Termius. Optional read-only/read-write Finder access
 uses Apple's replicated File Provider, not a synchronous mounted SFTP volume.
 Minimum OS: macOS 15. Shared-package deployment declarations also include iOS 17;
 iOS/iPadOS apps are planned, not implemented or verified.
 
+Project, targets, schemes, package and module names use Farport. Keep
+`com.panandafog.harbor` / `.finder`, CloudKit container/zone/record names, App Group,
+Keychain services/keys, Application Support/Harbor, tmux `harbor-` names and deterministic
+`Harbor conflict` filenames unchanged. Preserve the legacy Harbor* Info.plist keys and
+HARBOR_* build/environment variables. The app product and module are Farport; the
+repository directory and Xcode project are Farport and Farport.xcodeproj.
+
 - `App/`: SwiftUI interface, AppKit file panels, SwiftTerm terminal, UI models.
-- `Sources/HarborCore/`: portable models and storage/connection/session contracts.
-- `Sources/HarborSSH/`: Citadel/SwiftNIO SSH and SFTP adapter.
-- `Sources/HarborSecurity/`: shared Data Protection Keychain adapter.
-- `Sources/HarborCloud/`: CloudKit private-database sync and durable offline queue.
-- `Sources/HarborFinder/`: macOS File Provider items, error mapping, shared storage.
+- `Sources/FarportCore/`: portable models and storage/connection/session contracts.
+- `Sources/FarportSSH/`: Citadel/SwiftNIO SSH and SFTP adapter.
+- `Sources/FarportSecurity/`: shared Data Protection Keychain adapter.
+- `Sources/FarportCloud/`: CloudKit private-database sync and durable offline queue.
+- `Sources/FarportFinder/`: macOS File Provider items, error mapping, shared storage.
 - `FinderExtension/`: sandboxed replicated File Provider and enumerators.
 - `Tests/`: Swift Package model/storage and local-server integration tests.
 - `AppTests/`: Xcode tests for the macOS terminal model and retained output.
@@ -194,15 +201,15 @@ requires reviewing/regenerating the project and updating its official SHA-256.
 ```sh
 sh Scripts/lint.sh
 sh Scripts/xcodegen.sh generate
-xcodebuild -quiet -project Harbor.xcodeproj -scheme Harbor \
+xcodebuild -quiet -project Farport.xcodeproj -scheme Farport \
   -configuration Debug -destination 'platform=macOS' -derivedDataPath Build build
-xcodebuild -quiet -project Harbor.xcodeproj -scheme Harbor \
+xcodebuild -quiet -project Farport.xcodeproj -scheme Farport \
   -configuration Debug -destination 'platform=macOS' -derivedDataPath Build test
 swift test
 ```
 
-The Harbor scheme requires a CloudKit-capable profile for `iCloud.com.panandafog.harbor` and
-Push Notifications, in addition to the shared App Group/Keychain. `HarborLocal`
+The Farport scheme requires a CloudKit-capable profile for `iCloud.com.panandafog.harbor` and
+Push Notifications, in addition to the shared App Group/Keychain. `FarportLocal`
 uses configuration `Local` with those shared security entitlements but no iCloud
 or push entitlement; its cloud toggle is unavailable. It is for offline development,
 not a fallback that pretends sync is working. Both hosted test schemes isolate the
@@ -239,7 +246,7 @@ Do not probe inner jump destinations, send credentials during the wait, or use i
 for automatic recovery/background Finder requests. Pending and previously denied
 permissions cannot be distinguished by a general public API. Cancellation must be
 immediate and late readiness must not restart a cancelled/edited/closed session.
-Use the `Harbor` scheme for ordinary automatic Run. `Harbor Attach` intentionally
+Use the `Farport` scheme for ordinary automatic Run. `Farport Attach` intentionally
 waits for an external launch; keep it as a manual fallback, not the default workflow.
 See `Docs/Debugging.md` for the shared build path and both workflows.
 XcodeGen's post-generation Swift script owns the shared/current-user project
@@ -282,14 +289,26 @@ two jumps, binary transfer, independent cleanup, failed auth/forwarding, cancell
 before initial SSH greeting and during jump authentication, and unanswered forwarding
 deadlines. Never point these controls or tests at real servers.
 
-Build product: `Build/Build/Products/Debug/Harbor.app`. Signing uses the developer's
+Build product: `Build/Build/Products/Debug/Farport.app`. Signing uses the developer's
 configured Team (`project.yml`) and Apple Development with automatic provisioning.
 Use `-allowProvisioningUpdates` when creating the App IDs/App Group/profiles.
 Both app and extension require profiles authorizing `HARBOR_APP_GROUP`.
 For compile/unit checks without an account, override `CODE_SIGN_IDENTITY=-`,
 `CODE_SIGN_STYLE=Manual`, and `DEVELOPMENT_TEAM=`; this does NOT enable Finder.
-The main app is unsandboxed; the File Provider extension is sandboxed with outbound
-network access. There is no App Store/notarized distribution pipeline yet.
+The main app (Debug, Release and Local) and File Provider extension use App Sandbox
+with outbound network access. Only the main app has user-selected read/write access.
+Keep `App/container-migration.plist` bundled; it migrates the complete legacy
+Application Support/Harbor directory on first container creation, including workspace
+and iCloud queue state. Never migrate only hosts.json or reset a user's container to test.
+Panel-selected file access must cover the entire async transfer. Stage downloads using
+FileManager's itemReplacementDirectory on the destination volume, not arbitrary siblings
+beside a Save Panel URL. No broad filesystem, executable-file, incoming-network or
+temporary-exception entitlements in production. Run `xcrun swift Scripts/verify-sandbox.swift`
+in CI, and pass a built app/archive product path to verify actual signed entitlements.
+The verifier rejects stale extensions/test bundles too. After a target/project rename,
+ensure a fresh app bundle is assembled rather than shipping cached old plugins beside
+the new extension; use project-scoped build cleanup, never remove real app containers.
+See Docs/Sandbox.md for migration/runtime checks. There is no automated distribution pipeline yet.
 After an Xcode test action, run a normal build before manual verification or delivery:
 the test runner temporarily injects extra signing permissions. Check the signed
 extension has no test-only absolute-path read or testmanager Mach-lookup exceptions.
@@ -310,6 +329,10 @@ CI compilation does not establish distribution readiness or validate system perm
 For UI changes, build and run the app; verify layout, states, and actions using
 an isolated library and local fixture, never a user's real server. A Debug build
 accepts `--host-library PATH`; the fixture prints a suitable temporary library.
+With App Sandbox, that argument alone grants no file access. Prepare the library
+inside a disposable app-container location, or use a native panel grant; never add
+production filesystem exceptions to read an external fixture path. First-container
+migration testing requires a disposable macOS account, not the real user's home.
 Fixture terminal commands include `exit`, `drop` (abort TCP), and `eof` (half-close).
 Stop fixture processes after testing. Do not interrupt a user's active sessions
 just to launch a new build; use a separate test process/library.
@@ -318,6 +341,11 @@ The Xcode test scheme must set HARBOR_ISOLATED_TESTS=1 to keep startup migration
 from the real library. Use dedicated Keychain test services/accounts and clean up
 only those items. AppTests has its own Info.plist: never inherit NSExtension metadata
 from FinderExtension when including its Swift source for callback tests.
+That environment flag does not control macOS's container migration before app startup.
+Test first sandbox launch/upgrade in a disposable macOS account, never by deleting the
+real user's container or letting tests exercise their migrated library. Live hosted tests
+spawn external fixture tools and are not evidence of sandbox production permissions;
+the unsandboxed package fixture tests remain independent of hosted-test permissions.
 
 Server keys are pinned by hostname/port in Keychain. Unknown/changed keys fail the
 handshake without waiting for UI, stop auto-recovery, and prompt only in the main

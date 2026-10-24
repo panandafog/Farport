@@ -1,4 +1,4 @@
-# Harbor
+# Farport
 
 A native macOS SSH and SFTP client with saved hosts, terminal tabs, ProxyJump,
 optional persistent tmux sessions, and Finder integration.
@@ -24,25 +24,28 @@ iOS/iPadOS clients and additional file protocols are planned, not included.
 
 ## Run
 
-Open `Harbor.xcodeproj`, select **Harbor > My Mac**, and press **Command-R**.
+Open `Farport.xcodeproj`, select **Farport > My Mac**, and press **Command-R**.
 The first build downloads Swift Package dependencies. Select your own signing Team
 if needed; capability setup is described in [iCloud](Docs/iCloud.md) and [Finder](Docs/Finder.md).
 Do not rename existing App Group or Keychain identities when updating this installation.
 
 ```sh
 brew install swiftlint
-xcodebuild -project Harbor.xcodeproj -scheme Harbor \
+xcodebuild -project Farport.xcodeproj -scheme Farport \
   -configuration Debug -destination 'platform=macOS' \
   -derivedDataPath Build -allowProvisioningUpdates build
-open Build/Build/Products/Debug/Harbor.app
+open Build/Build/Products/Debug/Farport.app
 ```
 
-Use **HarborLocal** to develop without CloudKit provisioning; it still needs signing
+Use **FarportLocal** to develop without CloudKit provisioning; it still needs signing
 for shared Keychain and Finder access. For Local Network permissions and the manual
-**Harbor Attach** fallback, see [Debugging](Docs/Debugging.md).
+**Farport Attach** fallback, see [Debugging](Docs/Debugging.md).
 
 `project.yml` is the XcodeGen source of truth. The generated project and dependency
 lockfile are included. After configuration/resource changes, run `sh Scripts/xcodegen.sh generate`.
+The product, project, schemes, package and modules use Farport names.
+Bundle IDs, Keychain/App Group/iCloud identities, saved-data paths,
+and existing tmux session names are unchanged by the rename.
 The wrapper downloads the official XcodeGen 2.44.1 binary and presets into `Build/Tools`,
 checks the pinned SHA-256, and uses the same tool locally and in CI; it does not modify Homebrew.
 `AppIcon.icon` is a temporary copy of the MediaPlayer/Trackfold icon, to be replaced
@@ -53,7 +56,7 @@ before public distribution.
 ```sh
 sh Scripts/lint.sh
 swift test
-xcodebuild -project Harbor.xcodeproj -scheme Harbor \
+xcodebuild -project Farport.xcodeproj -scheme Farport \
   -configuration Debug -destination 'platform=macOS' -derivedDataPath Build test
 ```
 
@@ -74,8 +77,8 @@ remain a separate signed local check. See [CI](Docs/CI.md).
 
 ## Status
 
-This is a development MVP, not yet a TestFlight release. The main app is currently
-unsandboxed. Distribution signing, sandbox migration, CloudKit production setup,
+This is a development MVP, not yet a TestFlight release. The main app and Finder
+extension use App Sandbox. Distribution signing, CloudKit production setup,
 export compliance, and release validation remain on the [TestFlight checklist](Docs/TestFlight.md).
 An unsigned CI build is not an installable or distribution-validated release.
 

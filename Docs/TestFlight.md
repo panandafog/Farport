@@ -5,23 +5,23 @@ not a completed distribution pipeline. Do not upload the unsigned CI product.
 
 ## Remaining Release Gates
 
-- Enable and verify App Sandbox for the main app before the App Store distribution
-  path. Audit network access, user-selected file import/export, security-scoped
-  bookmarks where needed, storage migration, Keychain, and File Provider integration.
-  The current main app is intentionally unsandboxed; flipping one build setting
-  without this work is not a validated migration.
+- Verify the signed archive's sandbox entitlements with
+  `xcrun swift Scripts/verify-sandbox.swift /path/to/Farport.app` and check its
+  signature with `codesign --verify --deep --strict /path/to/Farport.app`.
+  Main app and extension now enable App Sandbox. Run the clean-install/upgrade
+  checks in [Sandbox](Sandbox.md); source entitlements alone do not verify runtime access.
 - Create/verify the App Store Connect app record for `com.panandafog.harbor` and
   distribution signing/profiles for both the app and `com.panandafog.harbor.finder`.
   Preserve existing shared App Group/Keychain identifiers to retain data access.
 - Deploy the CloudKit schema to production and verify opt-in profile sync through
   the distribution build. Development CloudKit success is not a production check.
 - Replace `AppIcon.icon` (currently copied unchanged from MediaPlayer/Trackfold)
-  with Harbor artwork, then validate the compiled icon in the archive.
+  with Farport artwork, then validate the compiled icon in the archive.
 - Review privacy disclosures, required-reason API/privacy manifests (including
   dependencies), support/privacy URLs, beta review information, and encryption
   export compliance. SSH uses encryption; do not assume an exemption without review.
 - Increment the build number for every upload, keeping app and extension versions
-  aligned. Archive the **Harbor** scheme in **Release**, not **HarborLocal**.
+  aligned. Archive the **Farport** scheme in **Release**, not **FarportLocal**.
 - Validate the distribution archive in Organizer, including embedded-extension
   signing, production capabilities, and absence of debug/test-only entitlements.
 - Run the signed hosted tests and exercise Local Network approval, unknown/changed

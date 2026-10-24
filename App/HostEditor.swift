@@ -1,4 +1,4 @@
-import HarborCore
+import FarportCore
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -139,6 +139,8 @@ struct HostEditor: View {
         panel.begin { response in
             guard response == .OK, let url = panel.url else { return }
             do {
+                let scoped = url.startAccessingSecurityScopedResource()
+                defer { if scoped { url.stopAccessingSecurityScopedResource() } }
                 host.credentials.privateKey = try String(contentsOf: url, encoding: .utf8)
             } catch {
                 self.error = error.localizedDescription

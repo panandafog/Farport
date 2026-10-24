@@ -160,7 +160,8 @@ async def main(port, run_tests, with_tmux):
                     if tmux:
                         environment.update(HARBOR_TEST_TMUX="1", HARBOR_TEST_ROOT=str(root))
                     test = await asyncio.create_subprocess_exec(
-                        "swift", "test", env=environment, cwd=pathlib.Path(__file__).resolve().parent.parent,
+                        "swift", "test", "--force-resolved-versions",
+                        env=environment, cwd=pathlib.Path(__file__).resolve().parent.parent,
                     )
                     result = await test.wait()
                     server.close()

@@ -1,4 +1,4 @@
-import HarborCore
+import FarportCore
 import SwiftUI
 
 enum ConnectionRequirement {
@@ -65,10 +65,10 @@ struct ConnectionRequirementView: View {
     private var message: String {
         switch requirement {
         case .localNetwork:
-            waiting ? "Allow Harbor in the macOS prompt or in Privacy & Security > Local Network. " +
+            waiting ? "Allow Farport in the macOS prompt or in Privacy & Security > Local Network. " +
                 "The connection will continue when access becomes available. You can cancel this attempt." :
-                "macOS blocked the last connection attempt. Allow Harbor in Privacy & Security > Local Network, " +
-                "then retry. If access is already enabled but retry is still blocked, quit and reopen Harbor. " +
+                "macOS blocked the last connection attempt. Allow Farport in Privacy & Security > Local Network, " +
+                "then retry. If access is already enabled but retry is still blocked, quit and reopen Farport. " +
                 "If you have multiple builds, reopen the same app copy."
         case .serverKey(let key): key.trusted == nil ?
             "The server's identity needs your confirmation before sign-in." :

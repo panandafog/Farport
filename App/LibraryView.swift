@@ -1,4 +1,4 @@
-import HarborCore
+import FarportCore
 import SwiftUI
 
 struct LibraryView: View {
@@ -9,7 +9,7 @@ struct LibraryView: View {
         NavigationSplitView {
             VStack(spacing: 0) {
                 HStack {
-                    Label("Harbor", systemImage: "terminal.fill")
+                    Label("Farport", systemImage: "terminal.fill")
                         .font(.title3.weight(.semibold))
                     Spacer()
                     Text("\(model.hosts.count)").foregroundStyle(.secondary).monospacedDigit()
@@ -70,7 +70,7 @@ struct LibraryView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .navigationTitle("Harbor")
+        .navigationTitle("Farport")
         .background {
             if let trust = model.trust { ServerTrustPresentation(model: trust, hosts: model.hosts) }
         }
@@ -80,7 +80,7 @@ struct LibraryView: View {
         .background {
             if let cloud = model.cloud { CloudSyncPresentation(model: cloud) }
         }
-        .alert("Harbor", isPresented: Binding(
+        .alert("Farport", isPresented: Binding(
             get: { model.error != nil }, set: { if !$0 { model.error = nil } }
         )) {
             Button("OK") { model.error = nil }

@@ -1,6 +1,6 @@
 # Finder Integration
 
-Harbor retains its existing Files UI. Optional Finder integration uses Apple's
+Farport retains its existing Files UI. Optional Finder integration uses Apple's
 `NSFileProviderReplicatedExtension`, not SSHFS, macFUSE, SMB, or a synchronous SFTP
 mount. Locations can be **Read Only** or **Read & Write**. The existing Files UI
 remains available independently.
@@ -12,13 +12,13 @@ Finder**, and confirm the remote folder. It defaults to the current Files folder
 or the host's initial directory. Select access explicitly; the new-location form
 defaults to Read & Write, while existing/legacy saved locations remain read-only.
 The same host/root with different access gets a separate domain, never an implicit
-permission upgrade. Harbor canonicalizes and checks that directory
+permission upgrade. Farport canonicalizes and checks that directory
 through the complete saved ProxyJump route before registering a separate domain.
-macOS may require enabling Harbor Files under File Provider extensions in System
+macOS may require enabling Farport Files under File Provider extensions in System
 Settings. The domain appears in Finder; opening a file downloads it on demand.
 
-Each domain has Open, Refresh, and Disconnect actions in Harbor. Domains survive
-quitting Harbor; macOS can run the extension independently. This is an explicit
+Each domain has Open, Refresh, and Disconnect actions in Farport. Domains survive
+quitting Farport; macOS can run the extension independently. This is an explicit
 opt-in to background file access, unlike restored terminal tabs. Only previously
 connected domains are eligible. Files downloaded by macOS may remain cached and
 readable offline; uncached files need the network. Errors are reported through
@@ -100,11 +100,11 @@ edits is not a guarantee those edits reached the server.
 
 ## Architecture And Storage
 
-`HarborCore` owns protocol-neutral paths, route snapshots, the reader/writer,
+`FarportCore` owns protocol-neutral paths, route snapshots, the reader/writer,
 metadata catalog/journal, and bounded/cancellable requests using `RemoteFileSession`.
 Atomic replacement is an additional explicit capability, not an SSH assumption in
 File Provider callbacks.
-`HarborFinder` adapts these values/errors to Apple's framework. The extension
+`FarportFinder` adapts these values/errors to Apple's framework. The extension
 contains lifecycle/enumeration callbacks. The app manages domains and opens the
 system-provided user-visible URL; no path under CloudStorage is hardcoded.
 
@@ -126,7 +126,7 @@ SSH handshakes retain their own
 bounded connector deadlines. No shell, tmux, copied keys, SSH config, agent forwarding,
 or local listener is used. Every endpoint must match its shared Keychain host-key
 pin. Unknown/changed keys fail closed without background prompts; review the endpoint
-in Harbor and retry. See [Security](Security.md) for signing, migration, and trust limits.
+in Farport and retry. See [Security](Security.md) for signing, migration, and trust limits.
 
 File Provider has an iOS/iPadOS counterpart; the portable reader and transport can
 be reused. This macOS extension is not yet an iOS target or verified iOS feature.
@@ -135,18 +135,18 @@ selection in the factory rather than putting protocol logic in Finder callbacks.
 
 ## Build And Verification
 
-Regenerate `Harbor.xcodeproj` using XcodeGen after editing `project.yml`. The Team
+Regenerate `Farport.xcodeproj` using XcodeGen after editing `project.yml`. The Team
 selected in Xcode is recorded in `project.yml` so regeneration preserves it. Both
 targets need explicit App IDs and profiles authorizing the shared App Group.
 `REGISTER_APP_GROUPS=YES` is required on macOS so automatic provisioning includes
 the `group.` entitlement rather than silently choosing a wildcard profile without it.
-The extension has App Sandbox and outbound-network entitlements; the main app
-retains its existing unsandboxed behavior. No third-party driver is required.
+Both the extension and main app have App Sandbox and outbound-network entitlements.
+Their shared App Group and Keychain identities remain unchanged. No third-party driver is required.
 
 ```sh
 sh Scripts/lint.sh
 sh Scripts/xcodegen.sh generate
-xcodebuild -quiet -project Harbor.xcodeproj -scheme Harbor \
+xcodebuild -quiet -project Farport.xcodeproj -scheme Farport \
   -configuration Debug -destination 'platform=macOS,arch=arm64' \
   -derivedDataPath Build -allowProvisioningUpdates build
 /private/tmp/harbor-test-env/bin/python Scripts/ssh_fixture.py --tmux --run-tests

@@ -1,7 +1,7 @@
 import Foundation
 
 let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
-let project = root.appendingPathComponent("Harbor.xcodeproj")
+let project = root.appendingPathComponent("Farport.xcodeproj")
 let shared = project.appendingPathComponent("project.xcworkspace/xcshareddata")
 let user = project.appendingPathComponent("project.xcworkspace/xcuserdata/\(NSUserName()).xcuserdatad")
 for directory in [shared, user] {
@@ -24,7 +24,7 @@ for directory in [shared, user] {
 }
 
 // XcodeGen has no wait-for-launch setting; patch the generated scheme structurally after generation.
-let schemeURL = project.appendingPathComponent("xcshareddata/xcschemes/Harbor Attach.xcscheme")
+let schemeURL = project.appendingPathComponent("xcshareddata/xcschemes/Farport Attach.xcscheme")
 let scheme = try XMLDocument(contentsOf: schemeURL, options: .nodePreserveAll)
 guard let launch = try scheme.nodes(forXPath: "/Scheme/LaunchAction").first as? XMLElement,
       let style = launch.attribute(forName: "launchStyle") else { throw CocoaError(.fileReadCorruptFile) }

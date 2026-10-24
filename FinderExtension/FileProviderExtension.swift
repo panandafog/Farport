@@ -1,6 +1,6 @@
+import FarportCore
+import FarportFinder
 import FileProvider
-import HarborCore
-import HarborFinder
 import UniformTypeIdentifiers
 
 final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {

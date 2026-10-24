@@ -1,5 +1,5 @@
+import FarportCore
 import Foundation
-import HarborCore
 
 extension LibraryModel {
     func canApplySyncedProfiles(_ profiles: [HostProfile]) -> Bool {

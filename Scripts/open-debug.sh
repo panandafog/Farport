@@ -2,9 +2,9 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-APP="$ROOT/Build/Build/Products/Debug/Harbor.app"
-if [ ! -x "$APP/Contents/MacOS/Harbor" ]; then
-    printf '%s\n' 'Build the Harbor or Harbor Attach scheme in Debug first.' >&2
+APP="$ROOT/Build/Build/Products/Debug/Farport.app"
+if [ ! -x "$APP/Contents/MacOS/Farport" ]; then
+    printf '%s\n' 'Build the Farport or Farport Attach scheme in Debug first.' >&2
     exit 1
 fi
 

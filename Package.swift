@@ -2,14 +2,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "HarborKit",
+    name: "FarportKit",
     platforms: [.macOS("15.0"), .iOS(.v17)],
     products: [
-        .library(name: "HarborCore", targets: ["HarborCore"]),
-        .library(name: "HarborSSH", targets: ["HarborSSH"]),
-        .library(name: "HarborSecurity", targets: ["HarborSecurity"]),
-        .library(name: "HarborCloud", targets: ["HarborCloud"]),
-        .library(name: "HarborFinder", targets: ["HarborFinder"])
+        .library(name: "FarportCore", targets: ["FarportCore"]),
+        .library(name: "FarportSSH", targets: ["FarportSSH"]),
+        .library(name: "FarportSecurity", targets: ["FarportSecurity"]),
+        .library(name: "FarportCloud", targets: ["FarportCloud"]),
+        .library(name: "FarportFinder", targets: ["FarportFinder"])
     ],
     dependencies: [
         .package(path: "Vendor/Citadel"),
@@ -18,19 +18,19 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-crypto.git", from: "3.12.3")
     ],
     targets: [
-        .target(name: "HarborCore"),
-        .target(name: "HarborCloud", dependencies: ["HarborCore"]),
-        .target(name: "HarborSecurity", dependencies: ["HarborCore"]),
-        .target(name: "HarborSSH", dependencies: [
-            "HarborCore", .product(name: "Citadel", package: "Citadel"),
+        .target(name: "FarportCore"),
+        .target(name: "FarportCloud", dependencies: ["FarportCore"]),
+        .target(name: "FarportSecurity", dependencies: ["FarportCore"]),
+        .target(name: "FarportSSH", dependencies: [
+            "FarportCore", .product(name: "Citadel", package: "Citadel"),
             .product(name: "NIO", package: "swift-nio"),
             .product(name: "NIOSSH", package: "swift-nio-ssh"),
             .product(name: "Crypto", package: "swift-crypto")
         ]),
-        .target(name: "HarborFinder", dependencies: ["HarborCore", "HarborSSH", "HarborSecurity"]),
-        .testTarget(name: "HarborFinderTests", dependencies: ["HarborFinder", "HarborCore"]),
-        .testTarget(name: "HarborCoreTests", dependencies: ["HarborCore"]),
-        .testTarget(name: "HarborCloudTests", dependencies: ["HarborCloud", "HarborCore"]),
-        .testTarget(name: "HarborSSHTests", dependencies: ["HarborSSH", "HarborCore"])
+        .target(name: "FarportFinder", dependencies: ["FarportCore", "FarportSSH", "FarportSecurity"]),
+        .testTarget(name: "FarportFinderTests", dependencies: ["FarportFinder", "FarportCore"]),
+        .testTarget(name: "FarportCoreTests", dependencies: ["FarportCore"]),
+        .testTarget(name: "FarportCloudTests", dependencies: ["FarportCloud", "FarportCore"]),
+        .testTarget(name: "FarportSSHTests", dependencies: ["FarportSSH", "FarportCore"])
     ]
 )

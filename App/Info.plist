@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Harbor</string>
+	<string>Farport</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -29,6 +29,6 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Harbor connects to your saved SSH and SFTP servers on the local network, including folders you connect to Finder.</string>
+	<string>Farport connects to your saved SSH and SFTP servers on the local network, including folders you connect to Finder.</string>
 </dict>
 </plist>

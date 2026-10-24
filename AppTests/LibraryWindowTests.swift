@@ -1,7 +1,7 @@
 import AppKit
-@testable import Harbor
-import HarborCloud
-import HarborCore
+@testable import Farport
+import FarportCloud
+import FarportCore
 import SwiftUI
 import XCTest
 

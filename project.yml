@@ -1,4 +1,4 @@
-name: Harbor
+name: Farport
 configs:
   Debug: debug
   Release: release
@@ -13,7 +13,7 @@ options:
   deploymentTarget:
     macOS: "15.0"
 packages:
-  HarborKit:
+  FarportKit:
     path: .
   SwiftTerm:
     url: https://github.com/migueldeicaza/SwiftTerm.git
@@ -30,8 +30,9 @@ settings:
     HARBOR_KEYCHAIN_GROUP: $(AppIdentifierPrefix)dev.harbor.shared
     HARBOR_ICLOUD_CONTAINER: iCloud.com.panandafog.harbor
 targets:
-  Harbor:
+  Farport:
     type: application
+    productName: Farport
     platform: macOS
     sources:
       - App
@@ -41,16 +42,18 @@ targets:
     info:
       path: App/Info.plist
       properties:
-        CFBundleDisplayName: Harbor
+        CFBundleDisplayName: Farport
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         HarborAppGroup: $(HARBOR_APP_GROUP)
         HarborKeychainGroup: $(HARBOR_KEYCHAIN_GROUP)
         HarborCloudContainer: $(HARBOR_ICLOUD_CONTAINER)
-        NSLocalNetworkUsageDescription: Harbor connects to your saved SSH and SFTP servers on the local network, including folders you connect to Finder.
+        NSLocalNetworkUsageDescription: Farport connects to your saved SSH and SFTP servers on the local network, including folders you connect to Finder.
         LSApplicationCategoryType: public.app-category.developer-tools
     attributes:
       SystemCapabilities:
+        com.apple.Sandbox:
+          enabled: 1
         com.apple.ApplicationGroups:
           enabled: 1
         com.apple.Keychain:
@@ -64,40 +67,43 @@ targets:
         script: /bin/sh "$SRCROOT/Scripts/lint.sh"
         basedOnDependencyAnalysis: false
     dependencies:
-      - package: HarborKit
-        product: HarborCore
-      - package: HarborKit
-        product: HarborSecurity
-      - package: HarborKit
-        product: HarborCloud
-      - package: HarborKit
-        product: HarborSSH
+      - package: FarportKit
+        product: FarportCore
+      - package: FarportKit
+        product: FarportSecurity
+      - package: FarportKit
+        product: FarportCloud
+      - package: FarportKit
+        product: FarportSSH
       - package: SwiftTerm
-      - package: HarborKit
-        product: HarborFinder
-      - target: HarborFinderExtension
+      - package: FarportKit
+        product: FarportFinder
+      - target: FarportFinderExtension
         embed: true
     settings:
       configs:
         Local:
-          CODE_SIGN_ENTITLEMENTS: App/HarborLocal.entitlements
+          CODE_SIGN_ENTITLEMENTS: App/FarportLocal.entitlements
           HARBOR_ICLOUD_CONTAINER: ""
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) DEBUG HARBOR_LOCAL
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.panandafog.harbor
-        PRODUCT_NAME: Harbor
+        PRODUCT_NAME: Farport
+        PRODUCT_MODULE_NAME: Farport
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: Harbor
+        INFOPLIST_KEY_CFBundleDisplayName: Farport
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
-        INFOPLIST_KEY_NSHumanReadableCopyright: "Harbor"
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Farport"
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
-        ENABLE_APP_SANDBOX: NO
+        ENABLE_APP_SANDBOX: YES
+        ENABLE_OUTGOING_NETWORK_CONNECTIONS: YES
+        ENABLE_USER_SELECTED_FILES: readwrite
         ENABLE_HARDENED_RUNTIME: YES
-        CODE_SIGN_ENTITLEMENTS: App/Harbor.entitlements
-  HarborFinderExtension:
+        CODE_SIGN_ENTITLEMENTS: App/Farport.entitlements
+  FarportFinderExtension:
     type: app-extension
     platform: macOS
     sources: [FinderExtension]
@@ -108,14 +114,14 @@ targets:
         com.apple.Keychain:
           enabled: 1
     dependencies:
-      - package: HarborKit
-        product: HarborFinder
-      - package: HarborKit
-        product: HarborCore
+      - package: FarportKit
+        product: FarportFinder
+      - package: FarportKit
+        product: FarportCore
     info:
       path: FinderExtension/Info.plist
       properties:
-        CFBundleDisplayName: Harbor Files
+        CFBundleDisplayName: Farport Files
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         HarborAppGroup: $(HARBOR_APP_GROUP)
@@ -131,64 +137,65 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.panandafog.harbor.finder
-        PRODUCT_NAME: HarborFinderExtension
-        CODE_SIGN_ENTITLEMENTS: FinderExtension/HarborFinder.entitlements
+        PRODUCT_NAME: FarportFinderExtension
+        CODE_SIGN_ENTITLEMENTS: FinderExtension/FarportFinder.entitlements
         ENABLE_APP_SANDBOX: YES
         ENABLE_HARDENED_RUNTIME: YES
         SKIP_INSTALL: YES
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
         LD_RUNPATH_SEARCH_PATHS: $(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks
-  HarborAppTests:
+  FarportAppTests:
     type: bundle.unit-test
     platform: macOS
     info:
       path: AppTests/Info.plist
       properties:
-        CFBundleDisplayName: Harbor Tests
+        CFBundleDisplayName: Farport Tests
     sources:
       - AppTests
-      - Tests/HarborCoreTests/FinderWriteFixture.swift
-      - Tests/HarborCoreTests/TestSecretStore.swift
-      - Tests/HarborSSHTests/FixtureTrust.swift
+      - Tests/FarportCoreTests/FinderWriteFixture.swift
+      - Tests/FarportCoreTests/TestSecretStore.swift
+      - Tests/FarportSSHTests/FixtureTrust.swift
       - path: FinderExtension
         includes: ["*.swift"]
     dependencies:
-      - target: Harbor
-      - package: HarborKit
-        product: HarborCloud
-      - package: HarborKit
-        product: HarborCore
+      - target: Farport
+      - package: FarportKit
+        product: FarportCloud
+      - package: FarportKit
+        product: FarportCore
       - package: SwiftTerm
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.panandafog.HarborAppTests
 schemes:
-  Harbor Attach:
+  Farport Attach:
     build:
       targets:
-        Harbor: [run]
+        Farport: [run]
     run:
       config: Debug
-  HarborLocal:
+  FarportLocal:
     build:
       targets:
-        Harbor: all
+        Farport: all
     run:
       config: Local
     test:
       config: Local
       environmentVariables:
         HARBOR_ISOLATED_TESTS: "1"
-      targets: [HarborAppTests]
-  Harbor:
+      targets: [FarportAppTests]
+  Farport:
     build:
       targets:
-        Harbor: all
+        Farport: all
     run:
       config: Debug
     test:
       config: Debug
       environmentVariables:
         HARBOR_ISOLATED_TESTS: "1"
-      targets: [HarborAppTests]
+      targets: [FarportAppTests]

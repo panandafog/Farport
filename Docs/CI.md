@@ -1,7 +1,7 @@
 # Continuous Integration
 
 `.github/workflows/build.yml` follows the neighboring Anomaly Merge project's
-unsigned macOS build approach, with additional Harbor-specific checks.
+unsigned macOS build approach, with additional Farport-specific checks.
 
 ## Jobs
 
@@ -9,6 +9,8 @@ unsigned macOS build approach, with additional Harbor-specific checks.
   environment with the pinned AsyncSSH dependency, and runs the full Swift package
   suite through `Scripts/ssh_fixture.py --tmux --run-tests`. The fixture binds only
   loopback and generates temporary keys/files; it stops its own servers afterward.
+  `Scripts/verify-sandbox.swift` also checks Boolean sandbox/network/selected-file
+  entitlements and the narrow legacy-data migration manifest without signing credentials.
 - **Build macOS (Debug/Release)** regenerates the checked-in project and requires
   no tracked diff, then builds the app and embedded Finder extension without signing.
 
@@ -60,8 +62,13 @@ Unsigned app builds are compilation checks, not runnable release artifacts. They
 cannot validate Keychain access groups, File Provider registration, CloudKit accounts,
 Local Network prompts, provisioning, notarization, or App Store acceptance.
 Hosted macOS tests require a properly signed app and matching capability profiles;
-run these locally using the `Harbor` test scheme and an isolated library, then rebuild
-normally to remove test-only signing exceptions. No signing material belongs in Git.
+run these locally using the `Farport` test scheme and an isolated library, then rebuild
+normally to remove test-only signing exceptions. First sandbox launch and migration
+require a disposable macOS account, not the user's real library: the test isolation
+flag does not control OS migration before app startup. See [Sandbox](Sandbox.md).
+Pass a normally built signed app path to `Scripts/verify-sandbox.swift` to check
+actual signed entitlements; the source-only CI check cannot prove signing or runtime access.
+No signing material belongs in Git.
 
 Before a release, complete [TestFlight preparation](TestFlight.md), run the signed
 hosted suite, and manually verify the system integrations. Build output is captured

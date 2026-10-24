@@ -1,0 +1,1079 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0C0EAEB467C804C3DC7007DD /* WorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA7371ADED7390F5A3CECD2 /* WorkspaceTests.swift */; };
+		0E94902301B1ECF322841D24 /* LibraryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 736FD4EF519F74C65A8A7C74 /* LibraryModel.swift */; };
+		10F7B42B764E6F3E98FDA132 /* FarportSecurity in Frameworks */ = {isa = PBXBuildFile; productRef = C581A12AA03318734C3ABC69 /* FarportSecurity */; };
+		15C6601F5EFE59F63C910E76 /* FarportCloud in Frameworks */ = {isa = PBXBuildFile; productRef = 7CEC566B51336461AD40CDD0 /* FarportCloud */; };
+		1761A1CB024B34C663EFF472 /* TerminalThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E72DB3B2C3AFE7043D4CE62 /* TerminalThemeTests.swift */; };
+		196E08BC07CBC25D68F48342 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 46B89A7269B4CA50899BE7E1 /* FarportCore */; };
+		214993804A312079C7DCA7F7 /* FarportApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761DDB6688A35191D74242B0 /* FarportApp.swift */; };
+		2241672700E92B651A5FD90C /* SystemTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C5C988E605379A3A07F3CD /* SystemTerminalView.swift */; };
+		29A636D5499086FB1EDC89B8 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 886D25B3FEF9744284698F95 /* FarportCore */; };
+		2A4FCB06807381E48A91995A /* FarportSSH in Frameworks */ = {isa = PBXBuildFile; productRef = EC47AA53AC832EAAEAA937A7 /* FarportSSH */; };
+		2F6DA869F8A60D1BB82F9E75 /* TerminalTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80E500ACAB636356D455EA3 /* TerminalTabs.swift */; };
+		3DFEFE2D6813F59E454DB8F2 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = C0C23B8FBAF68C1F25E0D56A /* SwiftTerm */; };
+		47F7790D5F40482E9A54CBE1 /* ConnectionRequirement.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF50FD53F435051F2A847A24 /* ConnectionRequirement.swift */; };
+		4BC11C1CE68B5BF271981E33 /* FinderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302C18F0CEC7B2F86E342330 /* FinderModel.swift */; };
+		4BED0F37E3C75D7930E19860 /* ServerTrustModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC58192F49909E1BCF7A7857 /* ServerTrustModel.swift */; };
+		4C2D6CDF3177B303C0FA8640 /* FinderControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCAFB7DE0B755F5303EF959C /* FinderControls.swift */; };
+		4F42C2374FA16E0B2DE4AF34 /* FarportFinderExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 783F52CB198258C012C39CA3 /* FarportFinderExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		54C60B457A8E8D2AEFBCAF0C /* FinderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C12B5B869AC8247908B362 /* FinderEnumerator.swift */; };
+		5A48129D0C4EF8A68ABE6F7D /* TerminalModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EBB0F7C62F8A3DA40F58878 /* TerminalModelTests.swift */; };
+		5B6764AC5DA7E3A3DA7EABF0 /* ServerTrustModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43A17C9E2E1FD4C069F9178 /* ServerTrustModelTests.swift */; };
+		60C85A0B9C0426E00996EB73 /* FinderWriteFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BEF0BBA828F1BE4ACAD278 /* FinderWriteFixture.swift */; };
+		64009EABA53C0623DBBCD4B8 /* AccentColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B41D6E65605D27DDFC7E53E7 /* AccentColorTests.swift */; };
+		6FC3D2073BBAF9071A8F6E44 /* KeychainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F95A9C427995CEA839BA4B /* KeychainTests.swift */; };
+		7A616C6DC45735DF38AAAB11 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = BF9E1B9BF9A81579AEDC9B13 /* SwiftTerm */; };
+		7D40E39A85E040CFFBC4990E /* FilesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CC3FD4070A60424111AD8F /* FilesModel.swift */; };
+		7FD7E511A8BA9A951A0C89EC /* FixtureTrust.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4906A02D27C6C3AD68364BF /* FixtureTrust.swift */; };
+		80AACED59B34919A5B90DC76 /* WorkspaceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B126142D07C9534CC603627 /* WorkspaceModel.swift */; };
+		83B4A2B19CF84CF5B00D8990 /* TestSecretStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D0E9F5D401E1277006689 /* TestSecretStore.swift */; };
+		86FC7C04D4EBD26C85D0384F /* LibraryWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA7391F5C0F7DFB0258BE1D /* LibraryWindowTests.swift */; };
+		8776FDBADB825EB23DFA2465 /* HostEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1F6C7DE4FC3D77FE0372B2 /* HostEditor.swift */; };
+		8793D93BDDEE287F86FA2592 /* FilesPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE2726307EB806A91F33FC1 /* FilesPane.swift */; };
+		8D0764952ECA94488BA17AEE /* BrandingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73BE6B45D1E289F15B665A5 /* BrandingTests.swift */; };
+		908010DCCBD144F3B9F8A505 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8DA980B4E0DE67141A3383FB /* FarportCore */; };
+		946B54DD013E24F16D41F0B0 /* TerminalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB0D50D1FD8A9586EF6ED12 /* TerminalModel.swift */; };
+		9AA635655DA8FFBEE8608B69 /* ConnectionOnboardingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D83B1917D9142525DA82D9A /* ConnectionOnboardingTests.swift */; };
+		9F1D4AE67AC91DFA72B698D3 /* LiveConnectionRecoveryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4993D4658EB4EAE21780A1A7 /* LiveConnectionRecoveryTests.swift */; };
+		A70213362A9DCA090D16232B /* ServerTrustViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F78FA38AD8115924E744C26 /* ServerTrustViews.swift */; };
+		AA9D9B34EE7F4ADA076FC646 /* LibraryRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14541ECB73BEEBE0A6941355 /* LibraryRoutingTests.swift */; };
+		AE3CA87FBDADD3D5CDAC00F6 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4348599A9A0976C9529D95AE /* LibraryView.swift */; };
+		B4AFD0212ADB354DDA794112 /* LibraryCloudChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7472502072D3A00A52C1C6C7 /* LibraryCloudChanges.swift */; };
+		C6FB6D381F5EECA45E21A99F /* container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = F835DC4D9DAF1826E7F72E03 /* container-migration.plist */; };
+		C977B0C69DF4D0F6AA6A5F0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C6E6C72BF2D4B11553855AB /* Assets.xcassets */; };
+		D4424DFA435E91C5935A883A /* FinderExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7DAF8DEA638B840F37776A /* FinderExtensionTests.swift */; };
+		D6C300586F08CA8366DC4BD4 /* CloudSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CA99A9417D7FA0546B68C2 /* CloudSyncView.swift */; };
+		DB7050DE86A3CA831056BBB9 /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */; };
+		DDC08949A89485E56535C695 /* CloudSyncModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA0A3B7977544B614CCF0B4 /* CloudSyncModelTests.swift */; };
+		E1644EDAD02EA89A72FAD708 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = D1E0BBB3191BFC628CC7666C /* AppIcon.icon */; };
+		E4E8870932D8D5BCFCB361E3 /* FarportCloud in Frameworks */ = {isa = PBXBuildFile; productRef = 80F85E9C3EF90F56B245F2D2 /* FarportCloud */; };
+		E80D99D5AA2B8A0888696347 /* FinderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C12B5B869AC8247908B362 /* FinderEnumerator.swift */; };
+		E9C69113AE138FDA1B6F64DE /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */; };
+		EF1995EC576DD11894187CC9 /* FarportFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 9DC3FA68A450554696260A9D /* FarportFinder */; };
+		F54AD2B54BA70C29B59A9BFD /* FinderWriteCallbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED59DC3EEF392EEEA10C399D /* FinderWriteCallbackTests.swift */; };
+		F86C9F6872B85D2E5ED5B02A /* CloudSyncModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6204F68DA86FCC04F460FA4 /* CloudSyncModel.swift */; };
+		F8D0CE240E49B3C26B8184D4 /* FarportFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 423A63DD5D61CFB78800F657 /* FarportFinder */; };
+		F9DF8613AB2ED09A63770F21 /* ConnectionAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F757F6A071818553721AF3A /* ConnectionAccessTests.swift */; };
+		FEDD2CE049415531A3DFEFAD /* ConnectionRecoveryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A073451FA11B3B5D7E4F7D4 /* ConnectionRecoveryTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		43CF2F7CEDE33A35F301160A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7ADF9C0A803398835C50BB34 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B06BFD99BBD442587219FCD9;
+			remoteInfo = Farport;
+		};
+		9514D277F5B092A4ED206C41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7ADF9C0A803398835C50BB34 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C06A711452FB341C0C350753;
+			remoteInfo = FarportFinderExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3D8F8BCD4B48721B01F6064B /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				4F42C2374FA16E0B2DE4AF34 /* FarportFinderExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		14541ECB73BEEBE0A6941355 /* LibraryRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryRoutingTests.swift; sourceTree = "<group>"; };
+		16C12B5B869AC8247908B362 /* FinderEnumerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderEnumerator.swift; sourceTree = "<group>"; };
+		1B126142D07C9534CC603627 /* WorkspaceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceModel.swift; sourceTree = "<group>"; };
+		302C18F0CEC7B2F86E342330 /* FinderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderModel.swift; sourceTree = "<group>"; };
+		3D83B1917D9142525DA82D9A /* ConnectionOnboardingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionOnboardingTests.swift; sourceTree = "<group>"; };
+		3FB0D50D1FD8A9586EF6ED12 /* TerminalModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalModel.swift; sourceTree = "<group>"; };
+		4348599A9A0976C9529D95AE /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		4993D4658EB4EAE21780A1A7 /* LiveConnectionRecoveryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveConnectionRecoveryTests.swift; sourceTree = "<group>"; };
+		49CA99A9417D7FA0546B68C2 /* CloudSyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncView.swift; sourceTree = "<group>"; };
+		4F757F6A071818553721AF3A /* ConnectionAccessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionAccessTests.swift; sourceTree = "<group>"; };
+		51C5C988E605379A3A07F3CD /* SystemTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTerminalView.swift; sourceTree = "<group>"; };
+		5C6E6C72BF2D4B11553855AB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6BE2726307EB806A91F33FC1 /* FilesPane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesPane.swift; sourceTree = "<group>"; };
+		736FD4EF519F74C65A8A7C74 /* LibraryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryModel.swift; sourceTree = "<group>"; };
+		7472502072D3A00A52C1C6C7 /* LibraryCloudChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryCloudChanges.swift; sourceTree = "<group>"; };
+		761DDB6688A35191D74242B0 /* FarportApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FarportApp.swift; sourceTree = "<group>"; };
+		783F52CB198258C012C39CA3 /* FarportFinderExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FarportFinderExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		7AA0A3B7977544B614CCF0B4 /* CloudSyncModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncModelTests.swift; sourceTree = "<group>"; };
+		7EBB0F7C62F8A3DA40F58878 /* TerminalModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalModelTests.swift; sourceTree = "<group>"; };
+		7F1F6C7DE4FC3D77FE0372B2 /* HostEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostEditor.swift; sourceTree = "<group>"; };
+		7F78FA38AD8115924E744C26 /* ServerTrustViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTrustViews.swift; sourceTree = "<group>"; };
+		892A338EC32AF1BF1379D65D /* FarportAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FarportAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8A073451FA11B3B5D7E4F7D4 /* ConnectionRecoveryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionRecoveryTests.swift; sourceTree = "<group>"; };
+		8CA7391F5C0F7DFB0258BE1D /* LibraryWindowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryWindowTests.swift; sourceTree = "<group>"; };
+		98AEDA753A2F94570449C062 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		9E72DB3B2C3AFE7043D4CE62 /* TerminalThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalThemeTests.swift; sourceTree = "<group>"; };
+		A0CC3FD4070A60424111AD8F /* FilesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesModel.swift; sourceTree = "<group>"; };
+		A1F95A9C427995CEA839BA4B /* KeychainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainTests.swift; sourceTree = "<group>"; };
+		A3BEF0BBA828F1BE4ACAD278 /* FinderWriteFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderWriteFixture.swift; sourceTree = "<group>"; };
+		A4906A02D27C6C3AD68364BF /* FixtureTrust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureTrust.swift; sourceTree = "<group>"; };
+		AD53E68F1973AF203485C05C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B41D6E65605D27DDFC7E53E7 /* AccentColorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentColorTests.swift; sourceTree = "<group>"; };
+		B7B7744095D0E37D4852CCA0 /* FarportFinder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FarportFinder.entitlements; sourceTree = "<group>"; };
+		BF49EA2F8CA0319C7774C4A0 /* Farport */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Farport; path = .; sourceTree = SOURCE_ROOT; };
+		C43A17C9E2E1FD4C069F9178 /* ServerTrustModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTrustModelTests.swift; sourceTree = "<group>"; };
+		CBC9B8EDFC64AF78C8E3925E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		CCAFB7DE0B755F5303EF959C /* FinderControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderControls.swift; sourceTree = "<group>"; };
+		CEA7371ADED7390F5A3CECD2 /* WorkspaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTests.swift; sourceTree = "<group>"; };
+		CF7DAF8DEA638B840F37776A /* FinderExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderExtensionTests.swift; sourceTree = "<group>"; };
+		D1E0BBB3191BFC628CC7666C /* AppIcon.icon */ = {isa = PBXFileReference; path = AppIcon.icon; sourceTree = "<group>"; };
+		D6126881A37BF9383E62CE1F /* Farport.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Farport.entitlements; sourceTree = "<group>"; };
+		D73BE6B45D1E289F15B665A5 /* BrandingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandingTests.swift; sourceTree = "<group>"; };
+		D80E500ACAB636356D455EA3 /* TerminalTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalTabs.swift; sourceTree = "<group>"; };
+		DC58192F49909E1BCF7A7857 /* ServerTrustModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTrustModel.swift; sourceTree = "<group>"; };
+		DF50FD53F435051F2A847A24 /* ConnectionRequirement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionRequirement.swift; sourceTree = "<group>"; };
+		E6204F68DA86FCC04F460FA4 /* CloudSyncModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncModel.swift; sourceTree = "<group>"; };
+		E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
+		ED3D0E9F5D401E1277006689 /* TestSecretStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSecretStore.swift; sourceTree = "<group>"; };
+		ED59DC3EEF392EEEA10C399D /* FinderWriteCallbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderWriteCallbackTests.swift; sourceTree = "<group>"; };
+		F19CC199D3C3F3D472431C17 /* FarportLocal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FarportLocal.entitlements; sourceTree = "<group>"; };
+		F37671BECB86E8680BDBCC3D /* Farport.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Farport.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F835DC4D9DAF1826E7F72E03 /* container-migration.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "container-migration.plist"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8117FF7D5C8BF22EA0A6AA74 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				908010DCCBD144F3B9F8A505 /* FarportCore in Frameworks */,
+				10F7B42B764E6F3E98FDA132 /* FarportSecurity in Frameworks */,
+				15C6601F5EFE59F63C910E76 /* FarportCloud in Frameworks */,
+				2A4FCB06807381E48A91995A /* FarportSSH in Frameworks */,
+				7A616C6DC45735DF38AAAB11 /* SwiftTerm in Frameworks */,
+				F8D0CE240E49B3C26B8184D4 /* FarportFinder in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B7DF755F2DF12DDC3E446F88 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF1995EC576DD11894187CC9 /* FarportFinder in Frameworks */,
+				29A636D5499086FB1EDC89B8 /* FarportCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CB723281A0F96CF3B7E6B750 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4E8870932D8D5BCFCB361E3 /* FarportCloud in Frameworks */,
+				196E08BC07CBC25D68F48342 /* FarportCore in Frameworks */,
+				3DFEFE2D6813F59E454DB8F2 /* SwiftTerm in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3DF79990373E29AEA185A8CD /* FinderExtension */ = {
+			isa = PBXGroup;
+			children = (
+				B7B7744095D0E37D4852CCA0 /* FarportFinder.entitlements */,
+				E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */,
+				16C12B5B869AC8247908B362 /* FinderEnumerator.swift */,
+				CBC9B8EDFC64AF78C8E3925E /* Info.plist */,
+			);
+			path = FinderExtension;
+			sourceTree = "<group>";
+		};
+		5CA06B77E9A50CA4FA00EF7B /* App */ = {
+			isa = PBXGroup;
+			children = (
+				5C6E6C72BF2D4B11553855AB /* Assets.xcassets */,
+				E6204F68DA86FCC04F460FA4 /* CloudSyncModel.swift */,
+				49CA99A9417D7FA0546B68C2 /* CloudSyncView.swift */,
+				DF50FD53F435051F2A847A24 /* ConnectionRequirement.swift */,
+				F835DC4D9DAF1826E7F72E03 /* container-migration.plist */,
+				D6126881A37BF9383E62CE1F /* Farport.entitlements */,
+				761DDB6688A35191D74242B0 /* FarportApp.swift */,
+				F19CC199D3C3F3D472431C17 /* FarportLocal.entitlements */,
+				A0CC3FD4070A60424111AD8F /* FilesModel.swift */,
+				6BE2726307EB806A91F33FC1 /* FilesPane.swift */,
+				CCAFB7DE0B755F5303EF959C /* FinderControls.swift */,
+				302C18F0CEC7B2F86E342330 /* FinderModel.swift */,
+				7F1F6C7DE4FC3D77FE0372B2 /* HostEditor.swift */,
+				AD53E68F1973AF203485C05C /* Info.plist */,
+				7472502072D3A00A52C1C6C7 /* LibraryCloudChanges.swift */,
+				736FD4EF519F74C65A8A7C74 /* LibraryModel.swift */,
+				4348599A9A0976C9529D95AE /* LibraryView.swift */,
+				DC58192F49909E1BCF7A7857 /* ServerTrustModel.swift */,
+				7F78FA38AD8115924E744C26 /* ServerTrustViews.swift */,
+				51C5C988E605379A3A07F3CD /* SystemTerminalView.swift */,
+				3FB0D50D1FD8A9586EF6ED12 /* TerminalModel.swift */,
+				D80E500ACAB636356D455EA3 /* TerminalTabs.swift */,
+				1B126142D07C9534CC603627 /* WorkspaceModel.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		87737CFB0157661ADC74FFEE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F37671BECB86E8680BDBCC3D /* Farport.app */,
+				892A338EC32AF1BF1379D65D /* FarportAppTests.xctest */,
+				783F52CB198258C012C39CA3 /* FarportFinderExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BD8427E53854C9C5F82975DD = {
+			isa = PBXGroup;
+			children = (
+				D1E0BBB3191BFC628CC7666C /* AppIcon.icon */,
+				5CA06B77E9A50CA4FA00EF7B /* App */,
+				F5588DA7737300425EE1488D /* AppTests */,
+				D4BA3FB2CDBA8B89D6E51F79 /* FarportCoreTests */,
+				C682007F84DF06885571EB4B /* FarportSSHTests */,
+				3DF79990373E29AEA185A8CD /* FinderExtension */,
+				EAB365A924A019A616B42EDA /* Packages */,
+				87737CFB0157661ADC74FFEE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C682007F84DF06885571EB4B /* FarportSSHTests */ = {
+			isa = PBXGroup;
+			children = (
+				A4906A02D27C6C3AD68364BF /* FixtureTrust.swift */,
+			);
+			name = FarportSSHTests;
+			path = Tests/FarportSSHTests;
+			sourceTree = "<group>";
+		};
+		D4BA3FB2CDBA8B89D6E51F79 /* FarportCoreTests */ = {
+			isa = PBXGroup;
+			children = (
+				A3BEF0BBA828F1BE4ACAD278 /* FinderWriteFixture.swift */,
+				ED3D0E9F5D401E1277006689 /* TestSecretStore.swift */,
+			);
+			name = FarportCoreTests;
+			path = Tests/FarportCoreTests;
+			sourceTree = "<group>";
+		};
+		EAB365A924A019A616B42EDA /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				BF49EA2F8CA0319C7774C4A0 /* Farport */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		F5588DA7737300425EE1488D /* AppTests */ = {
+			isa = PBXGroup;
+			children = (
+				B41D6E65605D27DDFC7E53E7 /* AccentColorTests.swift */,
+				D73BE6B45D1E289F15B665A5 /* BrandingTests.swift */,
+				7AA0A3B7977544B614CCF0B4 /* CloudSyncModelTests.swift */,
+				4F757F6A071818553721AF3A /* ConnectionAccessTests.swift */,
+				3D83B1917D9142525DA82D9A /* ConnectionOnboardingTests.swift */,
+				8A073451FA11B3B5D7E4F7D4 /* ConnectionRecoveryTests.swift */,
+				CF7DAF8DEA638B840F37776A /* FinderExtensionTests.swift */,
+				ED59DC3EEF392EEEA10C399D /* FinderWriteCallbackTests.swift */,
+				98AEDA753A2F94570449C062 /* Info.plist */,
+				A1F95A9C427995CEA839BA4B /* KeychainTests.swift */,
+				14541ECB73BEEBE0A6941355 /* LibraryRoutingTests.swift */,
+				8CA7391F5C0F7DFB0258BE1D /* LibraryWindowTests.swift */,
+				4993D4658EB4EAE21780A1A7 /* LiveConnectionRecoveryTests.swift */,
+				C43A17C9E2E1FD4C069F9178 /* ServerTrustModelTests.swift */,
+				7EBB0F7C62F8A3DA40F58878 /* TerminalModelTests.swift */,
+				9E72DB3B2C3AFE7043D4CE62 /* TerminalThemeTests.swift */,
+				CEA7371ADED7390F5A3CECD2 /* WorkspaceTests.swift */,
+			);
+			path = AppTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		58C44FD5DA8A9BAF89DFA3DA /* FarportAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A63D9A1D95FB89D752C65A10 /* Build configuration list for PBXNativeTarget "FarportAppTests" */;
+			buildPhases = (
+				B1F476C35349F25F885D06F1 /* Sources */,
+				CB723281A0F96CF3B7E6B750 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DEA897859ECA9E89D1F9EA20 /* PBXTargetDependency */,
+			);
+			name = FarportAppTests;
+			packageProductDependencies = (
+				80F85E9C3EF90F56B245F2D2 /* FarportCloud */,
+				46B89A7269B4CA50899BE7E1 /* FarportCore */,
+				C0C23B8FBAF68C1F25E0D56A /* SwiftTerm */,
+			);
+			productName = FarportAppTests;
+			productReference = 892A338EC32AF1BF1379D65D /* FarportAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B06BFD99BBD442587219FCD9 /* Farport */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9043E613FC126AD3C81BCC46 /* Build configuration list for PBXNativeTarget "Farport" */;
+			buildPhases = (
+				4A57E8E318BBC5B534AD3184 /* SwiftLint */,
+				6C3E6616A3B8B40484F78081 /* Sources */,
+				D5EDC8435A0A46E3A5E232BC /* Resources */,
+				8117FF7D5C8BF22EA0A6AA74 /* Frameworks */,
+				3D8F8BCD4B48721B01F6064B /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				88AD95DE04CA036E29CD0AB8 /* PBXTargetDependency */,
+			);
+			name = Farport;
+			packageProductDependencies = (
+				8DA980B4E0DE67141A3383FB /* FarportCore */,
+				C581A12AA03318734C3ABC69 /* FarportSecurity */,
+				7CEC566B51336461AD40CDD0 /* FarportCloud */,
+				EC47AA53AC832EAAEAA937A7 /* FarportSSH */,
+				BF9E1B9BF9A81579AEDC9B13 /* SwiftTerm */,
+				423A63DD5D61CFB78800F657 /* FarportFinder */,
+			);
+			productName = Farport;
+			productReference = F37671BECB86E8680BDBCC3D /* Farport.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C06A711452FB341C0C350753 /* FarportFinderExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 30A2F539A1984E4938DD269D /* Build configuration list for PBXNativeTarget "FarportFinderExtension" */;
+			buildPhases = (
+				9B9C073D1C3BD07FAF1B628B /* Sources */,
+				B7DF755F2DF12DDC3E446F88 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FarportFinderExtension;
+			packageProductDependencies = (
+				9DC3FA68A450554696260A9D /* FarportFinder */,
+				886D25B3FEF9744284698F95 /* FarportCore */,
+			);
+			productName = FarportFinderExtension;
+			productReference = 783F52CB198258C012C39CA3 /* FarportFinderExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7ADF9C0A803398835C50BB34 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					58C44FD5DA8A9BAF89DFA3DA = {
+						DevelopmentTeam = 3HG9ZBM8AV;
+						ProvisioningStyle = Automatic;
+					};
+					B06BFD99BBD442587219FCD9 = {
+						DevelopmentTeam = 3HG9ZBM8AV;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
+					};
+					C06A711452FB341C0C350753 = {
+						DevelopmentTeam = 3HG9ZBM8AV;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
+					};
+				};
+			};
+			buildConfigurationList = 628F25397995024539FB50A5 /* Build configuration list for PBXProject "Farport" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = BD8427E53854C9C5F82975DD;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				655BB840378D231E21876CBD /* XCRemoteSwiftPackageReference "SwiftTerm" */,
+				AB8BA11DACA711EFD32C6B7E /* XCLocalSwiftPackageReference "." */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B06BFD99BBD442587219FCD9 /* Farport */,
+				58C44FD5DA8A9BAF89DFA3DA /* FarportAppTests */,
+				C06A711452FB341C0C350753 /* FarportFinderExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D5EDC8435A0A46E3A5E232BC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E1644EDAD02EA89A72FAD708 /* AppIcon.icon in Resources */,
+				C977B0C69DF4D0F6AA6A5F0B /* Assets.xcassets in Resources */,
+				C6FB6D381F5EECA45E21A99F /* container-migration.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4A57E8E318BBC5B534AD3184 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/sh \"$SRCROOT/Scripts/lint.sh\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6C3E6616A3B8B40484F78081 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F86C9F6872B85D2E5ED5B02A /* CloudSyncModel.swift in Sources */,
+				D6C300586F08CA8366DC4BD4 /* CloudSyncView.swift in Sources */,
+				47F7790D5F40482E9A54CBE1 /* ConnectionRequirement.swift in Sources */,
+				214993804A312079C7DCA7F7 /* FarportApp.swift in Sources */,
+				7D40E39A85E040CFFBC4990E /* FilesModel.swift in Sources */,
+				8793D93BDDEE287F86FA2592 /* FilesPane.swift in Sources */,
+				4C2D6CDF3177B303C0FA8640 /* FinderControls.swift in Sources */,
+				4BC11C1CE68B5BF271981E33 /* FinderModel.swift in Sources */,
+				8776FDBADB825EB23DFA2465 /* HostEditor.swift in Sources */,
+				B4AFD0212ADB354DDA794112 /* LibraryCloudChanges.swift in Sources */,
+				0E94902301B1ECF322841D24 /* LibraryModel.swift in Sources */,
+				AE3CA87FBDADD3D5CDAC00F6 /* LibraryView.swift in Sources */,
+				4BED0F37E3C75D7930E19860 /* ServerTrustModel.swift in Sources */,
+				A70213362A9DCA090D16232B /* ServerTrustViews.swift in Sources */,
+				2241672700E92B651A5FD90C /* SystemTerminalView.swift in Sources */,
+				946B54DD013E24F16D41F0B0 /* TerminalModel.swift in Sources */,
+				2F6DA869F8A60D1BB82F9E75 /* TerminalTabs.swift in Sources */,
+				80AACED59B34919A5B90DC76 /* WorkspaceModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9B9C073D1C3BD07FAF1B628B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E9C69113AE138FDA1B6F64DE /* FileProviderExtension.swift in Sources */,
+				E80D99D5AA2B8A0888696347 /* FinderEnumerator.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B1F476C35349F25F885D06F1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				64009EABA53C0623DBBCD4B8 /* AccentColorTests.swift in Sources */,
+				8D0764952ECA94488BA17AEE /* BrandingTests.swift in Sources */,
+				DDC08949A89485E56535C695 /* CloudSyncModelTests.swift in Sources */,
+				F9DF8613AB2ED09A63770F21 /* ConnectionAccessTests.swift in Sources */,
+				9AA635655DA8FFBEE8608B69 /* ConnectionOnboardingTests.swift in Sources */,
+				FEDD2CE049415531A3DFEFAD /* ConnectionRecoveryTests.swift in Sources */,
+				DB7050DE86A3CA831056BBB9 /* FileProviderExtension.swift in Sources */,
+				54C60B457A8E8D2AEFBCAF0C /* FinderEnumerator.swift in Sources */,
+				D4424DFA435E91C5935A883A /* FinderExtensionTests.swift in Sources */,
+				F54AD2B54BA70C29B59A9BFD /* FinderWriteCallbackTests.swift in Sources */,
+				60C85A0B9C0426E00996EB73 /* FinderWriteFixture.swift in Sources */,
+				7FD7E511A8BA9A951A0C89EC /* FixtureTrust.swift in Sources */,
+				6FC3D2073BBAF9071A8F6E44 /* KeychainTests.swift in Sources */,
+				AA9D9B34EE7F4ADA076FC646 /* LibraryRoutingTests.swift in Sources */,
+				86FC7C04D4EBD26C85D0384F /* LibraryWindowTests.swift in Sources */,
+				9F1D4AE67AC91DFA72B698D3 /* LiveConnectionRecoveryTests.swift in Sources */,
+				5B6764AC5DA7E3A3DA7EABF0 /* ServerTrustModelTests.swift in Sources */,
+				5A48129D0C4EF8A68ABE6F7D /* TerminalModelTests.swift in Sources */,
+				1761A1CB024B34C663EFF472 /* TerminalThemeTests.swift in Sources */,
+				83B4A2B19CF84CF5B00D8990 /* TestSecretStore.swift in Sources */,
+				0C0EAEB467C804C3DC7007DD /* WorkspaceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		88AD95DE04CA036E29CD0AB8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C06A711452FB341C0C350753 /* FarportFinderExtension */;
+			targetProxy = 9514D277F5B092A4ED206C41 /* PBXContainerItemProxy */;
+		};
+		DEA897859ECA9E89D1F9EA20 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B06BFD99BBD442587219FCD9 /* Farport */;
+			targetProxy = 43CF2F7CEDE33A35F301160A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		05F56433527022EBADB6AA07 /* Local */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 3HG9ZBM8AV;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HARBOR_APP_GROUP = "group.dev.harbor.shared.$(DEVELOPMENT_TEAM)";
+				HARBOR_ICLOUD_CONTAINER = iCloud.com.panandafog.harbor;
+				HARBOR_KEYCHAIN_GROUP = "$(AppIdentifierPrefix)dev.harbor.shared";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Local;
+		};
+		111F7C07735D6FDC4CA85750 /* Local */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.HarborAppTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Farport.app/Contents/MacOS/Farport";
+			};
+			name = Local;
+		};
+		2810B7B18BEA99D02C6A43C0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 3HG9ZBM8AV;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HARBOR_APP_GROUP = "group.dev.harbor.shared.$(DEVELOPMENT_TEAM)";
+				HARBOR_ICLOUD_CONTAINER = iCloud.com.panandafog.harbor;
+				HARBOR_KEYCHAIN_GROUP = "$(AppIdentifierPrefix)dev.harbor.shared";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		29BCF571F1C974DF471C26B2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = App/Farport.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Farport;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = Farport;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor;
+				PRODUCT_MODULE_NAME = Farport;
+				PRODUCT_NAME = Farport;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		2E22F18C0BAD2E8A5D220E96 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.HarborAppTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Farport.app/Contents/MacOS/Farport";
+			};
+			name = Release;
+		};
+		40F97E1B6613494529F08B25 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = App/Farport.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Farport;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = Farport;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor;
+				PRODUCT_MODULE_NAME = Farport;
+				PRODUCT_NAME = Farport;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		4880F6C4D4EE25906EADE058 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.HarborAppTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Farport.app/Contents/MacOS/Farport";
+			};
+			name = Debug;
+		};
+		5052F84AC2C87F804B91DBE8 /* Local */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = FinderExtension/FarportFinder.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = FinderExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor.finder;
+				PRODUCT_NAME = FarportFinderExtension;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Local;
+		};
+		B085E07C89DB896FB3DA8FE6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = FinderExtension/FarportFinder.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = FinderExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor.finder;
+				PRODUCT_NAME = FarportFinderExtension;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		B41594BA18891218752811AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 3HG9ZBM8AV;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HARBOR_APP_GROUP = "group.dev.harbor.shared.$(DEVELOPMENT_TEAM)";
+				HARBOR_ICLOUD_CONTAINER = iCloud.com.panandafog.harbor;
+				HARBOR_KEYCHAIN_GROUP = "$(AppIdentifierPrefix)dev.harbor.shared";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		E4AAB1058E31338790661F58 /* Local */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = App/FarportLocal.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				GENERATE_INFOPLIST_FILE = YES;
+				HARBOR_ICLOUD_CONTAINER = "";
+				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Farport;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = Farport;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor;
+				PRODUCT_MODULE_NAME = Farport;
+				PRODUCT_NAME = Farport;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG HARBOR_LOCAL";
+			};
+			name = Local;
+		};
+		FD6BABBAEA91E01C09466119 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = FinderExtension/FarportFinder.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = FinderExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor.finder;
+				PRODUCT_NAME = FarportFinderExtension;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		30A2F539A1984E4938DD269D /* Build configuration list for PBXNativeTarget "FarportFinderExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B085E07C89DB896FB3DA8FE6 /* Debug */,
+				5052F84AC2C87F804B91DBE8 /* Local */,
+				FD6BABBAEA91E01C09466119 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		628F25397995024539FB50A5 /* Build configuration list for PBXProject "Farport" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B41594BA18891218752811AA /* Debug */,
+				05F56433527022EBADB6AA07 /* Local */,
+				2810B7B18BEA99D02C6A43C0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9043E613FC126AD3C81BCC46 /* Build configuration list for PBXNativeTarget "Farport" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29BCF571F1C974DF471C26B2 /* Debug */,
+				E4AAB1058E31338790661F58 /* Local */,
+				40F97E1B6613494529F08B25 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A63D9A1D95FB89D752C65A10 /* Build configuration list for PBXNativeTarget "FarportAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4880F6C4D4EE25906EADE058 /* Debug */,
+				111F7C07735D6FDC4CA85750 /* Local */,
+				2E22F18C0BAD2E8A5D220E96 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AB8BA11DACA711EFD32C6B7E /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		655BB840378D231E21876CBD /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.10.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		423A63DD5D61CFB78800F657 /* FarportFinder */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportFinder;
+		};
+		46B89A7269B4CA50899BE7E1 /* FarportCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportCore;
+		};
+		7CEC566B51336461AD40CDD0 /* FarportCloud */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportCloud;
+		};
+		80F85E9C3EF90F56B245F2D2 /* FarportCloud */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportCloud;
+		};
+		886D25B3FEF9744284698F95 /* FarportCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportCore;
+		};
+		8DA980B4E0DE67141A3383FB /* FarportCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportCore;
+		};
+		9DC3FA68A450554696260A9D /* FarportFinder */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportFinder;
+		};
+		BF9E1B9BF9A81579AEDC9B13 /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 655BB840378D231E21876CBD /* XCRemoteSwiftPackageReference "SwiftTerm" */;
+			productName = SwiftTerm;
+		};
+		C0C23B8FBAF68C1F25E0D56A /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 655BB840378D231E21876CBD /* XCRemoteSwiftPackageReference "SwiftTerm" */;
+			productName = SwiftTerm;
+		};
+		C581A12AA03318734C3ABC69 /* FarportSecurity */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportSecurity;
+		};
+		EC47AA53AC832EAAEAA937A7 /* FarportSSH */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportSSH;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 7ADF9C0A803398835C50BB34 /* Project object */;
+}

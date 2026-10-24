@@ -40,6 +40,9 @@ jobs:
       - name: SwiftLint
         run: sh Scripts/lint.sh
 
+      - name: Check sandbox configuration
+        run: xcrun swift Scripts/verify-sandbox.swift
+
       - name: Prepare isolated SSH fixture
         run: |
           python3 -m venv "$RUNNER_TEMP/harbor-test-env"
@@ -79,27 +82,27 @@ jobs:
       - name: Regenerate Xcode project
         run: |
           sh Scripts/xcodegen.sh generate
-          git diff --exit-code -- Harbor.xcodeproj App/Info.plist FinderExtension/Info.plist AppTests/Info.plist
+          git diff --exit-code -- Farport.xcodeproj App/Info.plist FinderExtension/Info.plist AppTests/Info.plist
 
       - name: Build without signing
         shell: bash
         run: |
           set -o pipefail
-          mkdir -p Harbor.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
-          cp Package.resolved Harbor.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
-          mkdir -p "$RUNNER_TEMP/HarborDiagnostics"
-          xcodebuild -project Harbor.xcodeproj -scheme Harbor \
+          mkdir -p Farport.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
+          cp Package.resolved Farport.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+          mkdir -p "$RUNNER_TEMP/FarportDiagnostics"
+          xcodebuild -project Farport.xcodeproj -scheme Farport \
             -configuration "${{ matrix.configuration }}" -destination 'generic/platform=macOS' \
-            -derivedDataPath "$RUNNER_TEMP/HarborBuild" \
-            -resultBundlePath "$RUNNER_TEMP/HarborDiagnostics/Harbor.xcresult" \
+            -derivedDataPath "$RUNNER_TEMP/FarportBuild" \
+            -resultBundlePath "$RUNNER_TEMP/FarportDiagnostics/Farport.xcresult" \
             -onlyUsePackageVersionsFromResolvedFile \
-            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee "$RUNNER_TEMP/HarborDiagnostics/build.log"
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee "$RUNNER_TEMP/FarportDiagnostics/build.log"
 
       - name: Preserve build diagnostics on failure
         if: failure()
         uses: actions/upload-artifact@v7
         with:
           name: build-diagnostics-${{ matrix.configuration }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/HarborDiagnostics/
+          path: ${{ runner.temp }}/FarportDiagnostics/
           if-no-files-found: ignore
           retention-days: 7

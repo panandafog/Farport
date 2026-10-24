@@ -1,4 +1,4 @@
-# Harbor Usage And Implementation
+# Farport Usage And Implementation
 
 Native macOS SSH/SFTP client MVP. Requires macOS 15 or later.
 
@@ -18,7 +18,7 @@ Native macOS SSH/SFTP client MVP. Requires macOS 15 or later.
   terminal history retained after EOF, transport failure, or manual disconnect.
 - Multiple named terminal tabs per host, with creation, switching, rename, and close.
 - Optional per-tab tmux sessions: detach and reattach to a persistent remote
-  shell after connection loss or restarting Harbor.
+  shell after connection loss or restarting Farport.
 - SSH heartbeat with finite timeout, bounded automatic tmux reconnect, cancellation,
   and connection verification after waking the Mac.
 - Native ProxyJump for both SSH and SFTP, with saved-host routes and independent
@@ -35,7 +35,7 @@ Native macOS SSH/SFTP client MVP. Requires macOS 15 or later.
 
 ## Run
 
-Open `Harbor.xcodeproj`, select the Harbor scheme and My Mac, and run.
+Open `Farport.xcodeproj`, select the Farport scheme and My Mac, and run.
 Finder requires Apple Development signing and an App Group. The project preserves
 the configured developer Team; other developers must select their own Team and
 register the generated `group.dev.harbor.shared.<Team ID>` App Group. Its value is
@@ -45,15 +45,15 @@ Their bundle identifiers are `com.panandafog.harbor` and
 `com.panandafog.harbor.finder`. Shared App Group/Keychain identifiers intentionally
 retain their original names to preserve data access. Finder locations registered
 under the previous extension ID may need to be connected again with the new app.
-The Harbor app also needs iCloud/CloudKit (`iCloud.com.panandafog.harbor`) and Push Notifications.
+The Farport app also needs iCloud/CloudKit (`iCloud.com.panandafog.harbor`) and Push Notifications.
 See [iCloud setup and behavior](iCloud.md). For development without CloudKit
-provisioning, use the `HarborLocal` scheme (`Local` configuration); iCloud is disabled
+provisioning, use the `FarportLocal` scheme (`Local` configuration); iCloud is disabled
 in that build, while shared Keychain and Finder signing are retained.
 The first build downloads Swift Package dependencies.
 Install SwiftLint first (`brew install swiftlint`); every Xcode build runs lint.
 
 macOS requires separate Local Network approval for LAN servers, including `.local`
-hostnames. Allow Harbor when prompted; a foreground Terminal/Files attempt waits
+hostnames. Allow Farport when prompted; a foreground Terminal/Files attempt waits
 up to 30 seconds and retries once when the route's first endpoint becomes reachable.
 Cancel stops the pending attempt. If the wait expires, use **Retry Connection**.
 A pending permission is guidance, not a red connection-failure banner.
@@ -61,14 +61,14 @@ Review access in **System Settings > Privacy &
 Security > Local Network**; a changed bundle ID may require new approval. This is
 independent of the sandbox/network entitlement and SSH server-key trust. Connection
 errors retain TCP/DNS details; a route error alone does not prove permission denial.
-For a direct no-route error, Harbor performs a one-second, cancellable TCP-only
+For a direct no-route error, Farport performs a one-second, cancellable TCP-only
 check using Network.framework to distinguish a confirmed Local Network denial.
 It sends no SSH credentials and never probes destinations behind ProxyJump locally.
 
 ```sh
-xcodebuild -quiet -project Harbor.xcodeproj -scheme Harbor \
+xcodebuild -quiet -project Farport.xcodeproj -scheme Farport \
   -configuration Debug -destination 'platform=macOS' -derivedDataPath Build -allowProvisioningUpdates build
-open Build/Build/Products/Debug/Harbor.app
+open Build/Build/Products/Debug/Farport.app
 ```
 
 `project.yml` is the XcodeGen source of truth. After changing project configuration,
@@ -79,11 +79,11 @@ XcodeGen is not required just to build.
 
 | Layer | Responsibility |
 | --- | --- |
-| `Sources/HarborCore` | Platform-neutral models, host/workspace repositories, session contracts, paths |
-| `Sources/HarborSSH` | Citadel/SwiftNIO implementation of SSH and SFTP, transfer lifecycle |
-| `Sources/HarborSecurity` | Shared Data Protection Keychain adapter |
-| `Sources/HarborCloud` | CKSyncEngine private-database sync, encrypted records, durable queue |
-| `Sources/HarborFinder` | macOS File Provider items/errors and shared-container access |
+| `Sources/FarportCore` | Platform-neutral models, host/workspace repositories, session contracts, paths |
+| `Sources/FarportSSH` | Citadel/SwiftNIO implementation of SSH and SFTP, transfer lifecycle |
+| `Sources/FarportSecurity` | Shared Data Protection Keychain adapter |
+| `Sources/FarportCloud` | CKSyncEngine private-database sync, encrypted records, durable queue |
+| `Sources/FarportFinder` | macOS File Provider items/errors and shared-container access |
 | `FinderExtension` | Sandboxed replicated File Provider, mutations, and enumerators |
 | `App` | macOS SwiftUI views, session state, AppKit file panels, SwiftTerm terminal |
 | `Vendor/Citadel` | Pinned library with small interoperability fixes documented in `UPSTREAM.md` |
@@ -105,7 +105,10 @@ are implemented. Schema versioning prevents silently overwriting newer data.
 
 ## MVP Storage And Limits
 
-Hosts persist at `~/Library/Application Support/Harbor/hosts.json` (not just RAM).
+Hosts persist in the app container's `Library/Application Support/Harbor/hosts.json`
+(not just RAM). On first sandbox launch, macOS migrates the previous
+`~/Library/Application Support/Harbor` directory using the bundled migration manifest.
+See [Sandbox](Sandbox.md) for migration limitations and testing.
 Schema 5 stores profiles, device-local credential readiness and Keychain references,
 not passwords/private keys/passphrases.
 Legacy libraries migrate only after secrets are stored and read back successfully.
@@ -123,8 +126,8 @@ connection, verify the fingerprint and choose **Trust & Connect** to store the p
 and resume that attempt. Cancel never retries. Finder setup offers **Trust Server**
 and requires retrying setup; the background extension never approves keys.
 See [Security](Security.md)
-for migration, trust policy, and limits. Main-app sandboxing, notarized
-distribution, and an independent security audit are not implemented.
+for migration, trust policy, and limits. App Sandbox is enabled; notarized
+distribution and an independent security audit are not implemented.
 
 Workspace metadata lives beside the host library in `hosts.workspace.json`. It has
 no credentials or terminal transcript. Changes are saved atomically as they occur,
@@ -148,7 +151,7 @@ project plans, and build/test procedures are in [AGENTS.md](../AGENTS.md).
 
 ```sh
 sh Scripts/lint.sh
-xcodebuild -quiet -project Harbor.xcodeproj -scheme Harbor \
+xcodebuild -quiet -project Farport.xcodeproj -scheme Farport \
   -configuration Debug -destination 'platform=macOS' -derivedDataPath Build test
 ```
 
@@ -209,7 +212,7 @@ of files or empty folders. Conflicting saves keep the local edit in a remote
 folder deletion, symlinks, and combined rename plus content update are unsupported.
 Finder uses on-demand local copies, not a
 synchronous SFTP disk. The extension can continue serving an explicitly connected
-location while Harbor is closed. Disconnect preserves downloaded data locally;
+location while Farport is closed. Disconnect preserves downloaded data locally;
 it is not a secure erase. See [Finder design and limits](Finder.md).
 
 ## ProxyJump
@@ -220,7 +223,7 @@ Leave the destination's real hostname, SSH port, username, and credentials in it
 own profile. **Direct connection** explicitly disables jumping for that profile.
 The route is shown below the destination address and applies to Terminal and Files.
 
-Harbor opens an SSH direct-tcpip channel through the gateway and authenticates a
+Farport opens an SSH direct-tcpip channel through the gateway and authenticates a
 separate SSH connection to the destination inside it. No gateway shell, tmux,
 agent forwarding, copied keys, or local listening port is needed. The gateway must
 permit TCP forwarding and reach/resolve the destination. A gateway's own saved
@@ -243,14 +246,14 @@ See [ProxyJump implementation](ProxyJump.md) for lifecycle and verification deta
 ## Session Recovery
 
 In **Edit Host > Terminal > Session**, choose **Persistent (tmux)**. The server must
-already provide tmux in the SSH account's PATH. Harbor creates or attaches to a
+already provide tmux in the SSH account's PATH. Farport creates or attaches to a
 session named `harbor-<tab UUID>`. The generated name is available in the terminal's
 tmux badge tooltip. The first default tab reuses the old host UUID for compatibility.
 Renaming a host or tab does not change its server session. Every new tab has its
 own identity, so terminals on the same host do not share the same shell.
 
 **Detach** disconnects SSH while remote programs keep running. **Attach** reconnects
-to the same remote shell; it also works after restarting Harbor and selecting the
+to the same remote shell; it also works after restarting Farport and selecting the
 same saved host. `exit` ends the current shell/pane; closing the last pane destroys
 the tmux session. A later Attach then creates a fresh session. Deleting a saved host
 does not kill its remote session. Other attached tmux clients are not evicted.
@@ -265,7 +268,7 @@ session termination, or server settings which destroy detached sessions can end 
 Use the plus button or Command-T for a new tab; rename via its context menu and
 close with its x button. Command-Shift-[ / ] switch tabs. Closing removes the tab
 from the saved workspace and detaches its connection, but does not kill tmux.
-After restarting Harbor, Attach returns each restored tmux tab to its own shell.
+After restarting Farport, Attach returns each restored tmux tab to its own shell.
 Standard SSH tabs also restore, but Connect starts a new shell. No commands are replayed.
 
 Every connected SSH terminal is checked every 15 seconds using an authenticated
@@ -283,10 +286,10 @@ failures before a terminal is opened require a manual retry.
 
 Detach/Cancel, clean shell exit/tmux detach, missing tmux, authentication errors,
 configuration errors, and host-key verification failures do not auto-retry.
-Unknown or changed server keys stop recovery until explicitly reviewed in Harbor.
+Unknown or changed server keys stop recovery until explicitly reviewed in Farport.
 Standard SSH detects loss but requires manual reconnect to create a new shell.
 
-While the Mac sleeps, heartbeat/retry timers pause. After wake, Harbor first checks
+While the Mac sleeps, heartbeat/retry timers pause. After wake, Farport first checks
 the old connection; if it has failed, tmux reconnects use the existing server
 session. Detaching during recovery cancels it, including any wake-triggered retry.
 Automatic recovery is terminal-only; file transfers are not automatically replayed.

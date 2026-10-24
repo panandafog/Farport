@@ -1,5 +1,5 @@
 import AppKit
-@testable import Harbor
+@testable import Farport
 import SwiftTerm
 import XCTest
 

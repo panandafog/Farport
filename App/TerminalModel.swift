@@ -1,5 +1,5 @@
 import AppKit
-import HarborCore
+import FarportCore
 import SwiftTerm
 import SwiftUI
 

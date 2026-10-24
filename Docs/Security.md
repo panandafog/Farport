@@ -10,7 +10,7 @@ are encoded together in a generic-password Keychain item, resolved into memory
 only when loading a saved profile. Notes and other profile metadata in the local
 JSON are not encrypted. Opt-in CloudKit records use `encryptedValues`.
 
-`HarborSecurity` implements the protocol-neutral `SecretStore` using Apple's Data
+`FarportSecurity` implements the protocol-neutral `SecretStore` using Apple's Data
 Protection Keychain. App and extension share the explicit entitlement
 `$(AppIdentifierPrefix)dev.harbor.shared`, configured as `HARBOR_KEYCHAIN_GROUP`.
 The service is `dev.harbor.secrets`; queries always specify service, account,
@@ -42,7 +42,7 @@ credential references, retaining the domain UUID/root/access mode. Copies have
 independent ownership: deleting a main-library host cannot delete a live snapshot's
 credentials. Host editing/deletion still explicitly revokes affected Finder locations.
 Only the main app migrates legacy Finder snapshots; the extension asks the user to
-open Harbor instead of rewriting a potentially revoked configuration during a read.
+open Farport instead of rewriting a potentially revoked configuration during a read.
 
 If a migration fails before the metadata commit, the original plaintext file is
 kept. A failed write or interrupted migration can leave unreferenced Keychain items;
@@ -99,7 +99,7 @@ may be shown/copied in the interface. Keychain I/O runs off the SSH event loop.
   persistent identity so it cannot delete a newly inserted replacement pin.
 - Finder never displays trust prompts or accepts new keys in the background. It
   reports the blocked endpoint/fingerprint as an authentication/sync error. Open
-  that host in Harbor to review and approve the endpoint, then retry Finder access.
+  that host in Farport to review and approve the endpoint, then retry Finder access.
 
 All trust/store/configuration failures are permanent for automatic terminal recovery;
 no fallback to direct SSH, a fresh shell, or unchecked keys is allowed. The transport's

@@ -1,5 +1,5 @@
+import FarportCore
 import Foundation
-import HarborCore
 
 @MainActor
 final class FilesModel: ObservableObject {
@@ -123,6 +123,8 @@ final class FilesModel: ObservableObject {
         perform("Uploading", refresh: true) { connection in
             for url in urls {
                 try Task.checkCancellation()
+                let scoped = url.startAccessingSecurityScopedResource()
+                defer { if scoped { url.stopAccessingSecurityScopedResource() } }
                 guard try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true else {
                     throw HarborError.message("Select individual files. Folder upload is not included in this MVP.")
                 }
@@ -139,6 +141,8 @@ final class FilesModel: ObservableObject {
 
     func download(_ entry: RemoteEntry, to destination: URL) {
         perform("Downloading \(entry.name)") { connection in
+            let scoped = destination.startAccessingSecurityScopedResource()
+            defer { if scoped { destination.stopAccessingSecurityScopedResource() } }
             try await connection.download(entry.path, to: destination, progress: self.progressHandler())
         }
     }

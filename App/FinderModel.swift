@@ -1,8 +1,8 @@
 import AppKit
+import FarportCore
+import FarportFinder
+import FarportSSH
 import FileProvider
-import HarborCore
-import HarborFinder
-import HarborSSH
 
 @MainActor
 final class FinderModel: ObservableObject {

@@ -57,7 +57,7 @@ are not encryption. Encryption can follow alongside Keychain work.
 The host's Terminal > Session setting opts its terminal tabs into independently
 named tmux sessions on the server. Reconnecting SSH attaches to the same live shell,
 including its current directory, running programs, and environment. This also
-works after a Harbor restart and can support macOS/iPadOS clients attaching to the
+works after a Farport restart and can support macOS/iPadOS clients attaching to the
 same remote session. [tmux documentation](https://github.com/tmux/tmux/wiki)
 
 Requirements and boundaries:

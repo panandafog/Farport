@@ -1,6 +1,6 @@
+import FarportCore
+import FarportFinder
 import FileProvider
-import HarborCore
-import HarborFinder
 
 final class FinderEnumerator: NSObject, NSFileProviderEnumerator {
     private let container: NSFileProviderItemIdentifier

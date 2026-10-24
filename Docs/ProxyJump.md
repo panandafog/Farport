@@ -51,7 +51,7 @@ No route connections are pooled between terminals or SFTP in this MVP.
 `TerminalConnectionError.route` adds endpoint context without losing the nested
 error's retry classification. Bad credentials/keys, route/configuration errors,
 and rejected forwarding are permanent and require manual retry. The underlying
-NIO API does not expose structured forwarding rejection reason codes; Harbor shows
+NIO API does not expose structured forwarding rejection reason codes; Farport shows
 its diagnostic and asks to check both forwarding permissions and destination
 reachability. It does not parse diagnostic strings to guess retry policy.
 
