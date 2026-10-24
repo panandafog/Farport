@@ -41,8 +41,9 @@ Use **FarportLocal** to develop without CloudKit provisioning; it still needs si
 for shared Keychain and Finder access. For Local Network permissions and the manual
 **Farport Attach** fallback, see [Debugging](Docs/Debugging.md).
 
-`project.yml` is the XcodeGen source of truth. The generated project and dependency
-lockfile are included. After configuration/resource changes, run `sh Scripts/xcodegen.sh generate`.
+`project.yml` is the XcodeGen source of truth. The generated project and both dependency
+lockfiles (shared package and Xcode app) are included. After configuration/resource
+changes, run `sh Scripts/xcodegen.sh generate`.
 The product, project, schemes, package and modules use Farport names.
 Bundle IDs, Keychain/App Group/iCloud identities, saved-data paths,
 and existing tmux session names are unchanged by the rename.

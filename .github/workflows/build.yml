@@ -43,6 +43,9 @@ jobs:
       - name: Check sandbox configuration
         run: xcrun swift Scripts/verify-sandbox.swift
 
+      - name: Check package lockfiles
+        run: xcrun swift Scripts/verify-package-locks.swift
+
       - name: Prepare isolated SSH fixture
         run: |
           python3 -m venv "$RUNNER_TEMP/harbor-test-env"
@@ -87,12 +90,13 @@ jobs:
       - name: Check checkout-name independence
         run: sh Scripts/verify-project-generation.sh
 
+      - name: Check package lockfiles
+        run: xcrun swift Scripts/verify-package-locks.swift
+
       - name: Build without signing
         shell: bash
         run: |
           set -o pipefail
-          mkdir -p Farport.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
-          cp Package.resolved Farport.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
           mkdir -p "$RUNNER_TEMP/FarportDiagnostics"
           xcodebuild -project Farport.xcodeproj -scheme Farport \
             -configuration "${{ matrix.configuration }}" -destination 'generic/platform=macOS' \

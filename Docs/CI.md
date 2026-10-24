@@ -63,12 +63,16 @@ read-only, checkout does not retain credentials, and there are no repository sec
 Apple accounts, distribution uploads, or production server connections. Fork PRs
 run with `pull_request`, never privileged `pull_request_target`.
 
-Keep the root `Package.resolved` in Git. Both jobs disallow silently resolving new
-versions. Before building, CI also copies it to the Xcode workspace's
-`xcshareddata/swiftpm/Package.resolved` path: the pinned Xcode toolchain may look
-there rather than use the root package's lockfile directly. This copy exists only
-in the disposable runner checkout; update the root lockfile, not two independent
-version lists. See [Apple's package CI guidance](https://developer.apple.com/documentation/xcode/building-swift-packages-or-apps-that-use-them-in-continuous-integration-workflows).
+Keep both `Package.resolved` and
+`Farport.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved` in Git.
+They describe different graphs: the package lock contains the shared libraries;
+the Xcode lock additionally pins SwiftTerm and its transitive ArgumentParser dependency.
+Never copy the root lock over the Xcode lock: doing so drops app-only pins, and
+strict dependency resolution correctly fails on a fresh runner. Both CI jobs retain
+their strict resolved-version flags and run `xcrun swift Scripts/verify-package-locks.swift`.
+This checks identical pins for shared dependencies and exact Xcode package requirements.
+Update both graphs intentionally when changing common dependencies; package tests
+must not prune or rewrite the Xcode lock. See [Apple's package CI guidance](https://developer.apple.com/documentation/xcode/building-swift-packages-or-apps-that-use-them-in-continuous-integration-workflows).
 Vendored Citadel sources and their license/patch notes must remain tracked.
 
 ## Limits

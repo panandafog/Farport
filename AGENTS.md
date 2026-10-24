@@ -198,6 +198,14 @@ development and CI. Do not use an arbitrary Homebrew XcodeGen version or remove
 CI's generated-file diff check to accommodate toolchain drift. Updating the pin
 requires reviewing/regenerating the project and updating its official SHA-256.
 
+Track both package lockfiles. Root Package.resolved pins the shared-library graph;
+Farport.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved additionally
+pins SwiftTerm and its transitive dependencies for the app. Never overwrite the
+Xcode lock with the root lock, or let package tests prune the app-only pins. Keep
+shared pins equal; run `xcrun swift Scripts/verify-package-locks.swift` and preserve
+strict resolved-version flags in both CI jobs. Validate dependency fixes using a fresh
+checkout and fresh DerivedData/SourcePackages, not only the developer's warm cache.
+
 ```sh
 sh Scripts/lint.sh
 sh Scripts/xcodegen.sh generate
@@ -327,7 +335,7 @@ production secrets or Apple signing material belong in Git or ordinary PR jobs.
 Keep package tests on macOS 15 and compile Icon Composer resources on the macOS 26
 build host; neither changes the app's deployment target. Preserve asset compilation
 failures with pipefail and diagnostic artifacts, never by skipping icon/accent assets.
-Keep `Package.resolved`, vendored source/license notes, generated project and shared
+Keep both `Package.resolved` files, vendored source/license notes, generated project and shared
 schemes tracked. Exclude build output, personal IDE state and `remote_development/`
 reference material. See `Docs/CI.md` and `Docs/TestFlight.md` for coverage/release gates.
 CI compilation does not establish distribution readiness or validate system permissions.
