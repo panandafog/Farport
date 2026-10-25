@@ -105,6 +105,8 @@ public final class SessionWorkspace<Terminal: TerminalSessionModel>: ObservableO
         files.disconnect()
     }
 
-    public func suspend() { terminals.values.forEach { $0.suspend() } }
+    public func suspend(disconnectTransport: Bool = false) {
+        terminals.values.forEach { $0.suspend(disconnectTransport: disconnectTransport) }
+    }
     public func resume() { terminals.values.forEach { $0.resume() } }
 }

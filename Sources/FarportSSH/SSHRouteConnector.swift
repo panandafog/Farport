@@ -65,8 +65,8 @@ struct SSHRouteConnector {
            await localNetworkDenied(endpoint.profile.hostname, endpoint.profile.port) {
             return .localNetworkPermission
         }
-        return SSHFailure.connection(error) as? TerminalConnectionError ??
-            .transport(error.localizedDescription)
+        let cause = SSHFailure.connection(error) as? TerminalConnectionError ?? .transport(error.localizedDescription)
+        return .endpoint(hostID: endpoint.id, cause: cause)
     }
 
     private func jump(from parent: SSHClient, to settings: SSHClientSettings) async throws -> SSHClient {

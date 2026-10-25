@@ -14,8 +14,8 @@ unsigned macOS build approach, with additional Farport-specific checks.
 - **Build macOS (Debug/Release)** regenerates the checked-in project and requires
   no tracked diff, checks generation under different checkout names, then builds the
   app and embedded Finder extension without signing.
-- **Compile Shared Modules for iOS** builds the reusable session, transport and
-  security libraries for iOS Simulator, without launching an iOS application.
+- **Build iOS and Shared Modules** builds reusable libraries for iOS Simulator and
+  unsigned Debug/Release mobile apps for iOS devices. It does not launch the app.
 
 Package tests run on `macos-15`; Debug/Release app builds run on `macos-26`, with
 Xcode 26.3 explicitly selected in all jobs. Build-host and app deployment target
@@ -105,5 +105,6 @@ The package test job also exercises platform-independent terminal recovery, file
 generation guards, workspace identity and English/Russian catalog/format consistency.
 The separate iOS compatibility job runs `sh Scripts/verify-ios.sh`, compiling Sessions,
 SSH and Security (including Core, Cloud and Localization) against the iOS Simulator SDK
-with the committed Xcode lockfile. It builds libraries only; no iOS app or simulator
-runtime is installed or launched. macOS UI tests remain separate from this check.
+with the committed Xcode lockfile, then building the mobile app for iOS devices in
+Debug and Release. No Simulator runtime is launched by CI. Native macOS and iOS
+hosted tests remain separate local checks.

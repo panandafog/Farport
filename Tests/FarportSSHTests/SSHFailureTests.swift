@@ -4,6 +4,34 @@ import NIO
 import XCTest
 
 final class SSHFailureTests: XCTestCase {
+    func testMissingCredentialsCarriesTheHostSettingsDestinationWithoutOpeningNetwork() async throws {
+        let host = SavedHost(profile: HostProfile(hostname: "never-resolve.invalid", username: "test"),
+                             credentialsConfigured: false)
+        let provider = SSHConnectionProvider()
+        do {
+            _ = try await provider.terminal(for: host)
+            XCTFail("Missing credentials must block connection")
+        } catch let failure as TerminalConnectionError {
+            XCTAssertEqual(failure.settingsHostID(fallback: UUID()), host.id)
+            XCTAssertFalse(failure.allowsReconnect)
+        }
+    }
+
+    func testMissingGatewayCredentialsCarryTheGatewaySettingsDestinationForSFTP() async throws {
+        let gateway = SavedHost(profile: HostProfile(hostname: "never-resolve.invalid", username: "test"),
+                                credentialsConfigured: false)
+        let target = SavedHost(profile: HostProfile(hostname: "private.internal", username: "test",
+                                                    jumpHostIDs: [gateway.id]))
+        let provider = SSHConnectionProvider(hosts: [gateway, target])
+        do {
+            _ = try await provider.files(for: target)
+            XCTFail("Missing gateway credentials must block connection")
+        } catch let failure as TerminalConnectionError {
+            XCTAssertEqual(failure.settingsHostID(fallback: target.id), gateway.id)
+            XCTAssertFalse(failure.allowsReconnect)
+        }
+    }
+
     func testPOSIXPermissionDenialExplainsSettingsAndDoesNotAutoRetry() throws {
         for code in [EACCES, EPERM] {
             let failure = try XCTUnwrap(SSHFailure.connection(IOError(errnoCode: code, reason: "connect"))

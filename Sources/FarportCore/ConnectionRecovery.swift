@@ -10,11 +10,21 @@ public enum TerminalConnectionError: LocalizedError, Sendable {
     case configuration(String)
     case localNetworkPermission
     indirect case route(stage: String, cause: TerminalConnectionError)
+    indirect case endpoint(hostID: UUID, cause: TerminalConnectionError)
+
+    public func settingsHostID(fallback: UUID) -> UUID? {
+        switch self {
+        case .authentication, .configuration: fallback
+        case .route(_, let cause): cause.settingsHostID(fallback: fallback)
+        case .endpoint(let hostID, let cause): cause.settingsHostID(fallback: hostID)
+        default: nil
+        }
+    }
 
     public var hostKeyChallenge: HostKeyChallenge? {
         switch self {
         case .serverTrust(let challenge): challenge
-        case .route(_, let cause): cause.hostKeyChallenge
+        case .route(_, let cause), .endpoint(_, let cause): cause.hostKeyChallenge
         default: nil
         }
     }
@@ -22,7 +32,7 @@ public enum TerminalConnectionError: LocalizedError, Sendable {
     public var requiresLocalNetworkPermission: Bool {
         switch self {
         case .localNetworkPermission: true
-        case .route(_, let cause): cause.requiresLocalNetworkPermission
+        case .route(_, let cause), .endpoint(_, let cause): cause.requiresLocalNetworkPermission
         default: false
         }
     }
@@ -31,7 +41,7 @@ public enum TerminalConnectionError: LocalizedError, Sendable {
         switch self {
         case .transport, .heartbeatTimeout: true
         case .authentication, .hostKeyRejected, .serverTrust, .configuration, .localNetworkPermission: false
-        case .route(_, let cause): cause.allowsReconnect
+        case .route(_, let cause), .endpoint(_, let cause): cause.allowsReconnect
         }
     }
 
@@ -49,6 +59,7 @@ public enum TerminalConnectionError: LocalizedError, Sendable {
                 "then continue."
             )
         case .route(let stage, let cause): "\(stage): \(cause.localizedDescription)"
+        case .endpoint(_, let cause): cause.localizedDescription
         }
     }
 }

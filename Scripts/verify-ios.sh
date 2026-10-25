@@ -11,3 +11,10 @@ for scheme in FarportSessions FarportSSH FarportSecurity; do
         -derivedDataPath "$build_directory" -onlyUsePackageVersionsFromResolvedFile \
         CODE_SIGNING_ALLOWED=NO build
 done
+
+for configuration in Debug Release; do
+    xcodebuild -quiet -project Farport.xcodeproj -scheme 'Farport iOS' \
+        -configuration "$configuration" -destination 'generic/platform=iOS' \
+        -derivedDataPath "$build_directory" -onlyUsePackageVersionsFromResolvedFile \
+        CODE_SIGNING_ALLOWED=NO build
+done

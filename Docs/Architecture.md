@@ -1,9 +1,9 @@
 # Shared Architecture
 
-Farport currently ships a macOS app. Its reusable Swift package targets macOS 15 and
-iOS/iPadOS 17. `Scripts/verify-ios.sh` compiles Sessions, SSH and Security against the
-iOS Simulator SDK, including their Core, Cloud and Localization dependencies. This
-is a compile check, not an iOS app or a device/background-network test.
+Farport has macOS and terminal-only iOS/iPadOS apps. Its reusable Swift package targets
+macOS 15 and iOS/iPadOS 17. `Scripts/verify-ios.sh` compiles shared libraries against the
+iOS Simulator SDK and builds the mobile app for devices in Debug/Release. Unsigned
+compilation does not validate device provisioning or background/network permissions.
 
 ## Boundaries
 
@@ -19,25 +19,36 @@ is a compile check, not an iOS app or a device/background-network test.
 - **FarportFinder** and **FinderExtension**: macOS File Provider integration.
 - **App**: macOS composition, SwiftUI views, native dialogs, clipboard, terminal
   renderer/theme and NSWorkspace lifecycle hooks.
+- **SharedUI**: cross-platform host editing, trust/cloud presentation and terminal colors.
+- **iOS**: adaptive native navigation, UIKit terminal and scene lifecycle.
 
 `App/LibraryEnvironment.swift` assembles the real macOS repositories and services.
-`LibraryModel` coordinates the host library with macOS Finder revocation. The future
-iOS composition should use the shared models, without instantiating Finder services.
+`HostLibraryModel<Terminal>` owns host CRUD, workspace persistence, route invalidation
+and synced-profile application. The macOS wrapper injects Finder revocation through
+HostLibraryIntegration; MobileLibraryModel has no Finder dependency.
 
 ## Terminal And Lifecycle
 
 `TerminalSessionModel` owns connections, attempt generations, input gating, heartbeat,
 retry budget and trust/access requirements. `TerminalOutput` accepts bytes, cursor
 visibility and focus requests. It never resets the screen. macOS `TerminalModel` is
-a thin SwiftTerm/AppKit adapter; an iOS renderer can implement the same output contract.
+a thin SwiftTerm/AppKit adapter; `MobileTerminalModel` implements the same contract with UIKit.
+
+Connection errors retain the failing saved-host ID through endpoint/route wrappers.
+Terminal and file models expose `settingsHostID` for authentication/configuration
+errors; the UI opens that host's editor, including a failed ProxyJump gateway. Never
+infer recovery actions by matching localized error text. Editing settings clears stale
+diagnostics while preserving terminal buffers. Permission and server-trust failures
+keep their dedicated actions.
 
 `SessionWorkspace<Terminal>` receives a terminal factory. It keeps per-tab controller
 identity, so switching views does not rebuild the native terminal or lose scrollback.
 Restoration retains metadata/UUIDs, stays disconnected and never replays input.
 
 The platform calls `suspend()` and `resume()`. macOS maps NSWorkspace sleep/wake to
-these methods. The iOS app must decide how scene/background events map to suspension
-and cleanup; no background entitlement or indefinite SSH execution is implied. On
+these methods. iOS calls `suspend(disconnectTransport: true)` only on background;
+inactive states save metadata without cancelling permission dialogs. No background
+entitlement or indefinite SSH execution is implied. On
 resume, surviving connections are checked before use; eligible tmux sessions may
 reattach using the same identifiers.
 
@@ -58,16 +69,13 @@ is an injected closure. No NSApplication or UIApplication singleton belongs in t
 shared coordinator. The host app retains the decision about active sessions and
 when remote profile changes can be applied.
 
-## Adding iOS
+## Remaining Mobile Work
 
-1. Add an iOS app target and composition with the existing storage/security identities
-   where provisioning allows them; define explicit migration if new locations are needed.
-2. Implement UIKit/SwiftTerm output, clipboard, keyboard/accessory keys and document pickers.
-3. Build adaptive host/workspace screens using the shared session models; map scene
-   lifecycle and push registration to their injected interfaces.
-4. Exercise permission prompts, Keychain access groups, CloudKit account changes,
+1. Exercise permission prompts, Keychain access groups, CloudKit account changes,
    security-scoped files and recovery on real devices. Simulator compilation does not
    verify these permissions, entitlements or system lifecycle behavior.
+2. Add mobile file browsing separately if requested; do not introduce Finder services.
+3. Define per-scene ownership before supporting multiple iPad windows.
 
 Do not add platform branches to transport-independent session logic for view concerns.
 Additional file protocols should implement `RemoteFileSession` and expose capabilities;

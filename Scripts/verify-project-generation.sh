@@ -25,7 +25,9 @@ for name in Farport Harbor 'checkout with spaces'; do
         Farport.xcodeproj/xcshareddata/xcschemes/Farport.xcscheme \
         Farport.xcodeproj/xcshareddata/xcschemes/FarportLocal.xcscheme \
         'Farport.xcodeproj/xcshareddata/xcschemes/Farport Attach.xcscheme' \
-        App/Info.plist FinderExtension/Info.plist AppTests/Info.plist Package.resolved; do
+        'Farport.xcodeproj/xcshareddata/xcschemes/Farport iOS.xcscheme' \
+        'Farport.xcodeproj/xcshareddata/xcschemes/Farport iOS Local.xcscheme' \
+        App/Info.plist iOS/Info.plist FinderExtension/Info.plist AppTests/Info.plist Package.resolved; do
         diff -u "$ROOT/$path" "$checkout/$path"
     done
     printf 'Generated files match for checkout: %s\n' "$name"

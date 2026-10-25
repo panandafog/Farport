@@ -154,6 +154,29 @@ final class ConnectionRecoveryTests: XCTestCase {
                       policy: .init(heartbeatInterval: interval, heartbeatTimeout: 0.05, retryDelays: delays))
     }
 
+    func testBackgroundDetachesTmuxAndForegroundReattachesWithoutReplayingInput() async throws {
+        let first = RecoveryTerminal()
+        let second = RecoveryTerminal()
+        let provider = RecoveryProvider([.success(first), .success(second)])
+        let model = makeModel(provider)
+        model.connect()
+        try await waitUntil { model.state == .connected }
+        await first.emit("before-background")
+        try await waitUntil { self.history(model).contains("before-background") }
+        model.suspend(disconnectTransport: true)
+        XCTAssertEqual(model.state, .suspended)
+        model.send(Data("ignored-background-input".utf8))
+        try await Task.sleep(for: .milliseconds(30))
+        let backgroundAttempts = await provider.attempts
+        XCTAssertEqual(backgroundAttempts, 1)
+        model.resume()
+        try await waitUntil { await provider.attempts == 2 && model.state == .connected }
+        let sent = await second.sent
+        XCTAssertTrue(sent.isEmpty)
+        XCTAssertTrue(history(model).contains("before-background"))
+        model.disconnect()
+    }
+
     private func history(_ model: RecordingTerminal) -> String {
         String(data: model.screen.data, encoding: .utf8) ?? ""
     }

@@ -19,7 +19,7 @@ public struct SSHConnectionProvider: ConnectionProvider {
 
     public func terminal(for host: SavedHost, sessionID: UUID) async throws -> any TerminalSession {
         guard host.profile.terminalProvider == "ssh" else {
-            throw HarborError.message(L10n.text("Unsupported terminal protocol."))
+            throw TerminalConnectionError.configuration(L10n.text("Unsupported terminal protocol."))
         }
         return CitadelTerminalSession(
             connection: try await connector.connect(host),
@@ -29,7 +29,7 @@ public struct SSHConnectionProvider: ConnectionProvider {
 
     public func files(for host: SavedHost) async throws -> any RemoteFileSession {
         guard host.profile.fileProvider == "sftp" else {
-            throw HarborError.message(L10n.text("Unsupported file protocol."))
+            throw TerminalConnectionError.configuration(L10n.text("Unsupported file protocol."))
         }
         return CitadelFileSession(connection: try await connector.connect(host))
     }

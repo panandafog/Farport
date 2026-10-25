@@ -7,6 +7,7 @@
 "A previous file operation still needs to be reconciled." = "A previous file operation still needs to be reconciled.";
 "Access" = "Access";
 "Add Host" = "Add Host";
+"Add First Host" = "Add First Host";
 "Affected connections and Finder locations will disconnect. Updated terminal tabs keep their buffers; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed." = "Affected connections and Finder locations will disconnect. Updated terminal tabs keep their buffers; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed.";
 "Allow Farport in the macOS prompt or in Privacy & Security > Local Network. The connection will continue when access becomes available. You can cancel this attempt." = "Allow Farport in the macOS prompt or in Privacy & Security > Local Network. The connection will continue when access becomes available. You can cancel this attempt.";
 "An iCloud host revision contains inconsistent data. Sync was stopped." = "An iCloud host revision contains inconsistent data. Sync was stopped.";
@@ -203,6 +204,7 @@
 "Session" = "Session";
 "Session ended" = "Session ended";
 "Set credentials for this host on this device before connecting." = "Set credentials for this host on this device before connecting.";
+"Host Settings" = "Host Settings";
 "Set credentials on this Mac" = "Set credentials on this Mac";
 "Shared Keychain is not configured. Build the signed Farport application." = "Shared Keychain is not configured. Build the signed Farport application.";
 "Size" = "Size";
@@ -285,3 +287,18 @@
 "iCloud push updates are unavailable. Sync Now still works. %@" = "iCloud push updates are unavailable. Sync Now still works. %@";
 "Unsupported host library. The file was not changed." = "Unsupported host library. The file was not changed.";
 "Unsupported host library." = "Unsupported host library.";
+"Connection closed in background" = "Connection closed in background";
+"The private key file is too large." = "The private key file is too large.";
+"No Hosts" = "No Hosts";
+"Select a Host" = "Select a Host";
+"Settings" = "Settings";
+"No Terminals" = "No Terminals";
+"Rename Tab" = "Rename Tab";
+"Terminal Actions" = "Terminal Actions";
+"Copy" = "Copy";
+"Keyboard" = "Keyboard";
+"Continue" = "Continue";
+"Allow Farport in Settings > Privacy & Security > Local Network, then retry." = "Allow Farport in Settings > Privacy & Security > Local Network, then retry.";
+"Affected connections will disconnect. Updated tabs keep their history; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed." = "Affected connections will disconnect. Updated tabs keep their history; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed.";
+"Open Link?" = "Open Link?";
+"Open in Browser" = "Open in Browser";

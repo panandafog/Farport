@@ -61,13 +61,16 @@ struct LibraryView: View {
         } detail: {
             if let workspace = model.selectedWorkspace {
                 WorkspaceView(model: workspace, finder: model.finder, hosts: model.hosts,
-                              edit: { model.editor = workspace.host })
+                              edit: { model.editor = workspace.host },
+                              editConnectionHost: { id in model.editor = model.hosts.first { $0.id == id } })
                     .id(ObjectIdentifier(workspace))
+            } else if model.hosts.isEmpty {
+                EmptyHostLibraryView(cloud: model.cloud) { model.editor = SavedHost() }
             } else {
                 VStack(spacing: 18) {
                     Image(systemName: "terminal").font(.system(size: 46, weight: .light))
                         .foregroundStyle(Color.accentColor)
-                    Text(model.hosts.isEmpty ? L10n.text("No hosts yet") : L10n.text("Select a host"))
+                    Text(L10n.text("Select a host"))
                         .font(.title2.weight(.medium))
                     Button(L10n.text("Add Host"), systemImage: "plus") { model.editor = SavedHost() }
                         .buttonStyle(.borderedProminent).tint(.accentColor)
@@ -106,6 +109,7 @@ struct WorkspaceView: View {
     let finder: FinderModel?
     let hosts: [SavedHost]
     let edit: () -> Void
+    let editConnectionHost: (UUID) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -137,7 +141,7 @@ struct WorkspaceView: View {
             case .terminal:
                 TerminalTabs(model: model)
                 if let terminal = model.terminal {
-                    TerminalPane(model: terminal)
+                    TerminalPane(model: terminal, editHost: editConnectionHost)
                 } else {
                     ContentUnavailableView {
                         Label(L10n.text("No terminal tabs"), systemImage: "terminal")
@@ -146,7 +150,7 @@ struct WorkspaceView: View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-            case .files: FilesPane(model: model.files)
+            case .files: FilesPane(model: model.files, editHost: editConnectionHost)
             }
         }
     }
@@ -154,6 +158,7 @@ struct WorkspaceView: View {
 
 struct TerminalPane: View {
     @ObservedObject var model: TerminalModel
+    let editHost: (UUID) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -206,7 +211,8 @@ struct TerminalPane: View {
                 .accessibilityElement(children: .combine)
             }
             if let error = model.error {
-                ErrorStrip(message: error, dismiss: { model.error = nil })
+                ErrorStrip(message: error, dismiss: { model.error = nil }, settingsHostID: model.settingsHostID,
+                           editHost: editHost)
             }
             if let requirement = model.requirement {
                 ConnectionRequirementView(requirement: requirement, review: model.reviewRequirement)
@@ -234,10 +240,19 @@ struct TerminalPane: View {
 struct ErrorStrip: View {
     let message: String
     let dismiss: () -> Void
+    var settingsHostID: UUID?
+    var editHost: ((UUID) -> Void)?
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "exclamationmark.circle.fill").foregroundStyle(.red)
-            Text(message).font(.callout).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading, spacing: 8) {
+                Text(message).font(.callout).textSelection(.enabled)
+                if let settingsHostID, let editHost {
+                    Button(L10n.text("Host Settings"), systemImage: "slider.horizontal.3") {
+                        editHost(settingsHostID)
+                    }
+                }
+            }.frame(maxWidth: .infinity, alignment: .leading)
             Button(action: dismiss) { Image(systemName: "xmark") }.buttonStyle(.plain).help(L10n.text("Dismiss error"))
         }
         .padding(12).background(Color.red.opacity(0.07))

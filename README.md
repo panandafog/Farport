@@ -1,14 +1,14 @@
 # Farport
 
-A native macOS SSH and SFTP client with saved hosts, terminal tabs, ProxyJump,
-optional persistent tmux sessions, and Finder integration.
+A native SSH client for macOS, iPhone and iPad with saved hosts, terminal tabs,
+ProxyJump and optional persistent tmux sessions. macOS also includes SFTP and Finder integration.
 
 ## Features
 
 - Interactive terminals with system light/dark appearance and retained output after disconnect.
 - Named terminal tabs and local workspace restoration; optional tmux reconnect.
-- SFTP browsing, uploads/downloads, progress, cancellation, and basic file operations.
-- Optional read-only or read/write Finder locations using File Provider.
+- macOS SFTP browsing, uploads/downloads, progress, cancellation, and basic file operations.
+- Optional macOS read-only or read/write Finder locations using File Provider.
 - Native multi-hop ProxyJump for SSH, SFTP, and Finder.
 - Keychain credentials and explicit server-key fingerprint verification.
 - Opt-in iCloud host-profile sync. Credentials and server-key trust stay on the device.
@@ -17,13 +17,14 @@ optional persistent tmux sessions, and Finder integration.
 ## Requirements
 
 - macOS 15 or newer.
+- iOS/iPadOS 17 or newer for the terminal-only mobile app.
 - Xcode 26.3 or newer, including Icon Composer support; locally validated with Xcode 27.
 - SwiftLint (`brew install swiftlint`). The pinned XcodeGen wrapper is needed only for regeneration.
 - Apple Development signing with matching App Group, Keychain, CloudKit, and Push capabilities.
 
-iOS/iPadOS clients and additional file protocols are planned, not included.
-Shared session, storage and transport modules are compiled for iOS Simulator in CI;
-the native iOS interface and device integration remain future work.
+The mobile app uses standard SwiftUI navigation, lists, forms and menus with a UIKit
+terminal. It shares session, library, storage and transport logic with macOS. File
+browsing is macOS-only; additional protocols remain planned.
 
 ## Run
 
@@ -43,6 +44,11 @@ open Build/Build/Products/Debug/Farport.app
 Use **FarportLocal** to develop without CloudKit provisioning; it still needs signing
 for shared Keychain and Finder access. For Local Network permissions and the manual
 **Farport Attach** fallback, see [Debugging](Docs/Debugging.md).
+
+For iPhone/iPad select **Farport iOS** and an iOS device or Simulator. **Farport iOS Local**
+omits CloudKit/push entitlements for local development. Both use the existing bundle ID
+`com.panandafog.harbor`; signing for a physical device still needs a matching iOS profile.
+See [iOS development](Docs/iOS.md) for lifecycle, test isolation and device checks.
 
 `project.yml` is the XcodeGen source of truth. The generated project and both dependency
 lockfiles (shared package and Xcode app) are included. After configuration/resource
@@ -95,6 +101,7 @@ not a synchronous mounted SFTP disk. Persistent remote history requires server-s
 
 - [Usage and implementation](Docs/Usage.md)
 - [Shared architecture and localization](Docs/Architecture.md)
+- [iPhone and iPad](Docs/iOS.md)
 - [Security and storage](Docs/Security.md)
 - [Finder access and limits](Docs/Finder.md)
 - [ProxyJump](Docs/ProxyJump.md)

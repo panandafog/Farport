@@ -2,21 +2,20 @@ import FarportCore
 import FarportLocalization
 import Foundation
 
-extension LibraryModel {
-    func canApplySyncedProfiles(_ profiles: [HostProfile]) -> Bool {
+extension HostLibraryModel {
+    public func canApplySyncedProfiles(_ profiles: [HostProfile]) -> Bool {
         let changed = changedHostIDs(profiles)
-        return editor == nil && finder?.busy != true &&
-            !changed.contains { hasActiveWorkspace($0) } &&
-            !(finder?.locations.contains { location in location.hosts.contains { changed.contains($0.id) } } ?? false)
+        return editor == nil && !changed.contains { hasActiveWorkspace($0) } &&
+            integration?.canApplyChanges(to: changed) != false
     }
 
-    func applySyncedProfiles(_ profiles: [HostProfile]) throws {
+    public func applySyncedProfiles(_ profiles: [HostProfile]) throws {
         guard !loadFailed, editor == nil else {
             throw HarborError.message(L10n.text("Close the host editor before applying sync."))
         }
         let updated = try SyncedProfileImport.apply(profiles, to: hosts)
         let affected = changedHostIDs(profiles)
-        try finder?.revoke(hostIDs: affected)
+        try integration?.revoke(hostIDs: affected)
         try repository.save(updated)
         removeDeletedWorkspaces(keeping: Set(updated.map(\.id)))
         replaceWorkspaces(with: updated, affected: affected)

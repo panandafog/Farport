@@ -2,21 +2,25 @@
 
 ## Project
 
-Farport is a native macOS SSH/SFTP client MVP, inspired by the basic host-library,
+Farport is a native SSH client for macOS/iOS/iPadOS, inspired by the basic host-library,
 terminal, and file-browser workflow of Termius. Optional read-only/read-write Finder access
 uses Apple's replicated File Provider, not a synchronous mounted SFTP volume.
-Minimum OS: macOS 15. Shared-package deployment declarations also include iOS 17;
-iOS/iPadOS apps are planned, not implemented. Shared targets are compiled against the
-iOS Simulator SDK by `sh Scripts/verify-ios.sh`; device runtime behavior is not yet verified.
+Minimum OS: macOS 15 and iOS/iPadOS 17. The mobile app is terminal-only; SFTP and Finder
+UI remain macOS-only. `sh Scripts/verify-ios.sh` compiles shared Simulator libraries and
+the iOS app's Debug/Release device builds. See Docs/iOS.md for runtime verification limits.
 
 Project, targets, schemes, package and module names use Farport. Keep
 `com.panandafog.harbor` / `.finder`, CloudKit container/zone/record names, App Group,
 Keychain services/keys, Application Support/Harbor, tmux `harbor-` names and deterministic
 `Harbor conflict` filenames unchanged. Preserve the legacy Harbor* Info.plist keys and
-HARBOR_* build/environment variables. The app product and module are Farport; the
-repository directory and Xcode project are Farport and Farport.xcodeproj.
+HARBOR_* build/environment variables. The app product is Farport (macOS module Farport,
+iOS module FarportMobile); the repository directory and Xcode project are Farport
+and Farport.xcodeproj.
 
 - `App/`: macOS composition, SwiftUI interface, AppKit panels and SwiftTerm adapter.
+- `iOS/`: mobile composition, adaptive navigation, UIKit terminal and scene lifecycle.
+- `SharedUI/`: host editor, trust/cloud sheets, Keychain adapter and terminal palette for both apps.
+- `iOSTests/`: isolated Simulator-hosted terminal and layout tests; never use real accounts.
 - `Sources/FarportSessions/`: shared observable terminal/files/trust/workspace/cloud models.
 - `Sources/FarportLocalization/`: English/Russian strings shared by UI and package errors.
 - `Sources/FarportCore/`: portable models and storage/connection/session contracts.
@@ -40,7 +44,7 @@ repository directory and Xcode project are Farport and Farport.xcodeproj.
 
 Keep the first version focused on saved hosts, interactive SSH, and basic SFTP.
 Optional iCloud profile synchronization is implemented. Future work includes additional
-file protocols and iOS/iPadOS clients. Preserve the existing SFTP browser alongside
+file protocols and mobile file browsing. Preserve the existing SFTP browser alongside
 Finder integration. Basic File Provider writes are implemented; broader metadata
 sync, resumable transfers, and recursive deletion remain future work.
 
@@ -52,6 +56,22 @@ capabilities rather than SSH assumptions in file-browser views.
 Keep FarportSessions free of AppKit, UIKit, SwiftUI, SwiftTerm and Citadel. Inject
 TerminalOutput, the workspace terminal factory and push registration. Lifecycle uses
 suspend/resume, with platform event handling in the app. See Docs/Architecture.md.
+HostLibraryModel owns host CRUD, route invalidation and sync application. Inject transport
+factories and optional HostLibraryIntegration; only macOS provides Finder revocation.
+Use native SwiftUI NavigationSplitView/List/Form/Menu on iOS; do not recreate a desktop
+sidebar or fixed-size sheets. SharedUI must remain compilable on both platforms.
+Mobile background transitions call suspend(disconnectTransport: true); inactive transitions
+(including permission prompts) must not detach. Only previously connected tmux sessions
+reattach on foreground. Never replay input or claim indefinite background SSH execution.
+Initialize the mobile library from MobileAppRoot's appearance task, outside the initial
+SwiftUI body evaluation, because restoring workspaces creates UIKit terminals. Cover
+empty/restored root rendering in mobile tests. Keep remote-notification in the mobile
+Info.plist for CloudKit silent pushes; it does not keep SSH alive in the background.
+One mobile window is supported; adding multi-window requires per-scene ownership/lifecycle.
+Keep iOS Keychain/iCloud identifiers identical to macOS where appropriate, but never
+include macOS sandbox, File Provider or container-migration resources in the mobile target.
+Release must not include demo/fixture data or test-only credential stores. Debug --demo,
+HARBOR_ISOLATED_TESTS and Simulator HARBOR_TEST_PORT use memory stores, no real iCloud/Keychain.
 Localize all application-owned visible text with FarportLocalization.L10n, including
 dynamic model strings. Keep en/ru catalogs and format arguments aligned. Never localize
 storage IDs, persisted enum raw values, commands, paths, user labels or remote output.

@@ -10,8 +10,6 @@ typealias ServerTrustModel = FarportSessions.ServerTrustModel
 typealias CloudSyncModel = FarportSessions.CloudSyncModel
 typealias WorkspaceModel = SessionWorkspace<TerminalModel>
 
-extension LibraryModel: SyncedHostLibrary {}
-
 extension SessionWorkspace where Terminal == TerminalModel {
     convenience init(host: SavedHost, provider: any ConnectionProvider, snapshot: HostWorkspace? = nil,
                      routeSummary: String? = nil, trust: ServerTrustModel? = nil) {

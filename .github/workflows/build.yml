@@ -57,9 +57,9 @@ jobs:
           "$RUNNER_TEMP/harbor-test-env/bin/python" Scripts/ssh_fixture.py --tmux --run-tests
 
   ios-compatibility:
-    name: Compile Shared Modules for iOS
+    name: Build iOS and Shared Modules
     runs-on: macos-26
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -69,7 +69,10 @@ jobs:
       - name: Check package lockfiles
         run: xcrun swift Scripts/verify-package-locks.swift
 
-      - name: Compile shared sessions and adapters
+      - name: Install build tools
+        run: brew install swiftlint
+
+      - name: Compile shared modules and iOS app (Debug/Release)
         run: sh Scripts/verify-ios.sh "$RUNNER_TEMP/FarportIOS"
 
   build:
@@ -101,7 +104,7 @@ jobs:
       - name: Regenerate Xcode project
         run: |
           sh Scripts/xcodegen.sh generate
-          git diff --exit-code -- Farport.xcodeproj App/Info.plist FinderExtension/Info.plist AppTests/Info.plist
+          git diff --exit-code -- Farport.xcodeproj App/Info.plist FinderExtension/Info.plist AppTests/Info.plist iOS/Info.plist
 
       - name: Check checkout-name independence
         run: sh Scripts/verify-project-generation.sh

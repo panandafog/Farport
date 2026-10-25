@@ -7,6 +7,7 @@
 "A previous file operation still needs to be reconciled." = "Необходимо завершить сверку предыдущей файловой операции.";
 "Access" = "Доступ";
 "Add Host" = "Добавить сервер";
+"Add First Host" = "Добавить первый сервер";
 "Affected connections and Finder locations will disconnect. Updated terminal tabs keep their buffers; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed." = "Затронутые соединения и подключения Finder будут закрыты. История изменённых вкладок сохранится; вкладки удалённых серверов закроются. При изменении адреса нужно проверить данные для входа.";
 "Allow Farport in the macOS prompt or in Privacy & Security > Local Network. The connection will continue when access becomes available. You can cancel this attempt." = "Разрешите доступ для Farport в окне macOS или в разделе «Конфиденциальность и безопасность» → «Локальная сеть». Подключение продолжится, когда доступ появится. Эту попытку можно отменить.";
 "An iCloud host revision contains inconsistent data. Sync was stopped." = "Версия сервера в iCloud содержит противоречивые данные. Синхронизация остановлена.";
@@ -203,6 +204,7 @@
 "Session" = "Сессия";
 "Session ended" = "Сессия завершена";
 "Set credentials for this host on this device before connecting." = "Перед подключением настройте данные для входа на этом устройстве.";
+"Host Settings" = "Настройки хоста";
 "Set credentials on this Mac" = "Настроить данные для входа на этом Mac";
 "Shared Keychain is not configured. Build the signed Farport application." = "Общая Связка ключей не настроена. Соберите подписанное приложение Farport.";
 "Size" = "Размер";
@@ -285,3 +287,18 @@
 "iCloud push updates are unavailable. Sync Now still works. %@" = "Push-обновления iCloud недоступны. Ручная синхронизация по-прежнему работает. %@";
 "Unsupported host library. The file was not changed." = "Неподдерживаемый список серверов. Файл не изменён.";
 "Unsupported host library." = "Неподдерживаемый список серверов.";
+"Connection closed in background" = "Соединение закрыто в фоновом режиме";
+"The private key file is too large." = "Файл закрытого ключа слишком большой.";
+"No Hosts" = "Нет серверов";
+"Select a Host" = "Выберите сервер";
+"Settings" = "Настройки";
+"No Terminals" = "Нет терминалов";
+"Rename Tab" = "Переименовать вкладку";
+"Terminal Actions" = "Действия терминала";
+"Copy" = "Копировать";
+"Keyboard" = "Клавиатура";
+"Continue" = "Продолжить";
+"Allow Farport in Settings > Privacy & Security > Local Network, then retry." = "Разрешите доступ для Farport в Настройках → Конфиденциальность и безопасность → Локальная сеть и повторите попытку.";
+"Affected connections will disconnect. Updated tabs keep their history; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed." = "Затронутые соединения будут отключены. Обновлённые вкладки сохранят историю, а вкладки удалённых серверов закроются. Для изменённых адресов нужно проверить учётные данные.";
+"Open Link?" = "Открыть ссылку?";
+"Open in Browser" = "Открыть в браузере";

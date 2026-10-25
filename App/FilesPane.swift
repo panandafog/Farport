@@ -4,6 +4,7 @@ import SwiftUI
 
 struct FilesPane: View {
     @ObservedObject var model: FilesModel
+    let editHost: (UUID) -> Void
     @State private var editingName = false
     @State private var name = ""
     @State private var renaming: RemoteEntry?
@@ -12,7 +13,10 @@ struct FilesPane: View {
     var body: some View {
         VStack(spacing: 0) {
             if !model.connected {
-                if let error = model.error { ErrorStrip(message: error, dismiss: { model.error = nil }) }
+                if let error = model.error {
+                    ErrorStrip(message: error, dismiss: { model.error = nil }, settingsHostID: model.settingsHostID,
+                               editHost: editHost)
+                }
                 if let requirement = model.requirement {
                     ConnectionRequirementView(requirement: requirement, review: model.reviewRequirement)
                 } else if model.waitingForAccess {
@@ -34,7 +38,10 @@ struct FilesPane: View {
                 navigationBar
                 Divider()
                 tools
-                if let error = model.error { ErrorStrip(message: error, dismiss: { model.error = nil }) }
+                if let error = model.error {
+                    ErrorStrip(message: error, dismiss: { model.error = nil }, settingsHostID: model.settingsHostID,
+                               editHost: editHost)
+                }
                 Table(model.visibleEntries, selection: $model.selection) {
                     TableColumn(L10n.text("Name")) { entry in
                         Label(entry.name, systemImage: icon(entry))

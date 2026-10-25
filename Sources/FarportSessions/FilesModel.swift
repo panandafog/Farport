@@ -12,6 +12,7 @@ public final class FilesModel: ObservableObject {
     @Published public var pathInput = ""
     @Published public var selection: String?
     @Published public var error: String?
+    @Published public private(set) var settingsHostID: UUID?
     @Published public private(set) var requirement: ConnectionRequirement?
     @Published public private(set) var waitingForAccess = false
     @Published public private(set) var activity = ""
@@ -42,6 +43,8 @@ public final class FilesModel: ObservableObject {
 
     public func reconfigure(host: SavedHost, provider: any ConnectionProvider) {
         disconnect()
+        error = nil
+        settingsHostID = nil
         self.host = host
         self.provider = provider
     }
@@ -51,6 +54,7 @@ public final class FilesModel: ObservableObject {
         busy = true
         activity = L10n.text("Connecting")
         error = nil
+        settingsHostID = nil
         requirement = nil
         let token = UUID()
         generation = token
@@ -77,6 +81,8 @@ public final class FilesModel: ObservableObject {
                 } else {
                     requirement = ConnectionRequirement(error)
                     self.error = requirement == nil ? error.localizedDescription : nil
+                    settingsHostID = (error as? TerminalConnectionError)?.settingsHostID(fallback: host.id)
+                    if requirement == nil, !(error is TerminalConnectionError) { settingsHostID = host.id }
                     activity = requirement?.title ?? L10n.text("Connection failed")
                 }
             }
@@ -175,6 +181,7 @@ public final class FilesModel: ObservableObject {
                          operation: @escaping (any RemoteFileSession, OperationToken) async throws -> Void) {
         guard !busy, let session else { return }
         busy = true; activity = label; error = nil; progress = nil
+        settingsHostID = nil
         operationID = UUID()
         transferred = 0
         total = 0
@@ -195,6 +202,7 @@ public final class FilesModel: ObservableObject {
                     activity = L10n.text("Cancelled")
                 } else {
                     self.error = error.localizedDescription
+                    settingsHostID = (error as? TerminalConnectionError)?.settingsHostID(fallback: host.id)
                     activity = L10n.text("Failed")
                     if error is TerminalConnectionError {
                         self.session = nil

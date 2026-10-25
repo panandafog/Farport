@@ -20,6 +20,7 @@ open class TerminalSessionModel: NSObject, ObservableObject {
     @Published public private(set) var retryAttempt = 0
     @Published public private(set) var nextRetryAt: Date?
     @Published public var error: String?
+    @Published public private(set) var settingsHostID: UUID?
     @Published public private(set) var requirement: ConnectionRequirement?
     private let output: any TerminalOutput
     public let sessionID: UUID
@@ -79,6 +80,7 @@ open class TerminalSessionModel: NSObject, ObservableObject {
         connectionWanted = true
         retryAttempt = 0
         error = nil
+        settingsHostID = nil
         requirement = nil
         endedAt = nil
         endReason = ""
@@ -88,6 +90,8 @@ open class TerminalSessionModel: NSObject, ObservableObject {
     public func reconfigure(host: SavedHost, provider: any ConnectionProvider) {
         let wasActive = state != .disconnected
         disconnect()
+        error = nil
+        settingsHostID = nil
         if wasActive { endReason = L10n.text("Connection settings changed") }
         self.host = host
         self.provider = provider
@@ -160,6 +164,7 @@ open class TerminalSessionModel: NSObject, ObservableObject {
         endReason = requirement?.title ?? reason
         endedAt = requirement == nil ? Date() : nil
         self.error = requirement == nil ? error?.localizedDescription : nil
+        settingsHostID = (error as? TerminalConnectionError)?.settingsHostID(fallback: host.id)
         output.setCursorVisible(false)
         let resume = usesTmux && connectionWanted && hasConnected && recover
         connectionWanted = resume
@@ -265,9 +270,13 @@ open class TerminalSessionModel: NSObject, ObservableObject {
 }
 
 extension TerminalSessionModel {
-    public func suspend() {
+    public func suspend(disconnectTransport: Bool = false) {
         isSleeping = true
         guard state != .disconnected else { return }
+        if disconnectTransport {
+            endConnection(generation, reason: L10n.text("Connection closed in background"), recover: usesTmux)
+            return
+        }
         heartbeatTask?.cancel()
         heartbeatID = UUID()
         if session == nil {

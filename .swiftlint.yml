@@ -2,6 +2,9 @@
 # https://github.com/realm/SwiftLint#configuration
 included:
   - App
+  - SharedUI
+  - iOS
+  - iOSTests
   - Sources
   - Tests
   - AppTests
