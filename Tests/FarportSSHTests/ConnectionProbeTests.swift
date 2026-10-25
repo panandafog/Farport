@@ -44,7 +44,8 @@ final class ConnectionProbeTests: XCTestCase {
             await session.close()
             XCTFail("Incorrect credentials must fail")
         } catch let error as TerminalConnectionError {
-            guard case .authentication = error else { throw error }
+            guard case .endpoint(let hostID, .authentication) = error else { throw error }
+            XCTAssertEqual(hostID, host.id)
             XCTAssertFalse(error.allowsReconnect)
         }
     }

@@ -76,7 +76,18 @@ identifier; profile labels and paths never enter that command. Citadel allocates
 a PTY and sends an exec request, rather than typing into an interactive shell.
 `tmux new-session -A -s harbor-<UUID>` creates or attaches without evicting other
 clients. The wrapper uses `/bin/sh` so non-POSIX login shells can launch it too.
+It enables `mouse` only on that UUID-named session, including reattachments, so wheel
+and touch scrolling can enter tmux's server-side history. It does not change global
+tmux options, key bindings or the user's configuration file.
 Exit 127 reports an actionable missing-tmux error, with no silent plain-shell fallback.
+
+Native clients forward wheel reports when a connected remote application requests
+mouse input. macOS preserves fractional trackpad deltas; iOS uses its native pan
+gesture for wheel reports instead of mouse dragging. Ordinary shells retain local
+scrolling with a bounded 10,000-line buffer. Disconnected terminals never send scroll
+input to the server. Remote tmux history still requires an attached connection.
+New ordinary-shell output preserves a scrolled-up viewport instead of returning it
+to the latest line; a viewport already at the bottom continues to follow output.
 
 Persisted tab UUIDs supply identity across restarts and label changes. The first
 default tab uses its host UUID to reuse the pre-tabs remote session. Additional

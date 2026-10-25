@@ -14,13 +14,23 @@ final class TerminalModel: TerminalSessionModel {
                                   font: NSFont.monospacedSystemFont(ofSize: 13, weight: .regular))
         super.init(host: host, provider: provider, policy: policy, sessionID: sessionID, trust: trust, output: view)
         view.terminalDelegate = self
+        view.getTerminal().changeHistorySize(TerminalScrollInput.historyLimit)
         view.applySystemTheme()
     }
 }
 
 extension SystemTerminalView: TerminalOutput {
-    func write(_ data: Data) { feed(byteArray: Array(data)[...]) }
+    func write(_ data: Data) {
+        let terminal = getTerminal()
+        let previousRow = terminal.getTopVisibleRow()
+        let readingHistory = canScroll && scrollPosition < 1
+        feed(byteArray: Array(data)[...])
+        if readingHistory, !terminal.isCurrentBufferAlternate {
+            scrollUp(lines: max(0, terminal.getTopVisibleRow() - previousRow))
+        }
+    }
     func setCursorVisible(_ visible: Bool) {
+        remoteInputEnabled = visible
         if visible { getTerminal().showCursor() } else { getTerminal().hideCursor() }
     }
     func focus() { window?.makeFirstResponder(self) }

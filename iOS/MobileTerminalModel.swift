@@ -37,11 +37,27 @@ extension MobileTerminalModel: @preconcurrency TerminalViewDelegate {
 
 final class MobileTerminalView: TerminalView, TerminalOutput {
     private var darkAppearance: Bool?
+    private var remoteInputEnabled = false
+    private var scrollInput = TerminalScrollInput()
+    private var lastPanTranslation: CGFloat = 0
+    private var panReportsRemote = false
+    private var correctingScrollOffset = false
+
+    private var reportsRemoteScroll: Bool {
+        remoteInputEnabled && allowMouseReporting && getTerminal().mouseMode != .off
+    }
 
     init() {
         super.init(frame: CGRect(x: 0, y: 0, width: 390, height: 600),
                    font: UIFont.monospacedSystemFont(ofSize: 14, weight: .regular))
         keyboardDismissMode = .interactive
+        alwaysBounceVertical = true
+        showsVerticalScrollIndicator = true
+        showsHorizontalScrollIndicator = false
+        contentInsetAdjustmentBehavior = .never
+        delegate = self
+        panGestureRecognizer.addTarget(self, action: #selector(scrollPan(_:)))
+        getTerminal().changeHistorySize(TerminalScrollInput.historyLimit)
         registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (view: MobileTerminalView, _: UITraitCollection) in
             view.applySystemTheme()
         }
@@ -49,6 +65,36 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
     }
 
     required init?(coder: NSCoder) { return nil }
+
+    override func mouseModeChanged(source: Terminal) {
+        // Keep the native scroll pan: upstream replaces it with a mouse-drag gesture for tmux.
+        scrollInput.reset()
+        if source.mouseMode == .off { super.mouseModeChanged(source: source) }
+    }
+
+    @objc private func scrollPan(_ gesture: UIPanGestureRecognizer) {
+        if gesture.state == .began {
+            scrollInput.reset()
+            lastPanTranslation = 0
+            panReportsRemote = reportsRemoteScroll
+        }
+        guard panReportsRemote, reportsRemoteScroll, gesture.state == .changed else { return }
+        let translation = gesture.translation(in: self).y
+        let delta = translation - lastPanTranslation
+        lastPanTranslation = translation
+        let lines = scrollInput.lines(for: Double(delta / scrollCellSize.height))
+        let location = gesture.location(in: self)
+        reportScrollWheel(lines: lines, at: CGPoint(x: location.x, y: location.y - bounds.minY))
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard reportsRemoteScroll, !correctingScrollOffset else { return }
+        let bottom = max(0, contentSize.height - bounds.height)
+        guard contentOffset.y != bottom else { return }
+        correctingScrollOffset = true
+        contentOffset = CGPoint(x: 0, y: bottom)
+        correctingScrollOffset = false
+    }
 
     override func didMoveToWindow() {
         super.didMoveToWindow()
@@ -70,8 +116,18 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
         setNeedsDisplay()
     }
 
-    func write(_ data: Data) { feed(byteArray: Array(data)[...]) }
+    func write(_ data: Data) {
+        let previousOffset = contentOffset.y
+        let bottom = max(0, contentSize.height - bounds.height)
+        let readingHistory = !getTerminal().isCurrentBufferAlternate && previousOffset < bottom - 0.5
+        feed(byteArray: Array(data)[...])
+        if readingHistory, !getTerminal().isCurrentBufferAlternate {
+            contentOffset.y = max(0, min(previousOffset, contentSize.height - bounds.height))
+        }
+    }
     func setCursorVisible(_ visible: Bool) {
+        remoteInputEnabled = visible
+        if !visible { panReportsRemote = false; scrollInput.reset() }
         if visible { getTerminal().showCursor() } else {
             getTerminal().hideCursor()
             _ = resignFirstResponder()

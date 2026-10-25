@@ -8,8 +8,31 @@ final class TmuxIntegrationTests: XCTestCase {
         let command = TerminalLaunchPlan(profile: profile).command ?? ""
         XCTAssertTrue(command.hasPrefix("exec /bin/sh -c '"))
         XCTAssertTrue(command.contains("exec tmux new-session -A -s \(profile.tmuxSessionName)"))
+        XCTAssertTrue(command.contains("set-option -t \(profile.tmuxSessionName) mouse on"))
+        XCTAssertFalse(command.contains("set-option -g"))
         XCTAssertFalse(command.contains(profile.name))
         XCTAssertNil(TerminalLaunchPlan(profile: HostProfile()).command)
+    }
+
+    func testMouseWheelScrollsThroughServerHistoryAndReturnsToLiveInput() async throws {
+        let host = try fixtureHost()
+        let terminal = try await RunningTerminal.open(host)
+        let token = UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        do {
+            try await terminal.waitFor("\u{1b}[?1049h")
+            try await terminal.session.send(Data((
+                "i=1; while [ \"$i\" -le 200 ]; do printf 'SCROLL_%s_%03d\\n' '\(token)' \"$i\"; " +
+                    "i=$((i+1)); done; printf 'SCROLL_READY_%s\\n' '\(token)'\n"
+            ).utf8))
+            try await terminal.waitFor("SCROLL_READY_\(token)")
+            let beforeScroll = await terminal.output.text.count
+            try await terminal.session.send(Data(String(repeating: "\u{1b}[<64;10;10M", count: 80).utf8))
+            try await terminal.waitFor("SCROLL_\(token)_001", after: beforeScroll)
+            try await terminal.session.send(Data(String(repeating: "\u{1b}[<65;10;10M", count: 80).utf8))
+            try await terminal.session.send(Data("printf 'SCROLL_INPUT_%s\\n' '\(token)'\n".utf8))
+            try await terminal.waitFor("SCROLL_INPUT_\(token)")
+            await terminal.close()
+        } catch { await terminal.close(); throw error }
     }
 
     func testTmuxSurvivesTransportCloseAndHostReload() async throws {
@@ -109,10 +132,10 @@ private struct RunningTerminal {
         return Self(session: session, output: output, task: task)
     }
 
-    func waitFor(_ expected: String) async throws {
+    func waitFor(_ expected: String, after offset: Int = 0) async throws {
         let deadline = ContinuousClock.now.advanced(by: .seconds(8))
         while ContinuousClock.now < deadline {
-            if await output.text.contains(expected) { return }
+            if await output.text.dropFirst(offset).contains(expected) { return }
             if let error = await output.error { throw error }
             try await Task.sleep(for: .milliseconds(10))
         }

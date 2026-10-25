@@ -13,7 +13,7 @@ struct TerminalLaunchPlan {
             // Only a UUID-derived identifier enters the command; user labels and paths never do.
             let script = "if ! command -v tmux >/dev/null 2>&1; then " +
                 "printf '%s\\n' 'Farport: tmux is unavailable on this server.' >&2; exit 127; fi; " +
-                "exec tmux new-session -A -s \(name)"
+                "exec tmux new-session -A -s \(name) \\; set-option -t \(name) mouse on"
             // SSH runs exec requests through the account's login shell, which may not be POSIX.
             command = "exec /bin/sh -c '" + script.replacingOccurrences(of: "'", with: "'\"'\"'") + "'"
         }
