@@ -53,6 +53,9 @@ See [iOS development](Docs/iOS.md) for lifecycle, test isolation and device chec
 `project.yml` is the XcodeGen source of truth. The generated project and both dependency
 lockfiles (shared package and Xcode app) are included. After configuration/resource
 changes, run `sh Scripts/xcodegen.sh generate`.
+Change version/build numbers in `project.yml` (`MARKETING_VERSION` /
+`CURRENT_PROJECT_VERSION`), not only in Xcode. Regenerate before committing any
+project or scheme changes; CI checks that the generated files match exactly.
 The product, project, schemes, package and modules use Farport names.
 Bundle IDs, Keychain/App Group/iCloud identities, saved-data paths,
 and existing tmux session names are unchanged by the rename.

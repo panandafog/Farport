@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -170,7 +170,7 @@
 		4348599A9A0976C9529D95AE /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		45F1877F938E7F0ECD678A2A /* FarportMobileLocal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FarportMobileLocal.entitlements; sourceTree = "<group>"; };
 		4993D4658EB4EAE21780A1A7 /* LiveConnectionRecoveryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveConnectionRecoveryTests.swift; sourceTree = "<group>"; };
-		4BB1FD631691B165E527426D /* Farport.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Farport.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4BB1FD631691B165E527426D /* Farport.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Farport.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F757F6A071818553721AF3A /* ConnectionAccessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionAccessTests.swift; sourceTree = "<group>"; };
 		51C5C988E605379A3A07F3CD /* SystemTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTerminalView.swift; sourceTree = "<group>"; };
 		51F28F72A0A18E5600DE89A3 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -210,7 +210,7 @@
 		CCAFB7DE0B755F5303EF959C /* FinderControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderControls.swift; sourceTree = "<group>"; };
 		CEA7371ADED7390F5A3CECD2 /* WorkspaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTests.swift; sourceTree = "<group>"; };
 		CF7DAF8DEA638B840F37776A /* FinderExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderExtensionTests.swift; sourceTree = "<group>"; };
-		D1E0BBB3191BFC628CC7666C /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		D1E0BBB3191BFC628CC7666C /* AppIcon.icon */ = {isa = PBXFileReference; path = AppIcon.icon; sourceTree = "<group>"; };
 		D6126881A37BF9383E62CE1F /* Farport.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Farport.entitlements; sourceTree = "<group>"; };
 		D6D35EEE0D1EE947FD40318F /* MobileLibraryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileLibraryModel.swift; sourceTree = "<group>"; };
 		D73BE6B45D1E289F15B665A5 /* BrandingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandingTests.swift; sourceTree = "<group>"; };
@@ -655,6 +655,7 @@
 				655BB840378D231E21876CBD /* XCRemoteSwiftPackageReference "SwiftTerm" */,
 				AB8BA11DACA711EFD32C6B7E /* XCLocalSwiftPackageReference "." */,
 			);
+			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -1174,11 +1175,7 @@
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FinderExtension/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor.finder;
 				PRODUCT_NAME = FarportFinderExtension;
@@ -1284,11 +1281,7 @@
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FinderExtension/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor.finder;
 				PRODUCT_NAME = FarportFinderExtension;
@@ -1424,11 +1417,7 @@
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FinderExtension/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor.finder;
 				PRODUCT_NAME = FarportFinderExtension;
