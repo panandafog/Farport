@@ -8,7 +8,7 @@
 "Access" = "Доступ";
 "Add Host" = "Добавить сервер";
 "Add First Host" = "Добавить первый сервер";
-"Affected connections and Finder locations will disconnect. Updated terminal tabs keep their buffers; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed." = "Затронутые соединения и подключения Finder будут закрыты. История изменённых вкладок сохранится; вкладки удалённых серверов закроются. При изменении адреса нужно проверить данные для входа.";
+"Changed connections and Finder locations will disconnect. Closed tabs and deleted hosts lose local terminal history; other tabs keep it. Changed endpoints require credentials to be reviewed." = "Изменённые соединения и подключения Finder будут отключены. Локальная история закрытых вкладок и удалённых серверов будет потеряна; остальные вкладки сохранят историю. Для изменённых адресов нужно проверить учётные данные.";
 "Allow Farport in the macOS prompt or in Privacy & Security > Local Network. The connection will continue when access becomes available. You can cancel this attempt." = "Разрешите доступ для Farport в окне macOS или в разделе «Конфиденциальность и безопасность» → «Локальная сеть». Подключение продолжится, когда доступ появится. Эту попытку можно отменить.";
 "An iCloud host revision contains inconsistent data. Sync was stopped." = "Версия сервера в iCloud содержит противоречивые данные. Синхронизация остановлена.";
 "An iCloud record has an inconsistent host ID." = "Запись iCloud содержит некорректный идентификатор сервера.";
@@ -299,6 +299,6 @@
 "Keyboard" = "Клавиатура";
 "Continue" = "Продолжить";
 "Allow Farport in Settings > Privacy & Security > Local Network, then retry." = "Разрешите доступ для Farport в Настройках → Конфиденциальность и безопасность → Локальная сеть и повторите попытку.";
-"Affected connections will disconnect. Updated tabs keep their history; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed." = "Затронутые соединения будут отключены. Обновлённые вкладки сохранят историю, а вкладки удалённых серверов закроются. Для изменённых адресов нужно проверить учётные данные.";
+"Changed connections will disconnect. Closed tabs and deleted hosts lose local terminal history; other tabs keep it. Changed endpoints require credentials to be reviewed." = "Изменённые соединения будут отключены. Локальная история закрытых вкладок и удалённых серверов будет потеряна; остальные вкладки сохранят историю. Для изменённых адресов нужно проверить учётные данные.";
 "Open Link?" = "Открыть ссылку?";
 "Open in Browser" = "Открыть в браузере";

@@ -6,7 +6,7 @@ ProxyJump and optional persistent tmux sessions. macOS also includes SFTP and Fi
 ## Features
 
 - Interactive terminals with system light/dark appearance and retained output after disconnect.
-- Named terminal tabs and local workspace restoration; optional tmux reconnect.
+- Named terminal tabs with optional iCloud sync, local workspace restoration and tmux reconnect.
 - macOS SFTP browsing, uploads/downloads, progress, cancellation, and basic file operations.
 - Optional macOS read-only or read/write Finder locations using File Provider.
 - Native multi-hop ProxyJump for SSH, SFTP, and Finder.

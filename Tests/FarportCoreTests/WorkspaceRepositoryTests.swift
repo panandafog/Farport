@@ -40,7 +40,7 @@ final class WorkspaceRepositoryTests: XCTestCase {
 
     func testClosedLastTabAndMissingFileAreSupported() throws {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        XCTAssertEqual(try JSONWorkspaceRepository(url: url).load(), WorkspaceSnapshot())
+        XCTAssertTrue(try JSONWorkspaceRepository(url: url).load().hosts.isEmpty)
         var host = HostWorkspace(hostID: UUID())
         host.terminals = []
         host.selectedTerminalID = nil

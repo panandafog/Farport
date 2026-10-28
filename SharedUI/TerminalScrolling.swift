@@ -20,7 +20,8 @@ extension TerminalView {
     func reportScrollWheel(lines: Int, at point: CGPoint, shift: Bool = false,
                            meta: Bool = false, control: Bool = false) {
         let terminal = getTerminal()
-        guard lines != 0, allowMouseReporting, terminal.mouseMode != .off else { return }
+        // Callers gate remote input; macOS disables native pointer reporting to keep drag selection local.
+        guard lines != 0, terminal.mouseMode != .off else { return }
         let cell = scrollCellSize
         let column = max(0, min(terminal.cols - 1, Int(point.x / cell.width)))
         let row = max(0, min(terminal.rows - 1, Int(point.y / cell.height)))

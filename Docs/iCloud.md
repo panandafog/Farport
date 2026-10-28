@@ -8,10 +8,12 @@ with the current Apple Account, not a public/shared database.
 
 Synced fields are the host UUID, name, hostname, port, username, authentication
 kind, terminal/file provider identifiers, initial directory, notes, tmux preference
-and ordered ProxyJump host UUIDs. Never put secrets in names/notes.
+and ordered ProxyJump host UUIDs. Terminal tab UUIDs, names and order now sync too.
+Never put secrets in host/tab names or notes.
 
 Passwords, imported keys, passphrases, Keychain references, credential readiness,
-server-key pins, workspace tabs/history and Finder locations stay on each device.
+server-key pins, terminal output/history and Finder locations stay on each device.
+Selected host/tab, Terminal/Files mode and connection state also remain local.
 Newly imported profiles show a key badge and require local credentials. An empty
 password requires explicit confirmation in the editor. Changing endpoint, username,
 authentication or route invalidates readiness, but metadata-only changes retain it.
@@ -26,6 +28,26 @@ only through [encryptedValues](https://developer.apple.com/documentation/cloudki
 CloudKit encrypts that field on-device before upload; this is not a claim of
 application-managed end-to-end encryption or a replacement for account security.
 
+Tab definitions live in HostProfile.terminalTabs, inside that same encrypted field;
+no new CloudKit record type or server schema field is required. Payload schema 2
+marks records containing tabs; older apps fail closed instead of silently dropping
+their metadata. Update both desktop and mobile apps before using tab sync. Legacy
+schema-1 host records without tabs still load normally.
+
+Existing local multi-tab workspaces are migrated into the host profile, preserving
+UUIDs and names. An untouched one-tab workspace remains implicit, so a new phone's
+default cannot replace the cloud's saved layout. Each tab has its own Lamport revision;
+independent additions/renames merge even when host settings conflict. Ties in tab
+position use UUID order. Closed tabs retain tombstones and never reopen from stale
+offline edits. No tombstone compaction is performed. Recovering a host as a copy
+creates new tab UUIDs to avoid attaching the original host's tmux sessions.
+
+Incoming additions/renames keep current terminal instances, output and connections.
+Closing an active tab waits for Apply Changes; applying closes only removed tabs
+unless host connection settings also changed. New tabs restore disconnected. For
+tmux hosts, attaching the same tab UUID reaches the same remote session when it still
+exists on the server. Plain SSH cannot resume a previous shell or synchronize history.
+
 The atomic owner-only `hosts.icloud.json` beside `hosts.json` contains schema-1
 sync metadata, the journal, change tokens and cached record system fields. It also
 contains profile metadata in plaintext locally, never secret bundles. Keep it with
@@ -38,9 +60,10 @@ Host-library schema 5 adds local credential readiness; schemas 1-4 migrate safel
 - Subsequent local saves/deletes enter a durable per-host queue. Startup/foreground
   reconciliation captures a save even if the app stopped before journaling it.
   Offline records remain pending; CKSyncEngine schedules ordinary retries.
-- Independent host edits merge. Same-host concurrent edits use a deterministic
-  whole-profile Lamport revision (counter, then device UUID), not wall-clock time
-  or field-by-field merging. A losing concurrent profile is retained locally.
+- Independent host edits merge. Concurrent connection/settings edits on the same
+  host use a deterministic whole-profile Lamport revision (counter, then device UUID),
+  not wall-clock time. A losing concurrent settings profile is retained locally.
+  Tab definitions merge independently by tab UUID/revision as described above.
 - Tombstones are retained indefinitely. Deletion wins over stale/offline edits to
   that UUID, even with a higher counter. **Restore Copy** creates a new UUID, which
   does not automatically repair other profiles' gateway references.

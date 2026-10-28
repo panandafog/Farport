@@ -5,7 +5,10 @@ import XCTest
 
 final class CloudHostCodecTests: XCTestCase {
     func testOnlyEncryptedProfileMetadataIsEncodedAndRoundTripsWithSystemFields() throws {
-        let profile = HostProfile(hostname: "host.internal", username: "user", notes: "Private profile metadata")
+        var profile = HostProfile(hostname: "host.internal", username: "user", notes: "Private profile metadata")
+        var tabs = SyncedTerminalTabs()
+        try tabs.record([TerminalTab(id: profile.id, title: "Shell"), TerminalTab(title: "Logs")], device: UUID())
+        profile.terminalTabs = tabs
         let value = CloudHostRecord(id: profile.id, revision: .init(counter: 1, device: UUID()), profile: profile)
         let record = try CloudHostCodec.encode(value, fields: nil)
         XCTAssertEqual(Set(record.allKeys()), ["profile"])
@@ -16,7 +19,8 @@ final class CloudHostCodecTests: XCTestCase {
         let bytes = try XCTUnwrap(record.encryptedValues["profile"] as? Data)
         let json = try XCTUnwrap(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
         let metadata = try XCTUnwrap(json["profile"] as? [String: Any])
-        for forbidden in ["password", "privateKey", "passphrase", "credentialReference", "credentialsConfigured"] {
+        for forbidden in ["password", "privateKey", "passphrase", "credentialReference", "credentialsConfigured",
+                          "selectedTerminalID", "history", "connected"] {
             XCTAssertNil(json[forbidden])
             XCTAssertNil(metadata[forbidden])
         }

@@ -83,6 +83,24 @@ final class TmuxIntegrationTests: XCTestCase {
         } catch { await first.close(); throw error }
     }
 
+    func testControlCInterruptsForegroundProcessAndControlUClearsPendingInput() async throws {
+        let terminal = try await RunningTerminal.open(fixtureHost())
+        let token = UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        do {
+            try await terminal.waitFor("\u{1b}[?1049h")
+            try await terminal.session.send(Data("printf '\\nINTERRUPT_READY_%s\\n' '\(token)'; sleep 30\n".utf8))
+            try await terminal.waitFor("INTERRUPT_READY_\(token)")
+            try await terminal.session.send(Data([3]))
+            try await terminal.session.send(Data("printf '\\nAFTER_INTERRUPT_%s\\n' '\(token)'\n".utf8))
+            try await terminal.waitFor("AFTER_INTERRUPT_\(token)")
+            try await terminal.session.send(Data("printf 'BAD_EDIT_%s' '\(token)'".utf8))
+            try await terminal.session.send(Data([21]))
+            try await terminal.session.send(Data("printf '\\nEDIT_CLEARED_%s\\n' '\(token)'\n".utf8))
+            try await terminal.waitFor("EDIT_CLEARED_\(token)")
+            await terminal.close()
+        } catch { await terminal.close(); throw error }
+    }
+
     func testMissingTmuxReportsActionableError() async throws {
         var host = try fixtureHost()
         host.profile.username = "harbor-no-tmux"

@@ -8,7 +8,7 @@
 "Access" = "Access";
 "Add Host" = "Add Host";
 "Add First Host" = "Add First Host";
-"Affected connections and Finder locations will disconnect. Updated terminal tabs keep their buffers; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed." = "Affected connections and Finder locations will disconnect. Updated terminal tabs keep their buffers; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed.";
+"Changed connections and Finder locations will disconnect. Closed tabs and deleted hosts lose local terminal history; other tabs keep it. Changed endpoints require credentials to be reviewed." = "Changed connections and Finder locations will disconnect. Closed tabs and deleted hosts lose local terminal history; other tabs keep it. Changed endpoints require credentials to be reviewed.";
 "Allow Farport in the macOS prompt or in Privacy & Security > Local Network. The connection will continue when access becomes available. You can cancel this attempt." = "Allow Farport in the macOS prompt or in Privacy & Security > Local Network. The connection will continue when access becomes available. You can cancel this attempt.";
 "An iCloud host revision contains inconsistent data. Sync was stopped." = "An iCloud host revision contains inconsistent data. Sync was stopped.";
 "An iCloud record has an inconsistent host ID." = "An iCloud record has an inconsistent host ID.";
@@ -299,6 +299,6 @@
 "Keyboard" = "Keyboard";
 "Continue" = "Continue";
 "Allow Farport in Settings > Privacy & Security > Local Network, then retry." = "Allow Farport in Settings > Privacy & Security > Local Network, then retry.";
-"Affected connections will disconnect. Updated tabs keep their history; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed." = "Affected connections will disconnect. Updated tabs keep their history; deleted hosts close their tabs. Changed endpoints require credentials to be reviewed.";
+"Changed connections will disconnect. Closed tabs and deleted hosts lose local terminal history; other tabs keep it. Changed endpoints require credentials to be reviewed." = "Changed connections will disconnect. Closed tabs and deleted hosts lose local terminal history; other tabs keep it. Changed endpoints require credentials to be reviewed.";
 "Open Link?" = "Open Link?";
 "Open in Browser" = "Open in Browser";

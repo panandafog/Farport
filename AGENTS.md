@@ -101,7 +101,12 @@ Never replay commands or install server software implicitly.
 
 iCloud sync is opt-in, using CKSyncEngine and encrypted per-host records in the
 private CloudKit database. Keep CloudKit out of Core. Sync HostProfile only, never
-SavedHost, Keychain references/secrets, server pins, Finder locations, or workspaces.
+SavedHost, Keychain references/secrets, server pins, Finder locations, terminal output,
+selected host/tab, workspace mode or connection intent. HostProfile.terminalTabs carries
+only UUID/name/order definitions and per-tab revision/tombstone metadata. Merge each
+tab independently; closed UUIDs never resurrect. CloudHostRecord schema 2 protects
+these definitions from older apps that cannot preserve the new payload; schema 1
+without tab metadata remains readable. Keep the existing encrypted CloudKit field/type.
 Imported hosts require explicit local credential setup, even for an empty password.
 Endpoint/authentication/route changes invalidate local credential readiness. Keep
 whole-profile deterministic revisions, durable tombstones, pending edits and bounded
@@ -123,6 +128,20 @@ Indexed colors 16-255 and true-color values keep their standard meaning. Explici
 application colors/background combinations are not automatically inverted/recolored.
 Theme tests cover contrast, SGR styles, selection, retained output, hidden cursor,
 palette queries, live window appearance changes, and offscreen render attachments.
+
+Terminal pointer selection is local by default on macOS, even when tmux requests
+mouse tracking. Option-primary-button gestures explicitly report remote clicks/drags;
+wheel reports remain separate. SwiftTerm's native key/mouse overrides are not open:
+scope the macOS event monitor to the attached visible terminal and keyboard focus,
+remove it on detachment, and never intercept another view's commands. iOS uses a
+native UIViewController responder for hardware Control commands and the existing
+selection gestures. Keep Command copy/paste and ordinary text/IME input native.
+Each mobile controller must own a separate root container, never use the retained
+terminal as its root view: SwiftUI replacements may overlap in lifetime. Detach only
+when that controller still owns the terminal's superview; stale teardown must not
+remove a newer attachment or dismiss its keyboard.
+TerminalKeyboardInput owns control-byte encoding and Russian-layout fallback;
+disconnected terminals reject remote input but retain selection/copy/scroll.
 
 Native ProxyJump uses Citadel `jump(to:)` and direct-tcpip, shared by SSH and SFTP.
 `HostProfile.jumpHostIDs` stores ordered saved-host references, not copied secrets
@@ -152,7 +171,13 @@ activity. Never persist live connection/retry intent. The first default tab uses
 the host UUID to preserve pre-tabs tmux sessions; subsequent tabs get independent
 UUIDs. Rename must not change identity. Switching hosts/tabs/views retains native
 terminal instances and their buffers; closing a tab detaches only its connection.
-Closed tabs are removed from the workspace, without killing remote tmux sessions.
+Tab definitions also sync through opt-in host iCloud sync. Preserve existing local
+multi-tab workspaces on first migration; an untouched implicit default tab must not
+overwrite the cloud's renamed/default tab. Save definitions in the host library before
+the local selection snapshot. Cloud additions/renames must not disconnect existing
+terminals, invalidate credentials or revoke Finder. Closing an active remote tab waits
+for explicit Apply Changes; preserve other terminal instances/buffers. Closed tabs
+are removed from the workspace, without killing remote tmux sessions.
 Corrupt/newer workspace files must not be silently replaced. Local scrollback is
 not written to disk; remote screen/history recovery still depends on surviving tmux.
 

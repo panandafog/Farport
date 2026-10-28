@@ -22,6 +22,7 @@ public struct HostProfile: Identifiable, Codable, Equatable, Sendable {
     public var notes: String
     public var terminalResumeStrategy: TerminalResumeStrategy
     public var jumpHostIDs: [UUID]
+    public var terminalTabs: SyncedTerminalTabs?
 
     // The host UUID is persisted, so reconnects and app restarts use the same remote session.
     public var tmuxSessionName: String { "harbor-" + id.uuidString.lowercased() }
@@ -30,7 +31,8 @@ public struct HostProfile: Identifiable, Codable, Equatable, Sendable {
                 username: String = "", authentication: AuthenticationKind = .password,
                 terminalProvider: String = "ssh", fileProvider: String = "sftp",
                 initialDirectory: String = ".", notes: String = "",
-                terminalResumeStrategy: TerminalResumeStrategy = .none, jumpHostIDs: [UUID] = []) {
+                terminalResumeStrategy: TerminalResumeStrategy = .none, jumpHostIDs: [UUID] = [],
+                terminalTabs: SyncedTerminalTabs? = nil) {
         self.id = id
         self.name = name
         self.hostname = hostname
@@ -43,11 +45,12 @@ public struct HostProfile: Identifiable, Codable, Equatable, Sendable {
         self.notes = notes
         self.terminalResumeStrategy = terminalResumeStrategy
         self.jumpHostIDs = jumpHostIDs
+        self.terminalTabs = terminalTabs
     }
 
     private enum CodingKeys: String, CodingKey {
         case id, name, hostname, port, username, authentication, terminalProvider, fileProvider
-        case initialDirectory, notes, terminalResumeStrategy, jumpHostIDs
+        case initialDirectory, notes, terminalResumeStrategy, jumpHostIDs, terminalTabs
     }
 
     public init(from decoder: Decoder) throws {
@@ -66,12 +69,30 @@ public struct HostProfile: Identifiable, Codable, Equatable, Sendable {
             TerminalResumeStrategy.self, forKey: .terminalResumeStrategy
         ) ?? .none
         jumpHostIDs = try values.decodeIfPresent([UUID].self, forKey: .jumpHostIDs) ?? []
+        terminalTabs = try values.decodeIfPresent(SyncedTerminalTabs.self, forKey: .terminalTabs)
+    }
+
+    public func hasSameSettings(as other: Self) -> Bool {
+        var left = self
+        var right = other
+        left.terminalTabs = nil
+        right.terminalTabs = nil
+        return left == right
+    }
+
+    public func mergingTerminalTabs(from other: Self) throws -> Self {
+        var result = self
+        if let incoming = other.terminalTabs {
+            result.terminalTabs = try terminalTabs?.merging(incoming) ?? incoming
+        }
+        return result
     }
 
     public var displayName: String { name.isEmpty ? hostname : name }
     public var address: String { "\(username)@\(hostname):\(port)" }
 
     public func validate() throws {
+        try terminalTabs?.validate()
         guard !hostname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               !hostname.contains(where: { $0.isWhitespace }), !hostname.contains("://"),
               !hostname.contains("/"), !hostname.contains("\0") else {

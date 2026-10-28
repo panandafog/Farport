@@ -98,6 +98,7 @@ public final class CloudSyncModel: ObservableObject {
         guard let library, var profile = conflict.profile else { return }
         do {
             profile.id = UUID()
+            profile.terminalTabs = try profile.terminalTabs?.copy(for: profile.id)
             profile.name = L10n.text("%@ (Recovered)", profile.displayName)
             try library.applySyncedProfiles(library.hosts.map(\.profile) + [profile])
             localChanged()

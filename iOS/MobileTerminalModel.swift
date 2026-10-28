@@ -37,14 +37,14 @@ extension MobileTerminalModel: @preconcurrency TerminalViewDelegate {
 
 final class MobileTerminalView: TerminalView, TerminalOutput {
     private var darkAppearance: Bool?
-    private var remoteInputEnabled = false
+    private(set) var remoteInputEnabled = false
     private var scrollInput = TerminalScrollInput()
     private var lastPanTranslation: CGFloat = 0
     private var panReportsRemote = false
     private var correctingScrollOffset = false
 
     private var reportsRemoteScroll: Bool {
-        remoteInputEnabled && allowMouseReporting && getTerminal().mouseMode != .off
+        remoteInputEnabled && allowMouseReporting && getTerminal().mouseMode != .off && !selectionActive
     }
 
     init() {
@@ -65,6 +65,22 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
     }
 
     required init?(coder: NSCoder) { return nil }
+
+    override func insertText(_ text: String) {
+        let accessory = inputAccessoryView as? TerminalAccessory
+        guard controlModifier || accessory?.controlModifier == true, markedTextRange == nil,
+              let bytes = TerminalKeyboardInput.controlSequence(characters: text, meta: metaModifier) else {
+            super.insertText(text)
+            return
+        }
+        controlModifier = false
+        accessory?.controlModifier = false
+        metaModifier = false
+        if remoteInputEnabled {
+            selectNone()
+            send(bytes)
+        }
+    }
 
     override func mouseModeChanged(source: Terminal) {
         // Keep the native scroll pan: upstream replaces it with a mouse-drag gesture for tmux.
@@ -136,9 +152,72 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
     func focus() { if window != nil { _ = becomeFirstResponder() } }
 }
 
-struct MobileTerminalSurface: UIViewRepresentable {
+final class MobileTerminalController: UIViewController {
+    let terminalView: MobileTerminalView
+    private lazy var controlCommands: [UIKeyCommand] = {
+        let modifiers: [UIKeyModifierFlags] = [.control, [.control, .shift],
+                                              [.control, .alternate], [.control, .alternate, .shift]]
+        return modifiers.flatMap { flags in
+            TerminalKeyboardInput.shortcutCharacters.map { character in
+                let command = UIKeyCommand(input: character, modifierFlags: flags,
+                                           action: #selector(sendControlCommand(_:)))
+                command.wantsPriorityOverSystemBehavior = true
+                return command
+            }
+        }
+    }()
+
+    init(terminalView: MobileTerminalView) {
+        self.terminalView = terminalView
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) { return nil }
+    override func loadView() {
+        // SwiftUI can create a replacement controller before dismantling the previous one.
+        // Only the container belongs to this controller; the model retains the terminal across mounts.
+        let container = UIView(frame: CGRect(origin: .zero, size: terminalView.bounds.size))
+        container.backgroundColor = .systemBackground
+        view = container
+        terminalView.removeFromSuperview()
+        terminalView.frame = container.bounds
+        terminalView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        container.addSubview(terminalView)
+    }
+
+    func detachTerminalView() {
+        guard let container = viewIfLoaded, terminalView.superview === container else { return }
+        _ = terminalView.resignFirstResponder()
+        terminalView.removeFromSuperview()
+    }
+
+    override var keyCommands: [UIKeyCommand]? { (super.keyCommands ?? []) + controlCommands }
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(sendControlCommand(_:)) {
+            return terminalView.superview === viewIfLoaded && terminalView.isFirstResponder &&
+                terminalView.markedTextRange == nil
+        }
+        return super.canPerformAction(action, withSender: sender)
+    }
+
+    @objc private func sendControlCommand(_ command: UIKeyCommand) {
+        guard terminalView.superview === viewIfLoaded, terminalView.isFirstResponder, terminalView.remoteInputEnabled,
+              let bytes = TerminalKeyboardInput.controlSequence(characters: command.input ?? "",
+                                                                meta: command.modifierFlags.contains(.alternate)) else {
+            return
+        }
+        terminalView.selectNone()
+        terminalView.send(bytes)
+    }
+}
+
+struct MobileTerminalSurface: UIViewControllerRepresentable {
     let model: MobileTerminalModel
-    func makeUIView(context: Context) -> MobileTerminalView { model.view }
-    func updateUIView(_ uiView: MobileTerminalView, context: Context) {}
-    static func dismantleUIView(_ uiView: MobileTerminalView, coordinator: ()) { _ = uiView.resignFirstResponder() }
+    func makeUIViewController(context: Context) -> UIViewController {
+        MobileTerminalController(terminalView: model.view)
+    }
+    func updateUIViewController(_ controller: UIViewController, context: Context) {}
+    static func dismantleUIViewController(_ controller: UIViewController, coordinator: ()) {
+        (controller as? MobileTerminalController)?.detachTerminalView()
+    }
 }
