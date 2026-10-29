@@ -1,10 +1,42 @@
 import AppKit
+import FarportLocalization
 import FarportSessions
 import SwiftTerm
 
 final class SystemTerminalView: TerminalView {
     private var appliedAppearance: NSAppearance.Name?
     var remoteInputEnabled = false
+    let pasteReview = TerminalPasteReview()
+    let history = TerminalHistoryState()
+
+    override func menu(for event: NSEvent) -> NSMenu? {
+        let menu = NSMenu()
+        let copy = menu.addItem(withTitle: L10n.text("Copy"), action: #selector(copy(_:)), keyEquivalent: "")
+        copy.target = self
+        let paste = menu.addItem(withTitle: L10n.text("Paste"), action: #selector(paste(_:)), keyEquivalent: "")
+        paste.target = self
+        let all = menu.addItem(withTitle: L10n.text("Select All"), action: #selector(selectAll(_:)), keyEquivalent: "")
+        all.target = self
+        return menu
+    }
+
+    override func validateUserInterfaceItem(_ item: NSValidatedUserInterfaceItem) -> Bool {
+        if item.action == #selector(paste(_:)) { return remoteInputEnabled && NSPasteboard.general.canReadItem(
+            withDataConformingToTypes: [NSPasteboard.PasteboardType.string.rawValue]) }
+        return super.validateUserInterfaceItem(item)
+    }
+
+    override func paste(_ sender: Any) {
+        guard remoteInputEnabled, let text = NSPasteboard.general.string(forType: .string),
+              let immediate = pasteReview.prepare(text) else { return }
+        sendPaste(immediate)
+    }
+
+    func sendPaste(_ text: String) {
+        guard remoteInputEnabled else { return }
+        selectNone()
+        send(TerminalPasteReview.bytes(text, bracketed: getTerminal().bracketedPasteMode))
+    }
     private var scrollInput = TerminalScrollInput()
     private var inputMonitor: Any?
     private var primaryMouseReportsRemote = false
@@ -15,11 +47,13 @@ final class SystemTerminalView: TerminalView {
     }
 
     private func sendControlKey(_ event: NSEvent) -> Bool {
-        guard event.modifierFlags.contains(.control), !event.modifierFlags.contains(.command),
+        guard getTerminal().keyboardEnhancementFlags.isEmpty,
+              event.modifierFlags.contains(.control), !event.modifierFlags.contains(.command),
               !hasMarkedText(),
               let bytes = TerminalKeyboardInput.controlSequence(
                 characters: event.charactersIgnoringModifiers ?? "",
-                fallback: Self.controlKeyFallback[event.keyCode], meta: event.modifierFlags.contains(.option)
+                fallback: Self.controlKeyFallback[event.keyCode],
+                meta: optionAsMetaKey && event.modifierFlags.contains(.option)
               ) else { return false }
         if remoteInputEnabled {
             selectNone()
@@ -39,24 +73,60 @@ final class SystemTerminalView: TerminalView {
     private func handleInput(_ event: NSEvent) -> NSEvent? {
         guard event.window === window, !isHiddenOrHasHiddenAncestor else { return event }
         if event.type == .keyDown {
+            if window?.firstResponder === self, navigateHistoryKey(event) { return nil }
             return window?.firstResponder === self && sendControlKey(event) ? nil : event
         }
-        let inside = bounds.contains(convert(event.locationInWindow, from: nil))
-        if event.type == .scrollWheel {
-            guard inside else { return event }
-            handleScrollWheel(event)
-            return nil
+        guard event.type == .scrollWheel, bounds.contains(convert(event.locationInWindow, from: nil)) else {
+            return event
         }
-        if event.type == .leftMouseDown {
-            guard inside else { return event }
-            window?.makeFirstResponder(self)
-            primaryMouseReportsRemote = remoteInputEnabled && getTerminal().mouseMode != .off &&
-                event.modifierFlags.contains(.option)
-        }
-        guard primaryMouseReportsRemote else { return event }
-        if event.type == .leftMouseUp { primaryMouseReportsRemote = false }
-        if remoteInputEnabled { reportPrimaryMouse(event) }
+        handleScrollWheel(event)
         return nil
+    }
+
+    private func navigateHistoryKey(_ event: NSEvent) -> Bool {
+        guard !hasMarkedText(), event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .shift else {
+            return false
+        }
+        let action: TerminalHistoryAction
+        switch event.keyCode {
+        case 115: action = .oldest // Shift-Home
+        case 116: action = .pageUp
+        case 119: action = .latest // Shift-End
+        case 121: action = .pageDown
+        default: return false
+        }
+        navigateHistory(action)
+        updateHistory(history)
+        return true
+    }
+
+    override func setFrameSize(_ newSize: NSSize) {
+        super.setFrameSize(newSize)
+        if terminal != nil { updateHistory(history) }
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        window?.makeFirstResponder(self)
+        primaryMouseReportsRemote = remoteInputEnabled && getTerminal().mouseMode != .off &&
+            event.modifierFlags.contains(.option)
+        if primaryMouseReportsRemote { reportPrimaryMouse(event) } else { super.mouseDown(with: event) }
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        if primaryMouseReportsRemote {
+            if remoteInputEnabled { reportPrimaryMouse(event) }
+        } else {
+            super.mouseDragged(with: event)
+        }
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        defer { primaryMouseReportsRemote = false }
+        if primaryMouseReportsRemote {
+            if remoteInputEnabled { reportPrimaryMouse(event) }
+        } else {
+            super.mouseUp(with: event)
+        }
     }
 
     private func reportPrimaryMouse(_ event: NSEvent) {
@@ -90,7 +160,7 @@ final class SystemTerminalView: TerminalView {
         let lines = scrollInput.lines(for: Double(delta))
         guard lines != 0 else { return }
         if remoteInputEnabled, getTerminal().mouseMode != .off,
-           !event.modifierFlags.contains(.shift) {
+           !event.modifierFlags.contains(.shift), !isReadingLocalHistory {
             let location = convert(event.locationInWindow, from: nil)
             reportScrollWheel(lines: lines, at: CGPoint(x: location.x, y: bounds.height - location.y),
                               meta: event.modifierFlags.contains(.option),
@@ -113,12 +183,11 @@ final class SystemTerminalView: TerminalView {
         if let inputMonitor { NSEvent.removeMonitor(inputMonitor) }
         inputMonitor = nil
         primaryMouseReportsRemote = false
+        if window == nil { pasteReview.cancel() }
         allowMouseReporting = false
         guard window != nil else { return }
-        // SwiftTerm's key/mouse overrides are not open. Keep interception scoped to this terminal's window/focus.
-        inputMonitor = NSEvent.addLocalMonitorForEvents(matching: [
-            .keyDown, .scrollWheel, .leftMouseDown, .leftMouseDragged, .leftMouseUp
-        ]) { [weak self] event in
+        // SwiftTerm 1.19 still keeps keyDown/scrollWheel closed; pointer events use native overrides above.
+        inputMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .scrollWheel]) { [weak self] event in
             guard let self else { return event }
             return self.handleInput(event)
         }

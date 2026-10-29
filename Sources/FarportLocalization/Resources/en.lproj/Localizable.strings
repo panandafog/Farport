@@ -302,3 +302,15 @@
 "Changed connections will disconnect. Closed tabs and deleted hosts lose local terminal history; other tabs keep it. Changed endpoints require credentials to be reviewed." = "Changed connections will disconnect. Closed tabs and deleted hosts lose local terminal history; other tabs keep it. Changed endpoints require credentials to be reviewed.";
 "Open Link?" = "Open Link?";
 "Open in Browser" = "Open in Browser";
+"Paste" = "Paste";
+"Select All" = "Select All";
+"Use Option as Meta" = "Use Option as Meta";
+"Local History" = "Local History";
+"Oldest Output" = "Oldest Output";
+"Previous Page" = "Previous Page";
+"Next Page" = "Next Page";
+"Jump to Bottom" = "Jump to Bottom";
+"New Output — Jump to Bottom" = "New Output — Jump to Bottom";
+"Special Keys" = "Special Keys";
+"Paste Multiple Lines?" = "Paste Multiple Lines?";
+"Pasted line breaks may execute commands. Review the text before sending it." = "Pasted line breaks may execute commands. Review the text before sending it.";

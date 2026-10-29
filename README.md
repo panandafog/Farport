@@ -32,12 +32,16 @@ Open `Farport.xcodeproj`, select **Farport > My Mac**, and press **Command-R**.
 The first build downloads Swift Package dependencies. Select your own signing Team
 if needed; capability setup is described in [iCloud](Docs/iCloud.md) and [Finder](Docs/Finder.md).
 Do not rename existing App Group or Keychain identities when updating this installation.
+Enable SwiftTermBuildInfoPlugin when Xcode asks. SwiftTerm's shader resources also
+require Apple's Metal Toolchain; the preparation command below installs it if missing.
 
 ```sh
 brew install swiftlint
+sh Scripts/prepare-terminal-build.sh
 xcodebuild -project Farport.xcodeproj -scheme Farport \
   -configuration Debug -destination 'platform=macOS' \
-  -derivedDataPath Build -allowProvisioningUpdates build
+  -derivedDataPath Build -onlyUsePackageVersionsFromResolvedFile \
+  -skipPackagePluginValidation -allowProvisioningUpdates build
 open Build/Build/Products/Debug/Farport.app
 ```
 
@@ -71,7 +75,8 @@ sh Scripts/lint.sh
 swift test
 sh Scripts/verify-ios.sh
 xcodebuild -project Farport.xcodeproj -scheme Farport \
-  -configuration Debug -destination 'platform=macOS' -derivedDataPath Build test
+  -configuration Debug -destination 'platform=macOS' -derivedDataPath Build \
+  -onlyUsePackageVersionsFromResolvedFile -skipPackagePluginValidation test
 ```
 
 `swift test` skips network tests unless the disposable SSH/SFTP fixture is running.

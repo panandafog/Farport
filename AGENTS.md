@@ -131,8 +131,11 @@ palette queries, live window appearance changes, and offscreen render attachment
 
 Terminal pointer selection is local by default on macOS, even when tmux requests
 mouse tracking. Option-primary-button gestures explicitly report remote clicks/drags;
-wheel reports remain separate. SwiftTerm's native key/mouse overrides are not open:
-scope the macOS event monitor to the attached visible terminal and keyboard focus,
+wheel reports remain separate. SwiftTerm is pinned to stable 1.19.0 in project.yml
+and the Xcode lockfile; do not adopt the 1.99/2.0 API transition implicitly.
+Use the open mouseDown/mouseDragged/mouseUp overrides, not a window event monitor,
+for pointer gestures. keyDown/scrollWheel remain non-open in this version: scope
+their macOS event monitor to the attached visible terminal and keyboard focus,
 remove it on detachment, and never intercept another view's commands. iOS uses a
 native UIViewController responder for hardware Control commands and the existing
 selection gestures. Keep Command copy/paste and ordinary text/IME input native.
@@ -141,7 +144,25 @@ terminal as its root view: SwiftUI replacements may overlap in lifetime. Detach 
 when that controller still owns the terminal's superview; stale teardown must not
 remove a newer attachment or dismiss its keyboard.
 TerminalKeyboardInput owns control-byte encoding and Russian-layout fallback;
-disconnected terminals reject remote input but retain selection/copy/scroll.
+apply these legacy overrides only while keyboardEnhancementFlags is empty. Once a
+remote program negotiates Kitty keyboard input, let SwiftTerm encode its events.
+Disconnected terminals reject remote input but retain selection/copy/scroll.
+Set history capacity through TerminalView.changeScrollback so view/scroller state
+updates with the engine. Keep SwiftTerm outside the shared session/transport models.
+See Docs/Terminal.md for upgrade scope and manual compatibility checks.
+TerminalPasteReview snapshots and sanitizes clipboard input, requests confirmation
+for every newline (including trailing CR/LF), and consumes each request only once.
+Disconnect or view detachment cancels pending paste; never reread the clipboard on
+confirmation or queue offline input. Encode bracketed paste using the current remote
+mode. The Option/Meta preference is device-local. Mobile touch selection stays local
+while wheel reporting remains independent; special-key actions respect cursor and
+Kitty keyboard modes. Keep preview text and sent content consistent.
+History navigation is local, including while disconnected. SwiftTerm owns viewport
+anchoring, trimming and reflow; do not restore old pixel offsets after feed. Keep
+history presentation state per terminal and coalesce publication outside native
+layout callbacks. Local page commands must never use SwiftTerm.pageUp/pageDown,
+which send remote keys in alternate-screen mode. Native user Copy is allowed;
+remote OSC 52 clipboard writes are ignored on both platforms. See Docs/Terminal.md.
 
 Native ProxyJump uses Citadel `jump(to:)` and direct-tcpip, shared by SSH and SFTP.
 `HostProfile.jumpHostIDs` stores ordered saved-host references, not copied secrets
@@ -264,13 +285,23 @@ checkout and fresh DerivedData/SourcePackages, not only the developer's warm cac
 ```sh
 sh Scripts/lint.sh
 sh Scripts/xcodegen.sh generate
+sh Scripts/prepare-terminal-build.sh
 xcodebuild -quiet -project Farport.xcodeproj -scheme Farport \
-  -configuration Debug -destination 'platform=macOS' -derivedDataPath Build build
+  -configuration Debug -destination 'platform=macOS' -derivedDataPath Build \
+  -onlyUsePackageVersionsFromResolvedFile -skipPackagePluginValidation build
 xcodebuild -quiet -project Farport.xcodeproj -scheme Farport \
-  -configuration Debug -destination 'platform=macOS' -derivedDataPath Build test
+  -configuration Debug -destination 'platform=macOS' -derivedDataPath Build \
+  -onlyUsePackageVersionsFromResolvedFile -skipPackagePluginValidation test
 swift test
 sh Scripts/verify-ios.sh
 ```
+
+SwiftTerm 1.19 requires Apple's separately installed Metal Toolchain and the
+SwiftTermBuildInfoPlugin (reviewed version-metadata generator). The preparation
+script downloads the compiler only when missing. IDE builds require enabling the
+plugin in Xcode's standard trust dialog. CLI/CI commands explicitly skip interactive
+plugin validation; keep exact pins and strict resolved-version checks, never disable
+the plugin execution sandbox or change global Xcode trust settings. See Docs/Terminal.md.
 
 The Farport scheme requires a CloudKit-capable profile for `iCloud.com.panandafog.harbor` and
 Push Notifications, in addition to the shared App Group/Keychain. `FarportLocal`

@@ -300,7 +300,7 @@ persistence, the tmux implementation, reconnect policy, and Mosh trade-offs.
 
 - [Citadel](https://github.com/orlandos-nl/Citadel), MIT, vendored revision recorded
   in `Vendor/Citadel/UPSTREAM.md`.
-- [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm), MIT, pinned to 1.10.1.
+- [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm), MIT, pinned to 1.19.0.
 - SwiftNIO, Swift Crypto, and the Citadel-compatible SwiftNIO SSH fork, resolved by SPM.
 
 Dependency licenses remain with their respective source packages.

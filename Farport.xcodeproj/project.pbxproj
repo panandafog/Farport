@@ -8,8 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		041A7A37C9A0E994A4A8CC47 /* MobileWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65939C2D6FAA23D880D4A849 /* MobileWorkspaceView.swift */; };
+		075A7DA2478EE516406B0C86 /* TerminalPastePresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5901B2B8504FC4AFE0E1AF /* TerminalPastePresentation.swift */; };
 		075AB2AEEF4663F10EE90BF2 /* MobileTerminalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A5CBD929644DD5B7AB6ECE /* MobileTerminalModel.swift */; };
 		08276D0EF838F9A9F94E312C /* TerminalScrolling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0790BF194376BDEE95295BF0 /* TerminalScrolling.swift */; };
+		0B445C47070BE2F4F686802F /* TerminalPastePresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5901B2B8504FC4AFE0E1AF /* TerminalPastePresentation.swift */; };
 		0BFB929D06026DA6EF79484A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = CA0AC1F27EDC44699F936B89 /* InfoPlist.strings */; };
 		0C0EAEB467C804C3DC7007DD /* WorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA7371ADED7390F5A3CECD2 /* WorkspaceTests.swift */; };
 		0E94902301B1ECF322841D24 /* LibraryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 736FD4EF519F74C65A8A7C74 /* LibraryModel.swift */; };
@@ -57,6 +59,7 @@
 		5FEFC8D93E2C6DF6A308E25B /* MobileLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5973CF2D6DACD7EC28B117 /* MobileLibraryTests.swift */; };
 		60C85A0B9C0426E00996EB73 /* FinderWriteFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BEF0BBA828F1BE4ACAD278 /* FinderWriteFixture.swift */; };
 		616741FA52DA68A62DF26409 /* TerminalPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BEE6B2471FD6122155E0C1 /* TerminalPalette.swift */; };
+		6232B74F068876BB3A57AA75 /* TerminalHistoryControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */; };
 		64009EABA53C0623DBBCD4B8 /* AccentColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B41D6E65605D27DDFC7E53E7 /* AccentColorTests.swift */; };
 		698DA130E099CF3B3F67B909 /* FarportLocalization in Frameworks */ = {isa = PBXBuildFile; productRef = 799CC95017CD5E78B3620103 /* FarportLocalization */; };
 		6DAEDFC5C9E9E7400E6D4477 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 6AAFDAF8215FF955BD7BB269 /* SwiftTerm */; };
@@ -85,6 +88,8 @@
 		B2DDBE357D3BA5378DB4F330 /* FarportSSH in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA674342ED988E1D8DF9692 /* FarportSSH */; };
 		B401A90F645A9631CC2F8398 /* TerminalPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BEE6B2471FD6122155E0C1 /* TerminalPalette.swift */; };
 		B5AD4CA0EE028EA9AB0DA91F /* HostEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43210A123717B0462B27C8A2 /* HostEditor.swift */; };
+		C0038E7E60C9DF25E3140A33 /* TerminalHistoryControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */; };
+		C484A54DEAA35199B3838EB1 /* TerminalPastePresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5901B2B8504FC4AFE0E1AF /* TerminalPastePresentation.swift */; };
 		C6FB6D381F5EECA45E21A99F /* container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = F835DC4D9DAF1826E7F72E03 /* container-migration.plist */; };
 		C977B0C69DF4D0F6AA6A5F0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C6E6C72BF2D4B11553855AB /* Assets.xcassets */; };
 		CA808C2C4FA026D2CD7F5397 /* TerminalScrolling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0790BF194376BDEE95295BF0 /* TerminalScrolling.swift */; };
@@ -92,6 +97,7 @@
 		CE7396A6398DD20FCDF53729 /* FarportSessions in Frameworks */ = {isa = PBXBuildFile; productRef = 7BBE18AE7D7BD416732280ED /* FarportSessions */; };
 		D0FADBBBF27D885505FF80C2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2FBCD3EF99F1DF2323E300B6 /* InfoPlist.strings */; };
 		D16FD4EAF7C415FF6A6DDBA9 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = BF9E1B9BF9A81579AEDC9B13 /* SwiftTerm */; };
+		D1AB6A5A16A88C1CB8E62B88 /* TerminalHistoryControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */; };
 		D4424DFA435E91C5935A883A /* FinderExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7DAF8DEA638B840F37776A /* FinderExtensionTests.swift */; };
 		DB7050DE86A3CA831056BBB9 /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */; };
 		DBE0C4D310EA5844BAC1EA82 /* ServerTrustViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2A5E24C2F1EC25A784BEE7 /* ServerTrustViews.swift */; };
@@ -182,6 +188,7 @@
 		736FD4EF519F74C65A8A7C74 /* LibraryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryModel.swift; sourceTree = "<group>"; };
 		737054954E94B6BC7683B0F5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		761DDB6688A35191D74242B0 /* FarportApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FarportApp.swift; sourceTree = "<group>"; };
+		7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalHistoryControls.swift; sourceTree = "<group>"; };
 		783F52CB198258C012C39CA3 /* FarportFinderExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FarportFinderExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		78E8DCC44D168626703DE8E2 /* AppSecretStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSecretStore.swift; sourceTree = "<group>"; };
 		7AA0A3B7977544B614CCF0B4 /* CloudSyncModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncModelTests.swift; sourceTree = "<group>"; };
@@ -224,6 +231,7 @@
 		F19CC199D3C3F3D472431C17 /* FarportLocal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FarportLocal.entitlements; sourceTree = "<group>"; };
 		F37671BECB86E8680BDBCC3D /* Farport.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Farport.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F835DC4D9DAF1826E7F72E03 /* container-migration.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "container-migration.plist"; sourceTree = "<group>"; };
+		FD5901B2B8504FC4AFE0E1AF /* TerminalPastePresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalPastePresentation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -374,7 +382,9 @@
 				43210A123717B0462B27C8A2 /* HostEditor.swift */,
 				BF2A5E24C2F1EC25A784BEE7 /* ServerTrustViews.swift */,
 				91450FAB138F3A7F5D1A8424 /* SheetFrame.swift */,
+				7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */,
 				15BEE6B2471FD6122155E0C1 /* TerminalPalette.swift */,
+				FD5901B2B8504FC4AFE0E1AF /* TerminalPastePresentation.swift */,
 				0790BF194376BDEE95295BF0 /* TerminalScrolling.swift */,
 			);
 			path = SharedUI;
@@ -759,7 +769,9 @@
 				5332B78D25AD08BE607D8B20 /* MobileWorkspaceView.swift in Sources */,
 				CD75223A6C8C362029628D57 /* ServerTrustViews.swift in Sources */,
 				24A48AF2A6A007E663D7EB3E /* SheetFrame.swift in Sources */,
+				C0038E7E60C9DF25E3140A33 /* TerminalHistoryControls.swift in Sources */,
 				F331467E91CB8F2418B56F9D /* TerminalPalette.swift in Sources */,
+				075A7DA2478EE516406B0C86 /* TerminalPastePresentation.swift in Sources */,
 				EBD999878EF0E1D67598BD48 /* TerminalScrolling.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -784,8 +796,10 @@
 				764F3143CD6905322EDA07FC /* SessionModels.swift in Sources */,
 				4FC61727DC0513F3B5ADA894 /* SheetFrame.swift in Sources */,
 				2241672700E92B651A5FD90C /* SystemTerminalView.swift in Sources */,
+				D1AB6A5A16A88C1CB8E62B88 /* TerminalHistoryControls.swift in Sources */,
 				946B54DD013E24F16D41F0B0 /* TerminalModel.swift in Sources */,
 				B401A90F645A9631CC2F8398 /* TerminalPalette.swift in Sources */,
+				0B445C47070BE2F4F686802F /* TerminalPastePresentation.swift in Sources */,
 				CA808C2C4FA026D2CD7F5397 /* TerminalScrolling.swift in Sources */,
 				2F6DA869F8A60D1BB82F9E75 /* TerminalTabs.swift in Sources */,
 			);
@@ -842,7 +856,9 @@
 				041A7A37C9A0E994A4A8CC47 /* MobileWorkspaceView.swift in Sources */,
 				DBE0C4D310EA5844BAC1EA82 /* ServerTrustViews.swift in Sources */,
 				3C91B2DAE489DE8FCEA02AA6 /* SheetFrame.swift in Sources */,
+				6232B74F068876BB3A57AA75 /* TerminalHistoryControls.swift in Sources */,
 				616741FA52DA68A62DF26409 /* TerminalPalette.swift in Sources */,
+				C484A54DEAA35199B3838EB1 /* TerminalPastePresentation.swift in Sources */,
 				08276D0EF838F9A9F94E312C /* TerminalScrolling.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1054,7 +1070,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/Farport.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -1101,7 +1117,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = iOS/FarportMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1126,7 +1142,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/Farport.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -1171,7 +1187,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = FinderExtension/FarportFinder.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FinderExtension/Info.plist;
@@ -1191,7 +1207,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = iOS/FarportMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1252,7 +1268,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = iOS/FarportMobileLocal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				HARBOR_ICLOUD_CONTAINER = "";
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -1277,7 +1293,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = FinderExtension/FarportFinder.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FinderExtension/Info.plist;
@@ -1384,7 +1400,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/FarportLocal.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -1413,7 +1429,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = FinderExtension/FarportFinder.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FinderExtension/Info.plist;
@@ -1504,7 +1520,7 @@
 			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm.git";
 			requirement = {
 				kind = exactVersion;
-				version = 1.10.1;
+				version = 1.19.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

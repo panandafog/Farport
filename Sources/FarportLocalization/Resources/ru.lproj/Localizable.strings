@@ -302,3 +302,15 @@
 "Changed connections will disconnect. Closed tabs and deleted hosts lose local terminal history; other tabs keep it. Changed endpoints require credentials to be reviewed." = "Изменённые соединения будут отключены. Локальная история закрытых вкладок и удалённых серверов будет потеряна; остальные вкладки сохранят историю. Для изменённых адресов нужно проверить учётные данные.";
 "Open Link?" = "Открыть ссылку?";
 "Open in Browser" = "Открыть в браузере";
+"Paste" = "Вставить";
+"Select All" = "Выделить всё";
+"Use Option as Meta" = "Использовать Option как Meta";
+"Local History" = "Локальная история";
+"Oldest Output" = "К началу истории";
+"Previous Page" = "На страницу вверх";
+"Next Page" = "На страницу вниз";
+"Jump to Bottom" = "К последнему выводу";
+"New Output — Jump to Bottom" = "Новый вывод — перейти вниз";
+"Special Keys" = "Специальные клавиши";
+"Paste Multiple Lines?" = "Вставить несколько строк?";
+"Pasted line breaks may execute commands. Review the text before sending it." = "Переводы строк при вставке могут выполнить команды. Проверьте текст перед отправкой.";

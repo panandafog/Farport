@@ -17,6 +17,13 @@ unsigned macOS build approach, with additional Farport-specific checks.
 - **Build iOS and Shared Modules** builds reusable libraries for iOS Simulator and
   unsigned Debug/Release mobile apps for iOS devices. It does not launch the app.
 
+App build jobs run `Scripts/prepare-terminal-build.sh` to ensure the Metal compiler
+required by SwiftTerm's shader resources is available. CLI builds pass
+`-skipPackagePluginValidation` to enable its reviewed version-metadata generator
+without Xcode's interactive trust dialog. The package remains exact-pinned and
+strict resolved-version checks remain enabled; the plugin execution sandbox is
+unchanged. See [Terminal](Terminal.md) for IDE setup and compatibility checks.
+
 Package tests run on `macos-15`; Debug/Release app builds run on `macos-26`, with
 Xcode 26.3 explicitly selected in all jobs. Build-host and app deployment target
 are independent: the app still targets macOS 15 and both CPU architectures.

@@ -6,6 +6,7 @@ import SwiftUI
 struct FarportApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @StateObject private var model = LibraryModel()
+    @AppStorage("terminal.optionAsMeta") private var optionAsMeta = true
 
     var body: some Scene {
         WindowGroup {
@@ -25,6 +26,8 @@ struct FarportApp: App {
                     .keyboardShortcut("t").disabled(model.selectedWorkspace == nil)
             }
             CommandMenu(L10n.text("Terminal")) {
+                Toggle(L10n.text("Use Option as Meta"), isOn: $optionAsMeta)
+                Divider()
                 Button(L10n.text("Next Tab")) { model.selectedWorkspace?.selectNextTerminal(offset: 1) }
                     .keyboardShortcut("]", modifiers: [.command, .shift])
                 Button(L10n.text("Previous Tab")) { model.selectedWorkspace?.selectNextTerminal(offset: -1) }

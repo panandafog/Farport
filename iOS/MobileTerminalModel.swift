@@ -23,7 +23,7 @@ extension MobileTerminalModel: @preconcurrency TerminalViewDelegate {
     }
     func setTerminalTitle(source: TerminalView, title: String) { updateTitle(title) }
     func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {}
-    func scrolled(source: TerminalView, position: Double) {}
+    func scrolled(source: TerminalView, position: Double) { view.updateHistory(view.history) }
     func rangeChanged(source: TerminalView, startY: Int, endY: Int) {}
     func requestOpenLink(source: TerminalView, link: String, params: [String: String]) {
         guard let url = URL(string: link), let scheme = url.scheme?.lowercased(),
@@ -36,28 +36,75 @@ extension MobileTerminalModel: @preconcurrency TerminalViewDelegate {
 }
 
 final class MobileTerminalView: TerminalView, TerminalOutput {
+    let pasteReview = TerminalPasteReview()
+    let history = TerminalHistoryState()
+
+    override func paste(_ sender: Any?) {
+        guard remoteInputEnabled, let text = UIPasteboard.general.string,
+              let immediate = pasteReview.prepare(text) else { return }
+        sendPaste(immediate)
+    }
+
+    func sendPaste(_ text: String) {
+        guard remoteInputEnabled else { return }
+        selectNone()
+        send(TerminalPasteReview.bytes(text, bracketed: getTerminal().bracketedPasteMode))
+    }
+
+    func sendFunctionKey(_ key: TerminalFunctionKey) {
+        guard remoteInputEnabled else { return }
+        let terminal = getTerminal()
+        selectNone()
+        let enhanced = !terminal.keyboardEnhancementFlags.isEmpty
+        var bytes = key.bytes(applicationCursor: terminal.applicationCursor, enhanced: enhanced)
+        if terminal.keyboardEnhancementFlags.contains(.reportEvents) {
+            bytes += key.bytes(applicationCursor: terminal.applicationCursor, enhanced: enhanced, release: true)
+        }
+        send(bytes)
+    }
     private var darkAppearance: Bool?
     private(set) var remoteInputEnabled = false
     private var scrollInput = TerminalScrollInput()
     private var lastPanTranslation: CGFloat = 0
     private var panReportsRemote = false
     private var correctingScrollOffset = false
+    private var localHistoryNavigation = false
+    private var readyForHistoryUpdates = false
 
     private var reportsRemoteScroll: Bool {
-        remoteInputEnabled && allowMouseReporting && getTerminal().mouseMode != .off && !selectionActive
+        remoteInputEnabled && getTerminal().mouseMode != .off && !selectionActive && !localHistoryNavigation
+    }
+
+    func browseHistory(_ action: TerminalHistoryAction) {
+        guard canScroll else { return }
+        localHistoryNavigation = true
+        panReportsRemote = false
+        navigateHistory(action)
+        localHistoryNavigation = isReadingLocalHistory
+        updateHistory(history)
+    }
+
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate, !isReadingLocalHistory { localHistoryNavigation = false }
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        if !isReadingLocalHistory { localHistoryNavigation = false }
     }
 
     init() {
         super.init(frame: CGRect(x: 0, y: 0, width: 390, height: 600),
                    font: UIFont.monospacedSystemFont(ofSize: 14, weight: .regular))
+        readyForHistoryUpdates = true
         keyboardDismissMode = .interactive
+        allowMouseReporting = false
         alwaysBounceVertical = true
         showsVerticalScrollIndicator = true
         showsHorizontalScrollIndicator = false
         contentInsetAdjustmentBehavior = .never
         delegate = self
         panGestureRecognizer.addTarget(self, action: #selector(scrollPan(_:)))
-        getTerminal().changeHistorySize(TerminalScrollInput.historyLimit)
+        changeScrollback(TerminalScrollInput.historyLimit)
         registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (view: MobileTerminalView, _: UITraitCollection) in
             view.applySystemTheme()
         }
@@ -68,7 +115,8 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
 
     override func insertText(_ text: String) {
         let accessory = inputAccessoryView as? TerminalAccessory
-        guard controlModifier || accessory?.controlModifier == true, markedTextRange == nil,
+        guard getTerminal().keyboardEnhancementFlags.isEmpty,
+              controlModifier || accessory?.controlModifier == true, markedTextRange == nil,
               let bytes = TerminalKeyboardInput.controlSequence(characters: text, meta: metaModifier) else {
             super.insertText(text)
             return
@@ -104,10 +152,12 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        defer { updateHistory(history) }
         guard reportsRemoteScroll, !correctingScrollOffset else { return }
         let bottom = max(0, contentSize.height - bounds.height)
         guard contentOffset.y != bottom else { return }
         correctingScrollOffset = true
+        scroll(toPosition: 1)
         contentOffset = CGPoint(x: 0, y: bottom)
         correctingScrollOffset = false
     }
@@ -115,6 +165,12 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
     override func didMoveToWindow() {
         super.didMoveToWindow()
         applySystemTheme()
+        updateHistory(history)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if readyForHistoryUpdates { updateHistory(history) }
     }
 
     func applySystemTheme() {
@@ -133,17 +189,13 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
     }
 
     func write(_ data: Data) {
-        let previousOffset = contentOffset.y
-        let bottom = max(0, contentSize.height - bounds.height)
-        let readingHistory = !getTerminal().isCurrentBufferAlternate && previousOffset < bottom - 0.5
         feed(byteArray: Array(data)[...])
-        if readingHistory, !getTerminal().isCurrentBufferAlternate {
-            contentOffset.y = max(0, min(previousOffset, contentSize.height - bounds.height))
-        }
+        if !canScroll { localHistoryNavigation = false }
+        updateHistory(history, receivedOutput: !data.isEmpty)
     }
     func setCursorVisible(_ visible: Bool) {
         remoteInputEnabled = visible
-        if !visible { panReportsRemote = false; scrollInput.reset() }
+        if !visible { panReportsRemote = false; scrollInput.reset(); pasteReview.cancel() }
         if visible { getTerminal().showCursor() } else {
             getTerminal().hideCursor()
             _ = resignFirstResponder()
@@ -187,23 +239,30 @@ final class MobileTerminalController: UIViewController {
 
     func detachTerminalView() {
         guard let container = viewIfLoaded, terminalView.superview === container else { return }
+        terminalView.pasteReview.cancel()
         _ = terminalView.resignFirstResponder()
         terminalView.removeFromSuperview()
     }
 
-    override var keyCommands: [UIKeyCommand]? { (super.keyCommands ?? []) + controlCommands }
+    override var keyCommands: [UIKeyCommand]? {
+        guard terminalView.getTerminal().keyboardEnhancementFlags.isEmpty else { return super.keyCommands }
+        return (super.keyCommands ?? []) + controlCommands
+    }
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(sendControlCommand(_:)) {
-            return terminalView.superview === viewIfLoaded && terminalView.isFirstResponder &&
+            return terminalView.getTerminal().keyboardEnhancementFlags.isEmpty &&
+                terminalView.superview === viewIfLoaded && terminalView.isFirstResponder &&
                 terminalView.markedTextRange == nil
         }
         return super.canPerformAction(action, withSender: sender)
     }
 
     @objc private func sendControlCommand(_ command: UIKeyCommand) {
-        guard terminalView.superview === viewIfLoaded, terminalView.isFirstResponder, terminalView.remoteInputEnabled,
+        guard terminalView.getTerminal().keyboardEnhancementFlags.isEmpty,
+              terminalView.superview === viewIfLoaded, terminalView.isFirstResponder, terminalView.remoteInputEnabled,
               let bytes = TerminalKeyboardInput.controlSequence(characters: command.input ?? "",
-                                                                meta: command.modifierFlags.contains(.alternate)) else {
+                                                                meta: terminalView.optionAsMetaKey &&
+                                                                    command.modifierFlags.contains(.alternate)) else {
             return
         }
         terminalView.selectNone()
@@ -213,10 +272,13 @@ final class MobileTerminalController: UIViewController {
 
 struct MobileTerminalSurface: UIViewControllerRepresentable {
     let model: MobileTerminalModel
+    @AppStorage("terminal.optionAsMeta") private var optionAsMeta = true
     func makeUIViewController(context: Context) -> UIViewController {
         MobileTerminalController(terminalView: model.view)
     }
-    func updateUIViewController(_ controller: UIViewController, context: Context) {}
+    func updateUIViewController(_ controller: UIViewController, context: Context) {
+        model.view.optionAsMetaKey = optionAsMeta
+    }
     static func dismantleUIViewController(_ controller: UIViewController, coordinator: ()) {
         (controller as? MobileTerminalController)?.detachTerminalView()
     }

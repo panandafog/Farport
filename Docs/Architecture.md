@@ -33,6 +33,12 @@ HostLibraryIntegration; MobileLibraryModel has no Finder dependency.
 retry budget and trust/access requirements. `TerminalOutput` accepts bytes, cursor
 visibility and focus requests. It never resets the screen. macOS `TerminalModel` is
 a thin SwiftTerm/AppKit adapter; `MobileTerminalModel` implements the same contract with UIKit.
+SwiftTerm is pinned to stable 1.19.0. Native macOS pointer overrides own local
+selection versus explicit Option-drag remote input. The remaining scoped event
+monitor handles only non-open keyboard/wheel entry points. Legacy control-byte
+fallbacks yield to SwiftTerm when a program negotiates Kitty keyboard input.
+History capacity uses the view's public changeScrollback API. See Terminal.md
+for the dependency-upgrade boundary and manual compatibility checklist.
 
 Connection errors retain the failing saved-host ID through endpoint/route wrappers.
 Terminal and file models expose `settingsHostID` for authentication/configuration
