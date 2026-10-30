@@ -314,3 +314,13 @@
 "Special Keys" = "Special Keys";
 "Paste Multiple Lines?" = "Paste Multiple Lines?";
 "Pasted line breaks may execute commands. Review the text before sending it." = "Pasted line breaks may execute commands. Review the text before sending it.";
+"Follow System Appearance" = "Follow System Appearance";
+"Appearance" = "Appearance";
+"Light" = "Light";
+"Dark" = "Dark";
+"Color Scheme" = "Color Scheme";
+"Default — System Accent" = "Default — System Accent";
+"Ocean" = "Ocean";
+"Paper" = "Paper";
+"Terminal Appearance" = "Terminal Appearance";
+"Applies to all terminals on this device." = "Applies to all terminals on this device.";

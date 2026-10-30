@@ -1,3 +1,4 @@
+import FarportSessions
 import SwiftTerm
 #if os(macOS)
 import AppKit
@@ -7,6 +8,7 @@ import UIKit
 
 struct TerminalPalette {
     let dark: Bool
+    var scheme: TerminalColorScheme = .standard
 
     var ansi: [SwiftTerm.Color] {
         let values: [UInt32] = dark ? [

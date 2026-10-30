@@ -226,8 +226,6 @@ struct TerminalPane: View {
                                                       navigate: model.view.navigateHistory))
                 .id(ObjectIdentifier(model))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(8)
-                .background(Color(nsColor: .textBackgroundColor))
         }
     }
 

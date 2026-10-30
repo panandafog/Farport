@@ -314,3 +314,13 @@
 "Special Keys" = "Специальные клавиши";
 "Paste Multiple Lines?" = "Вставить несколько строк?";
 "Pasted line breaks may execute commands. Review the text before sending it." = "Переводы строк при вставке могут выполнить команды. Проверьте текст перед отправкой.";
+"Follow System Appearance" = "Следовать теме системы";
+"Appearance" = "Оформление";
+"Light" = "Светлое";
+"Dark" = "Тёмное";
+"Color Scheme" = "Цветовая схема";
+"Default — System Accent" = "По умолчанию — системный акцент";
+"Ocean" = "Океан";
+"Paper" = "Бумага";
+"Terminal Appearance" = "Оформление терминала";
+"Applies to all terminals on this device." = "Применяется ко всем терминалам на этом устройстве.";

@@ -106,7 +106,19 @@ The Finder extension does not access CloudKit.
 5. Debug/development CloudKit creates the `HarborHost` encrypted `profile` schema
    when first uploading disposable test data. Before distributing a production
    signed app, deploy/verify that schema in CloudKit Console's production environment
-   and configure production APNS/provisioning. The current MVP signing is development.
+   and configure production APNS/provisioning. Debug uses Development; the App Store
+   Connect export uses Production.
+
+TestFlight uses the Production environment. In CloudKit Console select
+`iCloud.com.panandafog.harbor`, then Development → Deploy Schema Changes. Review
+the `HarborHost` record type and its encrypted Data field `profile` before deploying
+to Production. This deploys the schema, not the Development records. Afterwards,
+enable sync again on each TestFlight installation. Existing local hosts and queued
+changes are retained; do not delete the journal or recreate hosts to retry.
+
+When a server rejection pauses sync, its reason must survive cancellation of the
+old engine. CKError.operationCancelled and Foundation cancellation are not a new
+sync failure. Connection setup is serialized across account lookup, fetch and send.
 
 Use **FarportLocal**, configuration **Local**, when developing without cloud-capable
 provisioning. The UI explicitly says iCloud is unavailable; this is not cloud success.

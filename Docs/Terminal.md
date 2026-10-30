@@ -87,6 +87,18 @@ wheel gestures. Alternate-screen programs expose no local scrollback; local hist
 controls disable there, rather than silently sending Page Up/Down to the program.
 This does not retrieve server-side tmux scrollback into the local buffer.
 
+## Appearance Settings
+
+macOS Settings (also Terminal → Terminal Appearance) and the mobile Terminal Actions
+menu expose device-local preferences for following system appearance or choosing
+fixed light/dark colors. Standard uses native background/text and the system accent
+for the cursor and selection. Ocean and Paper provide cool and warm alternatives
+with both light/dark variants. ANSI color roles retain the readable light/dark
+palette; indices 16–255 and explicit RGB colors are unchanged. Settings apply to
+retained terminal views without resetting buffers, selection or connection state.
+Manual checks: switch each scheme/mode while output streams and text is selected;
+change macOS accent while Standard is active; switch tabs and restart to check persistence.
+
 ## Build Verification
 
 Build both apps with `-onlyUsePackageVersionsFromResolvedFile` and

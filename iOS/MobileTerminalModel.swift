@@ -62,7 +62,8 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
         }
         send(bytes)
     }
-    private var darkAppearance: Bool?
+    private var appliedPalette: TerminalResolvedPalette?
+    var theme = TerminalAppearance() { didSet { if readyForHistoryUpdates { applySystemTheme() } } }
     private(set) var remoteInputEnabled = false
     private var scrollInput = TerminalScrollInput()
     private var lastPanTranslation: CGFloat = 0
@@ -174,18 +175,27 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
     }
 
     func applySystemTheme() {
-        let dark = traitCollection.userInterfaceStyle == .dark
-        guard darkAppearance != dark else { return }
-        darkAppearance = dark
-        let palette = TerminalPalette(dark: dark)
-        nativeBackgroundColor = UIColor.systemBackground.resolvedColor(with: traitCollection)
-        nativeForegroundColor = UIColor.label.resolvedColor(with: traitCollection)
-        caretColor = nativeForegroundColor
-        caretTextColor = nativeBackgroundColor
-        selectedTextBackgroundColor = palette.selection
-        installColors(palette.ansi)
+        let dark = theme.usesDarkColors(systemDark: traitCollection.userInterfaceStyle == .dark)
+        let traits = UITraitCollection(traitsFrom: [traitCollection,
+            UITraitCollection(userInterfaceStyle: dark ? .dark : .light)])
+        let standard = theme.scheme == .standard
+        let palette = TerminalResolvedPalette(scheme: theme.scheme, dark: dark,
+            background: standard ? UIColor.systemBackground.resolvedColor(with: traits) :
+                TerminalResolvedPalette.color(theme.scheme.background(dark: dark)),
+            foreground: standard ? UIColor.label.resolvedColor(with: traits) :
+                TerminalResolvedPalette.color(theme.scheme.foreground(dark: dark)),
+            accent: standard ? tintColor.resolvedColor(with: traits) :
+                TerminalResolvedPalette.color(theme.scheme.accent(dark: dark)))
+        guard appliedPalette != palette else { return }
+        appliedPalette = palette
+        installTheme(palette)
         backgroundColor = nativeBackgroundColor
         setNeedsDisplay()
+    }
+
+    override func tintColorDidChange() {
+        super.tintColorDidChange()
+        if readyForHistoryUpdates { applySystemTheme() }
     }
 
     func write(_ data: Data) {
@@ -273,11 +283,13 @@ final class MobileTerminalController: UIViewController {
 struct MobileTerminalSurface: UIViewControllerRepresentable {
     let model: MobileTerminalModel
     @AppStorage("terminal.optionAsMeta") private var optionAsMeta = true
+    @TerminalAppearanceStorage private var theme
     func makeUIViewController(context: Context) -> UIViewController {
         MobileTerminalController(terminalView: model.view)
     }
     func updateUIViewController(_ controller: UIViewController, context: Context) {
         model.view.optionAsMetaKey = optionAsMeta
+        model.view.theme = theme
     }
     static func dismantleUIViewController(_ controller: UIViewController, coordinator: ()) {
         (controller as? MobileTerminalController)?.detachTerminalView()

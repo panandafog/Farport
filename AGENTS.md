@@ -118,10 +118,12 @@ disconnect them, retaining updated-host terminal buffers. Preserve baseline guar
 against stale snapshots racing a local save. See `Docs/iCloud.md` for provisioning,
 schema deployment, conflict rules, and test limitations.
 
-Terminal appearance follows the native view's effective system appearance via
-`SystemTerminalView`. Use resolved AppKit text/background colors for defaults and
-separate readable ANSI-16 palettes for light/dark mode. The SwiftUI padding must
-use the same system text background. Repaint the existing terminal; never recreate
+Terminal appearance defaults to following system appearance; device-local settings
+can select a fixed light/dark mode and Standard, Ocean or Paper colors. Standard
+uses resolved system text/background and the system accent for cursor/selection.
+Keep ANSI-16 color roles readable in both modes; extended and true colors stay intact.
+The terminal fills its surface without an independently colored SwiftUI padding.
+Repaint the existing terminal; never recreate
 it, replay output, alter cell attributes, clear selection/history, or send input
 when changing theme. Do not reinstall palettes on unchanged appearance callbacks.
 Indexed colors 16-255 and true-color values keep their standard meaning. Explicit

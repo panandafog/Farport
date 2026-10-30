@@ -10,6 +10,7 @@ struct MobileWorkspaceView: View {
     @State private var renaming = false
     @State private var title = ""
     @State private var closing = false
+    @State private var showingAppearance = false
     @AppStorage("terminal.optionAsMeta") private var optionAsMeta = true
 
     var body: some View {
@@ -42,6 +43,7 @@ struct MobileWorkspaceView: View {
                         .disabled(workspace.selectedTerminalID == nil)
                     Divider()
                     Toggle(L10n.text("Use Option as Meta"), isOn: $optionAsMeta)
+                    Button(L10n.text("Terminal Appearance"), systemImage: "paintpalette") { showingAppearance = true }
                     if let terminal = workspace.terminal {
                         TerminalHistoryMenu(history: terminal.view.history, navigate: terminal.view.browseHistory)
                     }
@@ -69,6 +71,7 @@ struct MobileWorkspaceView: View {
                 if let id = workspace.selectedTerminalID { workspace.renameTerminal(id, title: title) }
             }
         }
+        .sheet(isPresented: $showingAppearance) { TerminalAppearanceSheet() }
         .confirmationDialog(L10n.text("Close Tab"), isPresented: $closing, titleVisibility: .visible) {
             Button(L10n.text("Close Tab"), role: .destructive) {
                 if let id = workspace.selectedTerminalID { workspace.closeTerminal(id) }

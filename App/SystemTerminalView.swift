@@ -4,7 +4,9 @@ import FarportSessions
 import SwiftTerm
 
 final class SystemTerminalView: TerminalView {
-    private var appliedAppearance: NSAppearance.Name?
+    private var appliedPalette: TerminalResolvedPalette?
+    private var colorObserver: NSObjectProtocol?
+    var theme = TerminalAppearance() { didSet { applySystemTheme() } }
     var remoteInputEnabled = false
     let pasteReview = TerminalPasteReview()
     let history = TerminalHistoryState()
@@ -181,11 +183,18 @@ final class SystemTerminalView: TerminalView {
         super.viewDidMoveToWindow()
         applySystemTheme()
         if let inputMonitor { NSEvent.removeMonitor(inputMonitor) }
+        if let colorObserver { NotificationCenter.default.removeObserver(colorObserver) }
+        colorObserver = nil
         inputMonitor = nil
         primaryMouseReportsRemote = false
         if window == nil { pasteReview.cancel() }
         allowMouseReporting = false
         guard window != nil else { return }
+        colorObserver = NotificationCenter.default.addObserver(
+            forName: NSColor.systemColorsDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in self?.applySystemTheme() }
+        }
         // SwiftTerm 1.19 still keeps keyDown/scrollWheel closed; pointer events use native overrides above.
         inputMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .scrollWheel]) { [weak self] event in
             guard let self else { return event }
@@ -195,22 +204,27 @@ final class SystemTerminalView: TerminalView {
 
     deinit {
         if let inputMonitor { NSEvent.removeMonitor(inputMonitor) }
+        if let colorObserver { NotificationCenter.default.removeObserver(colorObserver) }
     }
 
     func applySystemTheme() {
         guard terminal != nil else { return }
-        let appearance = effectiveAppearance
-        guard appliedAppearance != appearance.name else { return }
-        appliedAppearance = appearance.name
-        let palette = TerminalPalette(dark: appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua)
+        let systemDark = effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
+        let dark = theme.usesDarkColors(systemDark: systemDark)
+        let appearance = theme.followsSystem ? effectiveAppearance :
+            (NSAppearance(named: dark ? .darkAqua : .aqua) ?? effectiveAppearance)
         appearance.performAsCurrentDrawingAppearance {
-            // Resolve dynamic AppKit colors before SwiftTerm converts them to RGB values.
-            nativeBackgroundColor = NSColor.textBackgroundColor.usingColorSpace(.sRGB) ?? .textBackgroundColor
-            nativeForegroundColor = NSColor.textColor.usingColorSpace(.sRGB) ?? .textColor
-            caretColor = nativeForegroundColor
-            caretTextColor = nativeBackgroundColor
-            selectedTextBackgroundColor = palette.selection
-            installColors(palette.ansi)
+            let standard = theme.scheme == .standard
+            let palette = TerminalResolvedPalette(scheme: theme.scheme, dark: dark,
+                background: standard ? NSColor.textBackgroundColor.usingColorSpace(.sRGB) ?? .white :
+                    TerminalResolvedPalette.color(theme.scheme.background(dark: dark)),
+                foreground: standard ? NSColor.textColor.usingColorSpace(.sRGB) ?? .black :
+                    TerminalResolvedPalette.color(theme.scheme.foreground(dark: dark)),
+                accent: standard ? NSColor.controlAccentColor.usingColorSpace(.sRGB) ?? .systemBlue :
+                    TerminalResolvedPalette.color(theme.scheme.accent(dark: dark)))
+            guard appliedPalette != palette else { return }
+            appliedPalette = palette
+            installTheme(palette)
             layer?.backgroundColor = nativeBackgroundColor.cgColor
         }
         needsDisplay = true

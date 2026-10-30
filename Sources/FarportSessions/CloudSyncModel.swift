@@ -48,6 +48,7 @@ public final class CloudSyncModel: ObservableObject {
     private func receive(_ value: HostSyncSnapshot) {
         if value.enabled && !snapshot.enabled { registerForPush() }
         snapshot = value
+        if !value.enabled { error = nil }
         reconsiderChanges()
     }
 
@@ -114,7 +115,9 @@ public final class CloudSyncModel: ObservableObject {
     private func perform(_ action: @escaping () async throws -> Void) {
         busy = true; error = nil
         Task {
-            do { try await action() } catch { self.error = error.localizedDescription }
+            do { try await action() } catch {
+                if !CloudSyncFailure.isCancellation(error) { self.error = error.localizedDescription }
+            }
             busy = false
         }
     }
@@ -123,7 +126,9 @@ public final class CloudSyncModel: ObservableObject {
         let previous = journalTask
         journalTask = Task {
             await previous?.value
-            do { try await action() } catch { self.error = error.localizedDescription }
+            do { try await action() } catch {
+                if !CloudSyncFailure.isCancellation(error) { self.error = error.localizedDescription }
+            }
         }
     }
 

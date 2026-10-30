@@ -51,6 +51,10 @@ extension TerminalModel: @preconcurrency TerminalViewDelegate {
 struct TerminalSurface: NSViewRepresentable {
     let model: TerminalModel
     @AppStorage("terminal.optionAsMeta") private var optionAsMeta = true
+    @TerminalAppearanceStorage private var theme
     func makeNSView(context: Context) -> TerminalView { model.view }
-    func updateNSView(_ nsView: TerminalView, context: Context) { nsView.optionAsMetaKey = optionAsMeta }
+    func updateNSView(_ nsView: TerminalView, context: Context) {
+        nsView.optionAsMetaKey = optionAsMeta
+        model.view.theme = theme
+    }
 }

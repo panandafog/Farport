@@ -20,7 +20,9 @@ final class TerminalThemeTests: XCTestCase {
             try apply(name, to: view)
             XCTAssertGreaterThan(try contrast(view.nativeForegroundColor, view.nativeBackgroundColor), 7)
             XCTAssertGreaterThan(try contrast(view.nativeForegroundColor, view.selectedTextBackgroundColor), 7)
-            XCTAssertEqual(view.caretColor, view.nativeForegroundColor)
+            view.effectiveAppearance.performAsCurrentDrawingAppearance {
+                XCTAssertEqual(view.caretColor, NSColor.controlAccentColor.usingColorSpace(.sRGB))
+            }
             XCTAssertEqual(view.caretTextColor, view.nativeBackgroundColor)
             let background = try XCTUnwrap(view.nativeBackgroundColor.usingColorSpace(.sRGB))
             XCTAssertEqual(background.redComponent > 0.5, name == .aqua)
