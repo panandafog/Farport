@@ -176,8 +176,7 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
 
     func applySystemTheme() {
         let dark = theme.usesDarkColors(systemDark: traitCollection.userInterfaceStyle == .dark)
-        let traits = UITraitCollection(traitsFrom: [traitCollection,
-            UITraitCollection(userInterfaceStyle: dark ? .dark : .light)])
+        let traits = traitCollection.modifyingTraits { $0.userInterfaceStyle = dark ? .dark : .light }
         let standard = theme.scheme == .standard
         let palette = TerminalResolvedPalette(scheme: theme.scheme, dark: dark,
             background: standard ? UIColor.systemBackground.resolvedColor(with: traits) :
