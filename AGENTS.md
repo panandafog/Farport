@@ -133,8 +133,8 @@ palette queries, live window appearance changes, and offscreen render attachment
 
 Terminal pointer selection is local by default on macOS, even when tmux requests
 mouse tracking. Option-primary-button gestures explicitly report remote clicks/drags;
-wheel reports remain separate. SwiftTerm is pinned to stable 1.19.0 in project.yml
-and the Xcode lockfile; do not adopt the 1.99/2.0 API transition implicitly.
+wheel reports remain separate. This demo branch vendors SwiftTerm 1.19.0 in Vendor/SwiftTerm (see UPSTREAM.md)
+with a macOS CoreGraphics fractional-scrollback patch; do not adopt the 1.99/2.0 API transition implicitly.
 Use the open mouseDown/mouseDragged/mouseUp overrides, not a window event monitor,
 for pointer gestures. keyDown/scrollWheel remain non-open in this version: scope
 their macOS event monitor to the attached visible terminal and keyboard focus,

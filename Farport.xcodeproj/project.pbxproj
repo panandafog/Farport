@@ -168,6 +168,7 @@
 		03B62BABA8763B4E76448433 /* EmptyHostLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyHostLibraryView.swift; sourceTree = "<group>"; };
 		072A9E25F29EBD0F2DD811E0 /* DebugEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugEnvironment.swift; sourceTree = "<group>"; };
 		0790BF194376BDEE95295BF0 /* TerminalScrolling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalScrolling.swift; sourceTree = "<group>"; };
+		0BEC48347826798C38FBB1EF /* SwiftTerm */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SwiftTerm; path = Vendor/SwiftTerm; sourceTree = SOURCE_ROOT; };
 		13B02DFF7CF451A3702B2CFA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		14541ECB73BEEBE0A6941355 /* LibraryRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryRoutingTests.swift; sourceTree = "<group>"; };
 		15BEE6B2471FD6122155E0C1 /* TerminalPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalPalette.swift; sourceTree = "<group>"; };
@@ -440,6 +441,7 @@
 			isa = PBXGroup;
 			children = (
 				BF49EA2F8CA0319C7774C4A0 /* Farport */,
+				0BEC48347826798C38FBB1EF /* SwiftTerm */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -672,8 +674,8 @@
 			mainGroup = BD8427E53854C9C5F82975DD;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				655BB840378D231E21876CBD /* XCRemoteSwiftPackageReference "SwiftTerm" */,
 				AB8BA11DACA711EFD32C6B7E /* XCLocalSwiftPackageReference "." */,
+				AE0E69DC6282E025774B050E /* XCLocalSwiftPackageReference "Vendor/SwiftTerm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
@@ -1528,18 +1530,11 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = .;
 		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		655BB840378D231E21876CBD /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm.git";
-			requirement = {
-				kind = exactVersion;
-				version = 1.19.0;
-			};
+		AE0E69DC6282E025774B050E /* XCLocalSwiftPackageReference "Vendor/SwiftTerm" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Vendor/SwiftTerm;
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		0BA674342ED988E1D8DF9692 /* FarportSSH */ = {
@@ -1560,7 +1555,6 @@
 		};
 		4FC3F0645FED6E4CF81CAFEA /* SwiftTerm */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 655BB840378D231E21876CBD /* XCRemoteSwiftPackageReference "SwiftTerm" */;
 			productName = SwiftTerm;
 		};
 		556A06B413EE1CAA4156E42A /* FarportCore */ = {
@@ -1569,7 +1563,6 @@
 		};
 		6AAFDAF8215FF955BD7BB269 /* SwiftTerm */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 655BB840378D231E21876CBD /* XCRemoteSwiftPackageReference "SwiftTerm" */;
 			productName = SwiftTerm;
 		};
 		6C25136D6515B7E45F12C53C /* FarportCloud */ = {
@@ -1618,12 +1611,10 @@
 		};
 		BF9E1B9BF9A81579AEDC9B13 /* SwiftTerm */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 655BB840378D231E21876CBD /* XCRemoteSwiftPackageReference "SwiftTerm" */;
 			productName = SwiftTerm;
 		};
 		C0C23B8FBAF68C1F25E0D56A /* SwiftTerm */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 655BB840378D231E21876CBD /* XCRemoteSwiftPackageReference "SwiftTerm" */;
 			productName = SwiftTerm;
 		};
 		C581A12AA03318734C3ABC69 /* FarportSecurity */ = {

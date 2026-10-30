@@ -17,8 +17,7 @@ packages:
   FarportKit:
     path: .
   SwiftTerm:
-    url: https://github.com/migueldeicaza/SwiftTerm.git
-    exactVersion: 1.19.0
+    path: Vendor/SwiftTerm
 settings:
   base:
     SWIFT_VERSION: "5.0"

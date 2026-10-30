@@ -139,3 +139,27 @@ Use disposable local connections for these checks:
     or less. Local navigation must not accidentally send remote key sequences.
 13. Emit OSC 52 from a disposable server and confirm it cannot replace the clipboard;
     normal Copy/Select All must still work.
+
+
+## Experimental smooth scrolling (demo/smooth-terminal-scroll)
+
+macOS trackpad and other precise wheel events move local scrollback by points,
+including AppKit momentum. Ordinary wheel notches remain line-based. The demo uses
+vendored SwiftTerm 1.19.0; see `Vendor/SwiftTerm/UPSTREAM.md` for the patch scope.
+The CoreGraphics renderer draws the extra partial row and adjusts selection/link
+hit testing, IME positions and the caret. Metal is disabled when smooth scrolling
+starts. iOS rendering remains upstream.
+
+Fractional position is transient: integer history navigation, resize and window
+reattachment discard it. Existing integer engine scrollback anchoring is retained;
+this does not add transcript or scroll-position persistence across app restarts.
+Remote mouse reporting (including tmux copy mode) remains discrete. Hold Shift to
+scroll local history instead. For a useful manual comparison, use a plain SSH tab
+or Shift-scroll after producing several hundred numbered lines.
+
+Manual checks: slowly reverse direction within a row; coast to both history edges;
+select/copy across partial rows; inspect ANSI backgrounds, wide characters and
+links; receive output while scrolled up; resize and switch tabs; jump to latest;
+check tmux wheel versus Shift-wheel. UI checks are left to the user. Arithmetic
+regressions run with `swift test --package-path Vendor/SwiftTerm --filter
+FractionalScrollPositionTests`.
