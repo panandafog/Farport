@@ -7,6 +7,23 @@ import FarportSessions
 import SwiftTerm
 
 extension TerminalView {
+    var isReadingLocalHistory: Bool { canScroll && scrollPosition < 1 }
+
+    func updateHistory(_ history: TerminalHistoryState, receivedOutput: Bool = false) {
+        history.update(canScroll: canScroll, position: scrollPosition, receivedOutput: receivedOutput)
+    }
+
+    /// These actions are always local, including when disconnected or inside a remote TUI.
+    func navigateHistory(_ action: TerminalHistoryAction) {
+        guard canScroll else { return }
+        switch action {
+        case .oldest: scroll(toPosition: 0)
+        case .pageUp: scrollUp(lines: max(1, getTerminal().rows - 1))
+        case .pageDown: scrollDown(lines: max(1, getTerminal().rows - 1))
+        case .latest: scroll(toPosition: 1)
+        }
+    }
+
     var scrollCellSize: CGSize {
         #if os(macOS)
         let scale = window?.backingScaleFactor ?? 1
@@ -20,7 +37,8 @@ extension TerminalView {
     func reportScrollWheel(lines: Int, at point: CGPoint, shift: Bool = false,
                            meta: Bool = false, control: Bool = false) {
         let terminal = getTerminal()
-        guard lines != 0, allowMouseReporting, terminal.mouseMode != .off else { return }
+        // Callers gate remote input; macOS disables native pointer reporting to keep drag selection local.
+        guard lines != 0, terminal.mouseMode != .off else { return }
         let cell = scrollCellSize
         let column = max(0, min(terminal.cols - 1, Int(point.x / cell.width)))
         let row = max(0, min(terminal.rows - 1, Int(point.y / cell.height)))

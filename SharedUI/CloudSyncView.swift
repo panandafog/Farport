@@ -105,14 +105,14 @@ struct CloudSyncView: View {
             #if os(iOS)
                 Text(
                     L10n.text(
-                        "Affected connections will disconnect. Updated tabs keep their history; deleted hosts "
-                            + "close their tabs. Changed endpoints require credentials to be reviewed."
+                        "Changed connections will disconnect. Closed tabs and deleted hosts lose local terminal "
+                            + "history; other tabs keep it. Changed endpoints require credentials to be reviewed."
                     ))
             #else
                 Text(
                     L10n.text(
-                        "Affected connections and Finder locations will disconnect. Updated terminal tabs keep "
-                            + "their buffers; deleted hosts close their tabs. Changed endpoints require credentials "
+                        "Changed connections and Finder locations will disconnect. Closed tabs and deleted hosts "
+                            + "lose local terminal history; other tabs keep it. Changed endpoints require credentials "
                             + "to be reviewed."
                     ))
             #endif

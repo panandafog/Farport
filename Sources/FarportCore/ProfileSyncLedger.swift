@@ -39,13 +39,17 @@ public struct ProfileSyncLedger: Codable, Sendable {
         }
     }
 
-    // Initial local data has no causal revision: preserve an existing cloud version and archive differing local data.
+    // Cloud settings win over unversioned local settings. Independently versioned tab definitions still merge.
     public mutating func bootstrap(_ local: [HostProfile]) throws {
         let values = try indexed(local)
         for profile in local {
             if let remote = records[profile.id] {
-                if remote.profile != profile {
+                if remote.profile?.hasSameSettings(as: profile) != true {
                     archive(CloudHostRecord(id: profile.id, revision: try nextRevision(), profile: profile))
+                }
+                if let cloud = remote.profile {
+                    let merged = try cloud.mergingTerminalTabs(from: profile)
+                    if merged != cloud { try edit(profile.id, profile: merged) }
                 }
             } else { try edit(profile.id, profile: profile) }
         }
@@ -58,8 +62,12 @@ public struct ProfileSyncLedger: Codable, Sendable {
             if records[profile.id]?.deleted == true {
                 archive(CloudHostRecord(id: profile.id, revision: try nextRevision(), profile: profile))
             } else {
-                if let current = records[profile.id], current.profile != baseline[profile.id] { archive(current) }
-                try edit(profile.id, profile: profile)
+                if let current = records[profile.id], let baseline = baseline[profile.id],
+                   current.profile?.hasSameSettings(as: baseline) != true { archive(current) }
+                let merged = try records[profile.id]?.profile.map {
+                    try profile.mergingTerminalTabs(from: $0)
+                } ?? profile
+                try edit(profile.id, profile: merged)
             }
         }
         for id in baseline.keys where values[id] == nil { try edit(id, profile: nil) }
@@ -85,8 +93,16 @@ public struct ProfileSyncLedger: Codable, Sendable {
         if current.deleted != incoming.deleted { winner = current.deleted ? current : incoming } else {
             winner = current.revision > incoming.revision ? current : incoming
         }
-        if current.profile != incoming.profile, pending.contains(current.id) {
+        if !sameSettings(current.profile, incoming.profile), pending.contains(current.id) {
             archive(winner == current ? incoming : current)
+        }
+        if let profile = winner.profile, let other = (winner == current ? incoming : current).profile {
+            let merged = try profile.mergingTerminalTabs(from: other)
+            if merged != profile {
+                records[incoming.id] = winner
+                try edit(incoming.id, profile: merged)
+                return
+            }
         }
         records[incoming.id] = winner
         if winner == incoming { pending.remove(incoming.id) } else { pending.insert(incoming.id) }
@@ -133,5 +149,10 @@ public struct ProfileSyncLedger: Codable, Sendable {
         }
         try profiles.forEach { try $0.validate() }
         return Dictionary(uniqueKeysWithValues: profiles.map { ($0.id, $0) })
+    }
+
+    private func sameSettings(_ left: HostProfile?, _ right: HostProfile?) -> Bool {
+        if let left, let right { return left.hasSameSettings(as: right) }
+        return left == right
     }
 }

@@ -18,12 +18,15 @@ sh Scripts/xcodegen.sh generate
 sh Scripts/verify-ios.sh
 xcodebuild -project Farport.xcodeproj -scheme 'Farport iOS Local' \
   -configuration Local -destination 'platform=iOS Simulator,name=iPhone 17e' \
-  -derivedDataPath Build/iOSApp test
+  -derivedDataPath Build/iOSApp -onlyUsePackageVersionsFromResolvedFile -skipPackagePluginValidation test
 ```
 
 Choose an installed Simulator name for the test command. Test schemes set
 `HARBOR_ISOLATED_TESTS=1`: startup uses empty memory repositories, no real Keychain,
 cloud account or persisted library. Never use a user's server to test disconnects.
+The verification script prepares Apple's Metal Toolchain and enables the reviewed,
+exact-pinned SwiftTerm build-info plugin for CLI builds. IDE builds need the standard
+package-plugin trust confirmation; see [Terminal](Terminal.md).
 
 ## Interface And Lifecycle
 

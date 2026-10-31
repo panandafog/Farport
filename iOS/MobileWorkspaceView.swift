@@ -10,6 +10,8 @@ struct MobileWorkspaceView: View {
     @State private var renaming = false
     @State private var title = ""
     @State private var closing = false
+    @State private var showingAppearance = false
+    @AppStorage("terminal.optionAsMeta") private var optionAsMeta = true
 
     var body: some View {
         VStack(spacing: 0) {
@@ -40,6 +42,19 @@ struct MobileWorkspaceView: View {
                     Button(L10n.text("Close Tab"), systemImage: "xmark", role: .destructive) { closing = true }
                         .disabled(workspace.selectedTerminalID == nil)
                     Divider()
+                    Toggle(L10n.text("Use Option as Meta"), isOn: $optionAsMeta)
+                    Button(L10n.text("Terminal Appearance"), systemImage: "paintpalette") { showingAppearance = true }
+                    if let terminal = workspace.terminal {
+                        TerminalHistoryMenu(history: terminal.view.history, navigate: terminal.view.browseHistory)
+                    }
+                    Menu(L10n.text("Special Keys")) {
+                        ForEach(TerminalFunctionKey.allCases) { key in
+                            Button(key.rawValue) { workspace.terminal?.view.sendFunctionKey(key) }
+                        }
+                    }.disabled(workspace.terminal?.state != .connected)
+                    Button(L10n.text("Select All")) { workspace.terminal?.view.selectAll() }
+                    Button(L10n.text("Paste")) { workspace.terminal?.view.paste(nil) }
+                        .disabled(workspace.terminal?.state != .connected)
                     Button(L10n.text("Copy"), systemImage: "doc.on.doc") { workspace.terminal?.view.copy(nil) }
                         .disabled(workspace.selectedTerminalID == nil)
                     Button(L10n.text("Edit Host"), systemImage: "slider.horizontal.3") {
@@ -56,6 +71,7 @@ struct MobileWorkspaceView: View {
                 if let id = workspace.selectedTerminalID { workspace.renameTerminal(id, title: title) }
             }
         }
+        .sheet(isPresented: $showingAppearance) { TerminalAppearanceSheet() }
         .confirmationDialog(L10n.text("Close Tab"), isPresented: $closing, titleVisibility: .visible) {
             Button(L10n.text("Close Tab"), role: .destructive) {
                 if let id = workspace.selectedTerminalID { workspace.closeTerminal(id) }
@@ -99,6 +115,8 @@ private struct MobileTerminalPane: View {
             }
             Divider()
             MobileTerminalSurface(model: model)
+                .modifier(TerminalPastePresentation(review: model.view.pasteReview, send: model.view.sendPaste))
+                .modifier(TerminalHistoryPresentation(history: model.view.history, navigate: model.view.browseHistory))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .toolbar {

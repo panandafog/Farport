@@ -22,7 +22,10 @@ commands can have irreversible side effects, and history can contain secrets.
 
 `WorkspaceRepository` stores schema-1 metadata in `hosts.workspace.json`, separate
 from the host/credential library. Each host has ordered tabs with stable UUIDs and
-names, selected tab, and Terminal/Files mode; the document stores selected host.
+names, selected tab, and Terminal/Files mode; the document stores selected host and
+a local device UUID for tab revisions. HostProfile also stores synchronized tab
+definitions (UUID/name/order plus per-tab revisions and tombstones). Its definitions
+are canonical after migration; the workspace file keeps device-local selection/mode.
 Changes save atomically immediately and on quit. Missing hosts are ignored/pruned,
 invalid/duplicate tab identities and future schemas are rejected, and load failure
 disables writes so damaged metadata is not silently replaced. Restoring makes no
@@ -32,6 +35,10 @@ native terminals lazily and retain their buffers while switching tabs/hosts/view
 Closing a tab removes its metadata and detaches SSH without killing tmux. Editing
 a host preserves tab identities but detaches existing connections. This first
 workspace version does not persist SFTP directory, terminal geometry, or transcripts.
+With iCloud enabled, tab definitions and closures propagate between macOS/iOS, but
+not the selected tab, connection intent or screen output. Existing UUIDs are preserved
+so tmux can attach to the same remote sessions. See `iCloud.md` for conflict handling
+and the required app upgrade on both devices.
 
 Extend the versioned repository with terminal dimensions, timestamps, and a bounded
 local transcript in a future iteration, without persisting a false connected status.
@@ -76,9 +83,14 @@ identifier; profile labels and paths never enter that command. Citadel allocates
 a PTY and sends an exec request, rather than typing into an interactive shell.
 `tmux new-session -A -s harbor-<UUID>` creates or attaches without evicting other
 clients. The wrapper uses `/bin/sh` so non-POSIX login shells can launch it too.
+It resolves tmux from the SSH account’s PATH first, then checks the standard
+Homebrew binaries `/opt/homebrew/bin/tmux` and `/usr/local/bin/tmux`. It does not
+source interactive/login shell startup files or modify the account’s PATH.
 It enables `mouse` only on that UUID-named session, including reattachments, so wheel
 and touch scrolling can enter tmux's server-side history. It does not change global
-tmux options, key bindings or the user's configuration file.
+tmux options, key bindings or the user's configuration file. Farport applies
+accent-tinted status/mode decoration styles to its own session/current window;
+see `Terminal.md` for live updates and multiple-client behavior.
 Exit 127 reports an actionable missing-tmux error, with no silent plain-shell fallback.
 
 Native clients forward wheel reports when a connected remote application requests
@@ -88,6 +100,15 @@ scrolling with a bounded 10,000-line buffer. Disconnected terminals never send s
 input to the server. Remote tmux history still requires an attached connection.
 New ordinary-shell output preserves a scrolled-up viewport instead of returning it
 to the latest line; a viewport already at the bottom continues to follow output.
+
+On macOS, primary-button dragging selects local terminal text, including in tmux;
+Command-C copies it and Command-V pastes. Hold Option while clicking/dragging to
+send primary-button mouse events to a remote application instead. Wheel reports
+remain independent of local selection. On iOS, long-press Select/Select All uses
+the native selection handles without forwarding selection pans as tmux scrolling.
+Control shortcuts use terminal control bytes, including Russian hardware keyboard
+input (macOS also falls back to physical keys for other non-Latin layouts).
+Command shortcuts and ordinary text/IME input remain native.
 
 Persisted tab UUIDs supply identity across restarts and label changes. The first
 default tab uses its host UUID to reuse the pre-tabs remote session. Additional

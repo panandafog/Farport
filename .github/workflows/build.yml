@@ -112,6 +112,9 @@ jobs:
       - name: Check package lockfiles
         run: xcrun swift Scripts/verify-package-locks.swift
 
+      - name: Prepare terminal shader compiler
+        run: sh Scripts/prepare-terminal-build.sh
+
       - name: Build without signing
         shell: bash
         run: |
@@ -121,7 +124,7 @@ jobs:
             -configuration "${{ matrix.configuration }}" -destination 'generic/platform=macOS' \
             -derivedDataPath "$RUNNER_TEMP/FarportBuild" \
             -resultBundlePath "$RUNNER_TEMP/FarportDiagnostics/Farport.xcresult" \
-            -onlyUsePackageVersionsFromResolvedFile \
+            -onlyUsePackageVersionsFromResolvedFile -skipPackagePluginValidation \
             CODE_SIGNING_ALLOWED=NO build 2>&1 | tee "$RUNNER_TEMP/FarportDiagnostics/build.log"
 
       - name: Preserve build diagnostics on failure

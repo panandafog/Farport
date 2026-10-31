@@ -27,6 +27,8 @@ open class HostLibraryModel<Terminal: TerminalSessionModel>: ObservableObject, S
     public private(set) var loadFailed = false
     private var workspaceLoadFailed = false
     private var ready = false
+    private var cloudAttached = false
+    private let workspaceDeviceID: UUID
 
     public init(repository: any HostRepository, workspaceRepository: any WorkspaceRepository,
                 trust: ServerTrustModel? = nil, cloud: CloudSyncModel? = nil,
@@ -55,15 +57,18 @@ open class HostLibraryModel<Terminal: TerminalSessionModel>: ObservableObject, S
             self.error = L10n.text("Could not restore the workspace. The saved file will not be overwritten. %@",
                                    error.localizedDescription)
         }
+        workspaceDeviceID = saved.deviceID
         for host in hosts {
             installWorkspace(for: host, snapshot: saved.hosts.first { $0.hostID == host.id })
         }
         selection = hosts.contains { $0.id == saved.selectedHostID } ? saved.selectedHostID : hosts.first?.id
         ready = true
-        if !loadFailed { cloud?.attach(self) }
+        persistWorkspace()
     }
 
     public var selectedWorkspace: SessionWorkspace<Terminal>? { selection.flatMap { workspaces[$0] } }
+
+    func storedWorkspace(_ id: UUID) -> SessionWorkspace<Terminal>? { workspaces[id] }
 
     public var filteredHosts: [SavedHost] {
         hosts.filter {
@@ -79,6 +84,7 @@ open class HostLibraryModel<Terminal: TerminalSessionModel>: ObservableObject, S
         let provider = makeProvider(hosts)
         if let workspace = workspaces[host.id] {
             workspace.reconfigure(host: host, provider: provider, routeSummary: summary)
+            workspace.applyTerminalTabs(host: host)
             return
         }
         let workspace = SessionWorkspace(host: host, provider: provider, snapshot: snapshot,
@@ -90,6 +96,10 @@ open class HostLibraryModel<Terminal: TerminalSessionModel>: ObservableObject, S
     public func save(_ host: SavedHost) throws {
         guard !loadFailed else {
             throw HarborError.message(L10n.text("Resolve the host library read error before saving changes."))
+        }
+        var host = host
+        if let existing = hosts.first(where: { $0.id == host.id }) {
+            host.profile.terminalTabs = existing.profile.terminalTabs
         }
         try host.profile.validate()
         if host.credentialsConfigured { try host.validate() }
@@ -136,16 +146,38 @@ open class HostLibraryModel<Terminal: TerminalSessionModel>: ObservableObject, S
 
     func replaceWorkspaces(with updated: [SavedHost], affected: Set<UUID>) {
         hosts = updated
-        for host in updated where affected.contains(host.id) {
-            installWorkspace(for: host)
+        for host in updated {
+            if affected.contains(host.id) { installWorkspace(for: host) } else {
+                workspaces[host.id]?.applyTerminalTabs(host: host)
+            }
         }
     }
 
     public func persistWorkspace() {
         guard ready, !loadFailed, !workspaceLoadFailed else { return }
         let snapshot = WorkspaceSnapshot(selectedHostID: selection,
-                                         hosts: hosts.compactMap { workspaces[$0.id]?.snapshot })
-        do { try workspaceRepository.save(snapshot) } catch { self.error = error.localizedDescription }
+                                         hosts: hosts.compactMap { workspaces[$0.id]?.snapshot },
+                                         deviceID: workspaceDeviceID)
+        do {
+            try snapshot.validate()
+            var updated = hosts
+            for index in updated.indices {
+                guard let workspace = workspaces[updated[index].id] else { continue }
+                let defaultTabs = HostWorkspace(hostID: updated[index].id).terminals
+                if updated[index].profile.terminalTabs == nil, workspace.tabs == defaultTabs { continue }
+                var layout = updated[index].profile.terminalTabs ?? SyncedTerminalTabs()
+                try layout.record(workspace.tabs, device: workspaceDeviceID)
+                updated[index].profile.terminalTabs = layout
+            }
+            if updated != hosts {
+                try repository.save(updated)
+                replaceWorkspaces(with: updated, affected: [])
+                cloud?.localChanged()
+            }
+            // Definitions are canonical in the host library. A selection-file failure must not lose saved tabs.
+            try workspaceRepository.save(snapshot)
+            if !cloudAttached { cloudAttached = true; cloud?.attach(self) }
+        } catch { self.error = error.localizedDescription }
     }
 
     public func hasActiveWorkspace(_ id: UUID) -> Bool { workspaces[id]?.hasActiveSessions == true }

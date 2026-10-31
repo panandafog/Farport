@@ -37,10 +37,22 @@ public struct WorkspaceSnapshot: Codable, Equatable, Sendable {
     public var schemaVersion = 1
     public var selectedHostID: UUID?
     public var hosts: [HostWorkspace]
+    public var deviceID: UUID
 
-    public init(selectedHostID: UUID? = nil, hosts: [HostWorkspace] = []) {
+    public init(selectedHostID: UUID? = nil, hosts: [HostWorkspace] = [], deviceID: UUID = UUID()) {
         self.selectedHostID = selectedHostID
         self.hosts = hosts
+        self.deviceID = deviceID
+    }
+
+    private enum CodingKeys: String, CodingKey { case schemaVersion, selectedHostID, hosts, deviceID }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        schemaVersion = try values.decode(Int.self, forKey: .schemaVersion)
+        selectedHostID = try values.decodeIfPresent(UUID.self, forKey: .selectedHostID)
+        hosts = try values.decode([HostWorkspace].self, forKey: .hosts)
+        deviceID = try values.decodeIfPresent(UUID.self, forKey: .deviceID) ?? UUID()
     }
 
     public func validate() throws {

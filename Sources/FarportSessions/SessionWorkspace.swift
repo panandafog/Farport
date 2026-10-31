@@ -33,8 +33,10 @@ public final class SessionWorkspace<Terminal: TerminalSessionModel>: ObservableO
         self.trust = trust
         files = FilesModel(host: host, provider: provider, trust: trust)
         let saved = snapshot ?? HostWorkspace(hostID: host.id)
-        tabs = saved.terminals
-        selectedTerminalID = saved.selectedTerminalID
+        let restoredTabs = host.profile.terminalTabs?.tabs ?? saved.terminals
+        tabs = restoredTabs
+        selectedTerminalID = restoredTabs.contains { $0.id == saved.selectedTerminalID } ?
+            saved.selectedTerminalID : restoredTabs.first?.id
         mode = saved.mode
     }
 
@@ -60,6 +62,27 @@ public final class SessionWorkspace<Terminal: TerminalSessionModel>: ObservableO
         self.host = host
         self.provider = provider
         self.routeSummary = routeSummary
+    }
+
+    public func canApplyTerminalTabs(_ layout: SyncedTerminalTabs?) -> Bool {
+        guard let layout else { return true }
+        let remaining = Set(layout.tabs.map(\.id))
+        return !terminals.contains { id, terminal in
+            !remaining.contains(id) && (terminal.state != .disconnected || terminal.requirement != nil)
+        }
+    }
+
+    public func applyTerminalTabs(host: SavedHost) {
+        let callback = changed
+        changed = nil
+        defer { changed = callback }
+        self.host = host
+        guard let layout = host.profile.terminalTabs else { return }
+        let updated = layout.tabs
+        let remaining = Set(updated.map(\.id))
+        for id in Set(terminals.keys).subtracting(remaining) { terminals.removeValue(forKey: id)?.disconnect() }
+        tabs = updated
+        if !tabs.contains(where: { $0.id == selectedTerminalID }) { selectedTerminalID = tabs.first?.id }
     }
 
     @discardableResult

@@ -6,7 +6,7 @@ ProxyJump and optional persistent tmux sessions. macOS also includes SFTP and Fi
 ## Features
 
 - Interactive terminals with system light/dark appearance and retained output after disconnect.
-- Named terminal tabs and local workspace restoration; optional tmux reconnect.
+- Named terminal tabs with optional iCloud sync, local workspace restoration and tmux reconnect.
 - macOS SFTP browsing, uploads/downloads, progress, cancellation, and basic file operations.
 - Optional macOS read-only or read/write Finder locations using File Provider.
 - Native multi-hop ProxyJump for SSH, SFTP, and Finder.
@@ -32,12 +32,16 @@ Open `Farport.xcodeproj`, select **Farport > My Mac**, and press **Command-R**.
 The first build downloads Swift Package dependencies. Select your own signing Team
 if needed; capability setup is described in [iCloud](Docs/iCloud.md) and [Finder](Docs/Finder.md).
 Do not rename existing App Group or Keychain identities when updating this installation.
+Enable SwiftTermBuildInfoPlugin when Xcode asks. SwiftTerm's shader resources also
+require Apple's Metal Toolchain; the preparation command below installs it if missing.
 
 ```sh
 brew install swiftlint
+sh Scripts/prepare-terminal-build.sh
 xcodebuild -project Farport.xcodeproj -scheme Farport \
   -configuration Debug -destination 'platform=macOS' \
-  -derivedDataPath Build -allowProvisioningUpdates build
+  -derivedDataPath Build -onlyUsePackageVersionsFromResolvedFile \
+  -skipPackagePluginValidation -allowProvisioningUpdates build
 open Build/Build/Products/Debug/Farport.app
 ```
 
@@ -71,7 +75,8 @@ sh Scripts/lint.sh
 swift test
 sh Scripts/verify-ios.sh
 xcodebuild -project Farport.xcodeproj -scheme Farport \
-  -configuration Debug -destination 'platform=macOS' -derivedDataPath Build test
+  -configuration Debug -destination 'platform=macOS' -derivedDataPath Build \
+  -onlyUsePackageVersionsFromResolvedFile -skipPackagePluginValidation test
 ```
 
 `swift test` skips network tests unless the disposable SSH/SFTP fixture is running.

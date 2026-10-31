@@ -5,6 +5,37 @@ import XCTest
 
 @MainActor
 final class MobileTerminalTests: XCTestCase {
+    func testReplacementControllersUseSeparateRootsAndLateDismantleKeepsTheNewAttachment() throws {
+        let terminal = try XCTUnwrap(workspace().terminal)
+        let view = terminal.view
+        view.write(Data("retained across controller replacement".utf8))
+        view.selectAll()
+        let history = view.getTerminal().getBufferAsData()
+        let selection = view.getSelection()
+        let first = MobileTerminalController(terminalView: view)
+        first.loadViewIfNeeded()
+        XCTAssertFalse(first.view === view)
+        XCTAssertTrue(view.superview === first.view)
+
+        let second = MobileTerminalController(terminalView: view)
+        second.loadViewIfNeeded()
+        XCTAssertFalse(second.view === view)
+        XCTAssertFalse(first.view === second.view)
+        XCTAssertTrue(view.superview === second.view)
+        MobileTerminalSurface.dismantleUIViewController(first, coordinator: ())
+        XCTAssertTrue(view.superview === second.view)
+        XCTAssertEqual(view.getTerminal().getBufferAsData(), history)
+        XCTAssertEqual(view.getSelection(), selection)
+
+        MobileTerminalSurface.dismantleUIViewController(second, coordinator: ())
+        XCTAssertNil(view.superview)
+        let third = MobileTerminalController(terminalView: view)
+        third.loadViewIfNeeded()
+        XCTAssertTrue(view.superview === third.view)
+        XCTAssertEqual(view.getTerminal().getBufferAsData(), history)
+        MobileTerminalSurface.dismantleUIViewController(third, coordinator: ())
+    }
+
     func testDisconnectRetainsNativeTerminalAndRejectsInput() async throws {
         let session = MobileTestSession()
         let workspace = workspace(session: session)

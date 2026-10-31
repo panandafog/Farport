@@ -19,11 +19,15 @@ public struct CloudHostRecord: Codable, Equatable, Sendable {
     public var deleted: Bool { profile == nil }
 
     public init(id: UUID, revision: ProfileRevision, parent: ProfileRevision? = nil, profile: HostProfile?) {
-        schemaVersion = 1; self.id = id; self.revision = revision; self.parent = parent; self.profile = profile
+        schemaVersion = profile?.terminalTabs == nil ? 1 : 2
+        self.id = id; self.revision = revision; self.parent = parent; self.profile = profile
     }
 
     public func validate() throws {
-        guard schemaVersion == 1, revision.counter > 0, revision.counter < UInt64.max,
+        guard (schemaVersion == 1 && profile?.terminalTabs == nil) || schemaVersion == 2 else {
+            throw HarborError.message(L10n.text("Unsupported iCloud host record."))
+        }
+        guard revision.counter > 0, revision.counter < UInt64.max,
               profile == nil || profile?.id == id else {
                   throw HarborError.message(L10n.text("Unsupported iCloud host record."))
               }

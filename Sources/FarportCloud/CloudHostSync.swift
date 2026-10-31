@@ -34,6 +34,8 @@ public actor CloudHostSync: HostSyncService {
 
     public func enable(profiles: [HostProfile]) async throws {
         guard !connecting else { throw HarborError.message(L10n.text("iCloud is already connecting.")) }
+        connecting = true
+        defer { connecting = false }
         latestProfiles = profiles
         let token = generation
         let container = CKContainer(identifier: containerIdentifier)
@@ -53,6 +55,7 @@ public actor CloudHostSync: HostSyncService {
     public func disable() async throws {
         document.enabled = false
         document.pauseReason = nil
+        issue = nil
         stopEngine()
         status = L10n.text("Off - local hosts and iCloud data kept")
         try checkpoint()
@@ -61,6 +64,8 @@ public actor CloudHostSync: HostSyncService {
     public func refresh(profiles: [HostProfile]) async throws {
         latestProfiles = profiles
         guard document.enabled, !connecting else { return }
+        connecting = true
+        defer { connecting = false }
         if document.initialized { try register(profiles) }
         let token = generation
         let container = CKContainer(identifier: containerIdentifier)
@@ -74,7 +79,11 @@ public actor CloudHostSync: HostSyncService {
                 return
             }
             try await connect(container: container)
-        } catch { report(error); throw error }
+        } catch {
+            guard token == generation else { throw CancellationError() }
+            report(error)
+            throw error
+        }
     }
 
     public func localChanged(profiles: [HostProfile]) throws {
@@ -98,8 +107,6 @@ public actor CloudHostSync: HostSyncService {
     }
 
     func connect(container: CKContainer) async throws {
-        connecting = true
-        defer { connecting = false }
         status = L10n.text("Connecting to iCloud")
         issue = nil
         publish()
@@ -131,7 +138,13 @@ public actor CloudHostSync: HostSyncService {
                 status = document.ledger.pending.isEmpty ? L10n.text("Up to date") : L10n.text("Changes queued")
             }
             publish()
-        } catch { report(error); throw error }
+        } catch {
+            // A delegate may have paused sync and cancelled this engine after a real failure.
+            // Keep that reason instead of replacing it with the old operation's cancellation.
+            guard engine === active, document.enabled else { throw CancellationError() }
+            report(error)
+            throw error
+        }
     }
 
     private func account(in container: CKContainer) async throws -> String {
@@ -165,7 +178,7 @@ public actor CloudHostSync: HostSyncService {
     }
 
     func report(_ error: Error) {
-        if !(error is CancellationError) {
+        if !CloudSyncFailure.isCancellation(error), document.enabled || document.pauseReason == nil {
             issue = error.localizedDescription
             status = L10n.text("Sync needs attention: %@", error.localizedDescription)
             publish()

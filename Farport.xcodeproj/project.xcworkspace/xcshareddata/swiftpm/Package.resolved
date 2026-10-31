@@ -55,6 +55,24 @@
       }
     },
     {
+      "identity" : "swift-docc-plugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-docc-plugin",
+      "state" : {
+        "revision" : "647c708be89f834fa6a6d4945442793a77ddf5b6",
+        "version" : "1.5.0"
+      }
+    },
+    {
+      "identity" : "swift-docc-symbolkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-docc-symbolkit",
+      "state" : {
+        "revision" : "b45d1f2ed151d057b54504d653e0da5552844e34",
+        "version" : "1.0.0"
+      }
+    },
+    {
       "identity" : "swift-log",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",
@@ -88,15 +106,6 @@
       "state" : {
         "revision" : "869129b7bf4ecc57b97d0193ad29690ca2134750",
         "version" : "1.8.1"
-      }
-    },
-    {
-      "identity" : "swiftterm",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/migueldeicaza/SwiftTerm.git",
-      "state" : {
-        "revision" : "5c83a9d214e7354697624c11deb4e488bdcfabad",
-        "version" : "1.10.1"
       }
     }
   ],

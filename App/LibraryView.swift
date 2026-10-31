@@ -186,6 +186,7 @@ struct TerminalPane: View {
                     }
                 }
                 Spacer()
+                TerminalHistoryMenu(history: model.view.history, navigate: model.view.navigateHistory)
                 if model.requirement != nil {
                     Button(L10n.text("Cancel"), systemImage: "xmark", action: model.disconnect)
                 } else if model.state == .disconnected {
@@ -220,10 +221,11 @@ struct TerminalPane: View {
                 ConnectionRequirementView(requirement: .localNetwork, review: {}, waiting: true)
             }
             TerminalSurface(model: model)
+                .modifier(TerminalPastePresentation(review: model.view.pasteReview, send: model.view.sendPaste))
+                .modifier(TerminalHistoryPresentation(history: model.view.history,
+                                                      navigate: model.view.navigateHistory))
                 .id(ObjectIdentifier(model))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(8)
-                .background(Color(nsColor: .textBackgroundColor))
         }
     }
 

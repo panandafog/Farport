@@ -13,24 +13,21 @@ final class TerminalModel: TerminalSessionModel {
         view = SystemTerminalView(frame: NSRect(x: 0, y: 0, width: 800, height: 540),
                                   font: NSFont.monospacedSystemFont(ofSize: 13, weight: .regular))
         super.init(host: host, provider: provider, policy: policy, sessionID: sessionID, trust: trust, output: view)
+        view.decorationColorsChanged = { [weak self] in self?.setDecorationColors($0) }
         view.terminalDelegate = self
-        view.getTerminal().changeHistorySize(TerminalScrollInput.historyLimit)
-        view.applySystemTheme()
+        view.changeScrollback(TerminalScrollInput.historyLimit)
+        view.applySystemTheme(force: true)
     }
 }
 
 extension SystemTerminalView: TerminalOutput {
     func write(_ data: Data) {
-        let terminal = getTerminal()
-        let previousRow = terminal.getTopVisibleRow()
-        let readingHistory = canScroll && scrollPosition < 1
         feed(byteArray: Array(data)[...])
-        if readingHistory, !terminal.isCurrentBufferAlternate {
-            scrollUp(lines: max(0, terminal.getTopVisibleRow() - previousRow))
-        }
+        updateHistory(history, receivedOutput: !data.isEmpty)
     }
     func setCursorVisible(_ visible: Bool) {
         remoteInputEnabled = visible
+        if !visible { pasteReview.cancel() }
         if visible { getTerminal().showCursor() } else { getTerminal().hideCursor() }
     }
     func focus() { window?.makeFirstResponder(self) }
@@ -43,12 +40,10 @@ extension TerminalModel: @preconcurrency TerminalViewDelegate {
     }
     func setTerminalTitle(source: TerminalView, title: String) { updateTitle(title) }
     func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {}
-    func scrolled(source: TerminalView, position: Double) {}
+    func scrolled(source: TerminalView, position: Double) { view.updateHistory(view.history) }
     func bell(source: TerminalView) { NSSound.beep() }
     func clipboardCopy(source: TerminalView, content: Data) {
-        guard let text = String(data: content, encoding: .utf8) else { return }
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(text, forType: .string)
+        // Remote OSC 52 must not overwrite the clipboard. Native user Copy remains available.
     }
     func iTermContent(source: TerminalView, content: ArraySlice<UInt8>) {}
     func rangeChanged(source: TerminalView, startY: Int, endY: Int) {}
@@ -56,6 +51,11 @@ extension TerminalModel: @preconcurrency TerminalViewDelegate {
 
 struct TerminalSurface: NSViewRepresentable {
     let model: TerminalModel
+    @AppStorage("terminal.optionAsMeta") private var optionAsMeta = true
+    @TerminalAppearanceStorage private var theme
     func makeNSView(context: Context) -> TerminalView { model.view }
-    func updateNSView(_ nsView: TerminalView, context: Context) {}
+    func updateNSView(_ nsView: TerminalView, context: Context) {
+        nsView.optionAsMetaKey = optionAsMeta
+        model.view.theme = theme
+    }
 }

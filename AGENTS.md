@@ -101,7 +101,12 @@ Never replay commands or install server software implicitly.
 
 iCloud sync is opt-in, using CKSyncEngine and encrypted per-host records in the
 private CloudKit database. Keep CloudKit out of Core. Sync HostProfile only, never
-SavedHost, Keychain references/secrets, server pins, Finder locations, or workspaces.
+SavedHost, Keychain references/secrets, server pins, Finder locations, terminal output,
+selected host/tab, workspace mode or connection intent. HostProfile.terminalTabs carries
+only UUID/name/order definitions and per-tab revision/tombstone metadata. Merge each
+tab independently; closed UUIDs never resurrect. CloudHostRecord schema 2 protects
+these definitions from older apps that cannot preserve the new payload; schema 1
+without tab metadata remains readable. Keep the existing encrypted CloudKit field/type.
 Imported hosts require explicit local credential setup, even for an empty password.
 Endpoint/authentication/route changes invalidate local credential readiness. Keep
 whole-profile deterministic revisions, durable tombstones, pending edits and bounded
@@ -113,16 +118,67 @@ disconnect them, retaining updated-host terminal buffers. Preserve baseline guar
 against stale snapshots racing a local save. See `Docs/iCloud.md` for provisioning,
 schema deployment, conflict rules, and test limitations.
 
-Terminal appearance follows the native view's effective system appearance via
-`SystemTerminalView`. Use resolved AppKit text/background colors for defaults and
-separate readable ANSI-16 palettes for light/dark mode. The SwiftUI padding must
-use the same system text background. Repaint the existing terminal; never recreate
+Terminal appearance defaults to following system appearance; device-local settings
+can select a fixed light/dark mode and Standard, Ocean or Paper colors. Standard
+uses resolved system text/background and the system accent for cursor/selection.
+Keep ANSI-16 color roles readable in both modes; extended and true colors stay intact.
+The terminal fills its surface without an independently colored SwiftUI padding.
+Tmux status/mode decorations use a separate optional TerminalSession color capability,
+not ANSI slot remapping. Resolve the application's accent natively, tint the terminal
+background and choose black/white text for contrast. Cache colors in the shared model
+for reconnects; update via a separate SSH exec channel, never interactive input.
+Attach with `-T 256,RGB` to advertise only Farport's client capabilities. Test actual
+RGB SGR output as well as stored style options to catch tmux color quantization.
+Scope options to the UUID session/current window, never global options or user config.
+Cosmetic failures must not disconnect the shell; colors are shared by all clients of
+the same server session/window. See Docs/Terminal.md.
+Repaint the existing terminal; never recreate
 it, replay output, alter cell attributes, clear selection/history, or send input
 when changing theme. Do not reinstall palettes on unchanged appearance callbacks.
 Indexed colors 16-255 and true-color values keep their standard meaning. Explicit
-application colors/background combinations are not automatically inverted/recolored.
+application colors/background combinations using 256-color indices 16–255 or
+true color are not automatically inverted/recolored. Basic/default ANSI pairs use
+the shared SwiftTerm contrast correction at render time (4.5:1), preserving background,
+hue ordering, cell attributes, equal fg/bg and dim text. Keep the installed ANSI-16
+palette stable across themes: a remote TUI can use every slot as a background.
+Both CoreGraphics and Metal consume the same resolved run attributes.
 Theme tests cover contrast, SGR styles, selection, retained output, hidden cursor,
 palette queries, live window appearance changes, and offscreen render attachments.
+
+Terminal pointer selection is local by default on macOS, even when tmux requests
+mouse tracking. Option-primary-button gestures explicitly report remote clicks/drags;
+wheel reports remain separate. This demo branch vendors SwiftTerm 1.19.0 in Vendor/SwiftTerm (see UPSTREAM.md)
+with a macOS CoreGraphics fractional-scrollback patch; do not adopt the 1.99/2.0 API transition implicitly.
+Use the open mouseDown/mouseDragged/mouseUp overrides, not a window event monitor,
+for pointer gestures. keyDown/scrollWheel remain non-open in this version: scope
+their macOS event monitor to the attached visible terminal and keyboard focus,
+remove it on detachment, and never intercept another view's commands. iOS uses a
+native UIViewController responder for hardware Control commands and the existing
+selection gestures. Keep Command copy/paste and ordinary text/IME input native.
+Each mobile controller must own a separate root container, never use the retained
+terminal as its root view: SwiftUI replacements may overlap in lifetime. Detach only
+when that controller still owns the terminal's superview; stale teardown must not
+remove a newer attachment or dismiss its keyboard.
+TerminalKeyboardInput owns control-byte encoding and Russian-layout fallback;
+apply these legacy overrides only while keyboardEnhancementFlags is empty. Once a
+remote program negotiates Kitty keyboard input, let SwiftTerm encode its events.
+Disconnected terminals reject remote input but retain selection/copy/scroll.
+Set history capacity through TerminalView.changeScrollback so view/scroller state
+updates with the engine. Keep SwiftTerm outside the shared session/transport models.
+See Docs/Terminal.md for upgrade scope and manual compatibility checks.
+TerminalPasteReview snapshots and sanitizes clipboard input, requests confirmation
+for every newline (including trailing CR/LF), and consumes each request only once.
+Disconnect or view detachment cancels pending paste; never reread the clipboard on
+confirmation or queue offline input. Encode bracketed paste using the current remote
+mode. The Option/Meta preference is device-local. Mobile touch selection stays local
+while wheel reporting remains independent; special-key actions respect cursor and
+Kitty keyboard modes. Keep preview text and sent content consistent.
+History navigation is local, including while disconnected. SwiftTerm owns viewport
+anchoring, trimming and reflow; do not restore old pixel offsets after feed. Keep
+history presentation state per terminal and coalesce publication outside native
+layout callbacks. Local page commands must never use SwiftTerm.pageUp/pageDown,
+which send remote keys in alternate-screen mode. Native user Copy is allowed;
+remote OSC 52 clipboard writes are ignored on both platforms. See Docs/Terminal.md.
 
 Native ProxyJump uses Citadel `jump(to:)` and direct-tcpip, shared by SSH and SFTP.
 `HostProfile.jumpHostIDs` stores ordered saved-host references, not copied secrets
@@ -152,7 +208,13 @@ activity. Never persist live connection/retry intent. The first default tab uses
 the host UUID to preserve pre-tabs tmux sessions; subsequent tabs get independent
 UUIDs. Rename must not change identity. Switching hosts/tabs/views retains native
 terminal instances and their buffers; closing a tab detaches only its connection.
-Closed tabs are removed from the workspace, without killing remote tmux sessions.
+Tab definitions also sync through opt-in host iCloud sync. Preserve existing local
+multi-tab workspaces on first migration; an untouched implicit default tab must not
+overwrite the cloud's renamed/default tab. Save definitions in the host library before
+the local selection snapshot. Cloud additions/renames must not disconnect existing
+terminals, invalidate credentials or revoke Finder. Closing an active remote tab waits
+for explicit Apply Changes; preserve other terminal instances/buffers. Closed tabs
+are removed from the workspace, without killing remote tmux sessions.
 Corrupt/newer workspace files must not be silently replaced. Local scrollback is
 not written to disk; remote screen/history recovery still depends on surviving tmux.
 
@@ -239,13 +301,23 @@ checkout and fresh DerivedData/SourcePackages, not only the developer's warm cac
 ```sh
 sh Scripts/lint.sh
 sh Scripts/xcodegen.sh generate
+sh Scripts/prepare-terminal-build.sh
 xcodebuild -quiet -project Farport.xcodeproj -scheme Farport \
-  -configuration Debug -destination 'platform=macOS' -derivedDataPath Build build
+  -configuration Debug -destination 'platform=macOS' -derivedDataPath Build \
+  -onlyUsePackageVersionsFromResolvedFile -skipPackagePluginValidation build
 xcodebuild -quiet -project Farport.xcodeproj -scheme Farport \
-  -configuration Debug -destination 'platform=macOS' -derivedDataPath Build test
+  -configuration Debug -destination 'platform=macOS' -derivedDataPath Build \
+  -onlyUsePackageVersionsFromResolvedFile -skipPackagePluginValidation test
 swift test
 sh Scripts/verify-ios.sh
 ```
+
+SwiftTerm 1.19 requires Apple's separately installed Metal Toolchain and the
+SwiftTermBuildInfoPlugin (reviewed version-metadata generator). The preparation
+script downloads the compiler only when missing. IDE builds require enabling the
+plugin in Xcode's standard trust dialog. CLI/CI commands explicitly skip interactive
+plugin validation; keep exact pins and strict resolved-version checks, never disable
+the plugin execution sandbox or change global Xcode trust settings. See Docs/Terminal.md.
 
 The Farport scheme requires a CloudKit-capable profile for `iCloud.com.panandafog.harbor` and
 Push Notifications, in addition to the shared App Group/Keychain. `FarportLocal`

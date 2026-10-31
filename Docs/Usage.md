@@ -246,7 +246,9 @@ See [ProxyJump implementation](ProxyJump.md) for lifecycle and verification deta
 ## Session Recovery
 
 In **Edit Host > Terminal > Session**, choose **Persistent (tmux)**. The server must
-already provide tmux in the SSH account's PATH. Farport creates or attaches to a
+already provide tmux in the SSH account's PATH or in `/opt/homebrew/bin/tmux`
+(Apple Silicon Homebrew) / `/usr/local/bin/tmux` (Intel Homebrew). The account's
+PATH takes precedence; interactive shell aliases are not supported. Farport creates or attaches to a
 session named `harbor-<tab UUID>`. The generated name is available in the terminal's
 tmux badge tooltip. The first default tab reuses the old host UUID for compatibility.
 Renaming a host or tab does not change its server session. Every new tab has its
@@ -300,7 +302,7 @@ persistence, the tmux implementation, reconnect policy, and Mosh trade-offs.
 
 - [Citadel](https://github.com/orlandos-nl/Citadel), MIT, vendored revision recorded
   in `Vendor/Citadel/UPSTREAM.md`.
-- [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm), MIT, pinned to 1.10.1.
+- [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm), MIT, pinned to 1.19.0.
 - SwiftNIO, Swift Crypto, and the Citadel-compatible SwiftNIO SSH fork, resolved by SPM.
 
 Dependency licenses remain with their respective source packages.

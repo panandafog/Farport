@@ -1,0 +1,57 @@
+import FarportLocalization
+import FarportSessions
+import SwiftUI
+
+struct TerminalAppearanceSettings: View {
+    @AppStorage("terminal.colorScheme") private var scheme = TerminalColorScheme.standard.rawValue
+    @AppStorage("terminal.followsSystemAppearance") private var followsSystem = true
+    @AppStorage("terminal.darkAppearance") private var dark = true
+
+    var body: some View {
+        Form {
+            Toggle(L10n.text("Follow System Appearance"), isOn: $followsSystem)
+            if !followsSystem {
+                Picker(L10n.text("Appearance"), selection: $dark) {
+                    Text(L10n.text("Light")).tag(false)
+                    Text(L10n.text("Dark")).tag(true)
+                }.pickerStyle(.segmented)
+            }
+            Picker(L10n.text("Color Scheme"), selection: $scheme) {
+                Text(L10n.text("Default — System Accent")).tag(TerminalColorScheme.standard.rawValue)
+                Text(L10n.text("Ocean")).tag(TerminalColorScheme.ocean.rawValue)
+                Text(L10n.text("Paper")).tag(TerminalColorScheme.paper.rawValue)
+            }
+            Text(L10n.text("Applies to all terminals on this device.")).font(.footnote).foregroundStyle(.secondary)
+        }
+        .formStyle(.grouped)
+        .navigationTitle(L10n.text("Terminal Appearance"))
+    }
+}
+
+struct TerminalAppearanceSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            TerminalAppearanceSettings()
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(L10n.text("Done")) { dismiss() }
+                    }
+                }
+        }.sheetFrame(width: 480, height: 320)
+    }
+}
+
+/// Observed by each native adapter so retained tabs pick up changes when reattached.
+@propertyWrapper
+struct TerminalAppearanceStorage: DynamicProperty {
+    @AppStorage("terminal.colorScheme") private var scheme = TerminalColorScheme.standard.rawValue
+    @AppStorage("terminal.followsSystemAppearance") private var followsSystem = true
+    @AppStorage("terminal.darkAppearance") private var dark = true
+
+    var wrappedValue: TerminalAppearance {
+        TerminalAppearance(scheme: TerminalColorScheme(rawValue: scheme) ?? .standard,
+                           followsSystem: followsSystem, dark: dark)
+    }
+}
