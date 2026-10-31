@@ -12,7 +12,7 @@ final class TmuxDiscoveryTests: XCTestCase {
             let binary = try stub(in: root.appendingPathComponent("Home brew's bin"), marker: "fallback")
             let result = try run(path: root.path, candidates: [missing.path, notExecutable.path, binary.path])
             XCTAssertEqual(result.status, 0)
-            XCTAssertTrue(result.output.hasPrefix("fallback\nnew-session\n-A\n-s\nharbor-"))
+            XCTAssertTrue(result.output.hasPrefix("fallback\n-T\n256,RGB\nnew-session\n-A\n-s\nharbor-"))
             XCTAssertTrue(result.output.contains("\n;\nset-option\n-t\nharbor-"))
             XCTAssertTrue(result.output.hasSuffix("\nmouse\non\n"))
         }

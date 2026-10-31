@@ -146,6 +146,14 @@ open class TerminalView: UIScrollView, UITextInputTraits, UIKeyInput, UIScrollVi
      * If a client application has not indicated any use for mouse events, then this setting
      * does not do anything, and selection and panning are still processed.
      */
+    /// Farport: minimum readable contrast for default/basic ANSI pairs only.
+    public var adjustsANSIContrast = false {
+        didSet {
+            resetCaches()
+            setNeedsDisplay(frame)
+        }
+    }
+
     public var allowMouseReporting: Bool = true
 
     /// Controls how link tracking resolves hovered links:

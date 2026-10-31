@@ -88,7 +88,9 @@ Homebrew binaries `/opt/homebrew/bin/tmux` and `/usr/local/bin/tmux`. It does no
 source interactive/login shell startup files or modify the account’s PATH.
 It enables `mouse` only on that UUID-named session, including reattachments, so wheel
 and touch scrolling can enter tmux's server-side history. It does not change global
-tmux options, key bindings or the user's configuration file.
+tmux options, key bindings or the user's configuration file. Farport applies
+accent-tinted status/mode decoration styles to its own session/current window;
+see `Terminal.md` for live updates and multiple-client behavior.
 Exit 127 reports an actionable missing-tmux error, with no silent plain-shell fallback.
 
 Native clients forward wheel reports when a connected remote application requests

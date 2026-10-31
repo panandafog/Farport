@@ -1012,6 +1012,14 @@ open class TerminalView: NSView, NSTextInputClient, NSUserInterfaceValidations, 
     /// This vaiable controls whether mouse events are sent to the application running under the
     /// terminal if it has requested the data.   This poses a problem for selection, so users
     /// need a way of toggling this behavior.
+    /// Farport: minimum readable contrast for default/basic ANSI pairs only.
+    public var adjustsANSIContrast = false {
+        didSet {
+            resetCaches()
+            setNeedsDisplay(frame)
+        }
+    }
+
     public var allowMouseReporting: Bool = true
 
     /// Controls how link tracking resolves hovered links:

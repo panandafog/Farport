@@ -47,8 +47,9 @@ class TmuxFixture:
 
     async def run(self, process):
         # tmux owns line editing and echo through its real PTY, including Ctrl-B/Ctrl-C.
-        process.channel.set_line_mode(False)
-        process.channel.set_echo(False)
+        if process.get_terminal_type():
+            process.channel.set_line_mode(False)
+            process.channel.set_echo(False)
         master, slave = pty.openpty()
         width, height, _, _ = process.get_terminal_size()
         fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", height or 30, width or 100, 0, 0))

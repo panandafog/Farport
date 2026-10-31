@@ -846,6 +846,32 @@ extension TerminalView {
     //
     // Given a vt100 attribute, return the NSAttributedString attributes used to render it
     //
+    private static func isBasicANSIColor(_ color: Attribute.Color) -> Bool {
+        switch color {
+        case .defaultColor, .defaultInvertedColor: return true
+        case .ansi256(let index): return index < 16
+        case .trueColor: return false
+        }
+    }
+
+    private func readableANSIColor(_ foreground: TTColor, on background: TTColor) -> TTColor {
+        func components(_ color: TTColor) -> (SIMD3<Double>, CGFloat)? {
+            var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 1
+#if os(macOS)
+            guard let rgb = color.usingColorSpace(.sRGB) else { return nil }
+            rgb.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+#else
+            guard color.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
+#endif
+            return (SIMD3(Double(red), Double(green), Double(blue)), alpha)
+        }
+        guard let (fg, alpha) = components(foreground), let (bg, _) = components(background) else {
+            return foreground
+        }
+        let result = ANSIContrast.resolve(fg, on: bg)
+        return TTColor.make(red: CGFloat(result.x), green: CGFloat(result.y), blue: CGFloat(result.z), alpha: alpha)
+    }
+
     func getAttributes (_ attribute: Attribute, withUrl: Bool) -> [NSAttributedString.Key:Any]?
     {
         if let result = withUrl ? urlAttributes [attribute] : attributes [attribute] {
@@ -889,6 +915,10 @@ extension TerminalView {
         
         var fgColor = mapColor (color: fg, isFg: true, isBold: isBold, useBrightColors: useBrightColors)
         let bgColor = mapColor (color: bg, isFg: false, isBold: false)
+        if adjustsANSIContrast, !flags.contains(.dim), fg != bg,
+           Self.isBasicANSIColor(fg), Self.isBasicANSIColor(bg) {
+            fgColor = readableANSIColor(fgColor, on: bgColor)
+        }
         // Apply dim/faint attribute (SGR 2)
         if flags.contains (.dim) {
             fgColor = fgColor.dimmedColor (towards: bgColor)

@@ -1,3 +1,4 @@
+import FarportCore
 import FarportSessions
 import SwiftTerm
 #if os(macOS)
@@ -30,6 +31,21 @@ struct TerminalResolvedPalette: Equatable {
         #endif
     }
 
+    func decorationColors(accent: TerminalNativeColor) -> TerminalDecorationColors {
+        func rgb(_ color: TerminalNativeColor) -> UInt32 {
+            var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 1
+            #if os(macOS)
+            let resolved = color.usingColorSpace(.sRGB) ?? color
+            resolved.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+            #else
+            color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+            #endif
+            func byte(_ value: CGFloat) -> UInt32 { UInt32((max(0, min(1, value)) * 255).rounded()) }
+            return byte(red) << 16 | byte(green) << 8 | byte(blue)
+        }
+        return .tinted(background: rgb(background), accent: rgb(accent), dark: dark)
+    }
+
     static func color(_ rgb: UInt32) -> TerminalNativeColor {
         TerminalNativeColor(red: CGFloat((rgb >> 16) & 255) / 255,
                             green: CGFloat((rgb >> 8) & 255) / 255,
@@ -39,6 +55,7 @@ struct TerminalResolvedPalette: Equatable {
 
 extension TerminalView {
     func installTheme(_ palette: TerminalResolvedPalette) {
+        adjustsANSIContrast = true
         nativeBackgroundColor = palette.background
         nativeForegroundColor = palette.foreground
         caretColor = palette.accent

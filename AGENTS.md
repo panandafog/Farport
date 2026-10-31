@@ -123,11 +123,25 @@ can select a fixed light/dark mode and Standard, Ocean or Paper colors. Standard
 uses resolved system text/background and the system accent for cursor/selection.
 Keep ANSI-16 color roles readable in both modes; extended and true colors stay intact.
 The terminal fills its surface without an independently colored SwiftUI padding.
+Tmux status/mode decorations use a separate optional TerminalSession color capability,
+not ANSI slot remapping. Resolve the application's accent natively, tint the terminal
+background and choose black/white text for contrast. Cache colors in the shared model
+for reconnects; update via a separate SSH exec channel, never interactive input.
+Attach with `-T 256,RGB` to advertise only Farport's client capabilities. Test actual
+RGB SGR output as well as stored style options to catch tmux color quantization.
+Scope options to the UUID session/current window, never global options or user config.
+Cosmetic failures must not disconnect the shell; colors are shared by all clients of
+the same server session/window. See Docs/Terminal.md.
 Repaint the existing terminal; never recreate
 it, replay output, alter cell attributes, clear selection/history, or send input
 when changing theme. Do not reinstall palettes on unchanged appearance callbacks.
 Indexed colors 16-255 and true-color values keep their standard meaning. Explicit
-application colors/background combinations are not automatically inverted/recolored.
+application colors/background combinations using 256-color indices 16–255 or
+true color are not automatically inverted/recolored. Basic/default ANSI pairs use
+the shared SwiftTerm contrast correction at render time (4.5:1), preserving background,
+hue ordering, cell attributes, equal fg/bg and dim text. Keep the installed ANSI-16
+palette stable across themes: a remote TUI can use every slot as a background.
+Both CoreGraphics and Metal consume the same resolved run attributes.
 Theme tests cover contrast, SGR styles, selection, retained output, hidden cursor,
 palette queries, live window appearance changes, and offscreen render attachments.
 

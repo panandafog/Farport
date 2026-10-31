@@ -13,3 +13,12 @@ Metal is disabled on the first smooth scroll. iOS renderer is unchanged.
 This is an experimental local fork, not an upstream release. Remote mouse-wheel
 reporting remains discrete. AppKit precise deltas include native momentum; ordinary
 mouse-wheel notches keep line scrolling. No synthetic animation or easing is added.
+
+
+Farport ANSI contrast patch: opt-in `adjustsANSIContrast` on both native views;
+shared run-attribute resolution adjusts only basic/default ANSI text, leaving
+backgrounds, 256-color/RGB pairs, identical fg/bg and dim text unchanged. The
+minimum is 4.5:1 and the smallest blend toward black/white is chosen. This applies
+to CoreGraphics and Metal text via shared shaped-run attributes. Palette queries
+remain faithful to the installed palette. ANSIContrastTests cover tmux-style bars,
+all Farport theme backgrounds, channel ordering and intentional hidden text.

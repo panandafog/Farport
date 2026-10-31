@@ -37,6 +37,7 @@ open class TerminalSessionModel: NSObject, ObservableObject {
     private var generation = UUID()
     private var heartbeatID = UUID()
     private var size = TerminalSize()
+    private var decorationColors: TerminalDecorationColors?
     private var connectionWanted = false
     private var isSleeping = false
 
@@ -110,6 +111,8 @@ open class TerminalSessionModel: NSObject, ObservableObject {
                 let connection = try await openTerminal(token: token, recovering: recovering)
                 guard token == generation, !Task.isCancelled else { await connection.close(); return }
                 session = connection
+                if let decorationColors { await connection.setDecorationColors(decorationColors) }
+                guard token == generation, !Task.isCancelled else { await connection.close(); return }
                 startInput(connection, token: token)
                 await run(connection, token: token)
                 await connection.close()
@@ -329,4 +332,17 @@ extension TerminalSessionModel {
             })
         } else { connect() }
     }
+}
+
+extension TerminalSessionModel {
+    public func setDecorationColors(_ colors: TerminalDecorationColors) {
+        guard decorationColors != colors else { return }
+        decorationColors = colors
+        guard let session else { return }
+        Task { [weak self] in
+            guard self?.decorationColors == colors else { return }
+            await session.setDecorationColors(colors)
+        }
+    }
+
 }

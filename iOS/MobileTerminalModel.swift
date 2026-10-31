@@ -12,6 +12,8 @@ final class MobileTerminalModel: TerminalSessionModel {
     init(host: SavedHost, provider: any ConnectionProvider, sessionID: UUID, trust: ServerTrustModel?) {
         view = MobileTerminalView()
         super.init(host: host, provider: provider, sessionID: sessionID, trust: trust, output: view)
+        view.decorationColorsChanged = { [weak self] in self?.setDecorationColors($0) }
+        view.applySystemTheme(force: true)
         view.terminalDelegate = self
     }
 }
@@ -63,6 +65,7 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
         send(bytes)
     }
     private var appliedPalette: TerminalResolvedPalette?
+    var decorationColorsChanged: ((TerminalDecorationColors) -> Void)?
     var theme = TerminalAppearance() { didSet { if readyForHistoryUpdates { applySystemTheme() } } }
     private(set) var remoteInputEnabled = false
     private var scrollInput = TerminalScrollInput()
@@ -174,7 +177,7 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
         if readyForHistoryUpdates { updateHistory(history) }
     }
 
-    func applySystemTheme() {
+    func applySystemTheme(force: Bool = false) {
         let dark = theme.usesDarkColors(systemDark: traitCollection.userInterfaceStyle == .dark)
         let traits = traitCollection.modifyingTraits { $0.userInterfaceStyle = dark ? .dark : .light }
         let standard = theme.scheme == .standard
@@ -185,7 +188,8 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
                 TerminalResolvedPalette.color(theme.scheme.foreground(dark: dark)),
             accent: standard ? tintColor.resolvedColor(with: traits) :
                 TerminalResolvedPalette.color(theme.scheme.accent(dark: dark)))
-        guard appliedPalette != palette else { return }
+        decorationColorsChanged?(palette.decorationColors(accent: tintColor.resolvedColor(with: traits)))
+        guard force || appliedPalette != palette else { return }
         appliedPalette = palette
         installTheme(palette)
         backgroundColor = nativeBackgroundColor

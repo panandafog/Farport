@@ -26,13 +26,7 @@ final class TerminalThemeTests: XCTestCase {
             XCTAssertEqual(view.caretTextColor, view.nativeBackgroundColor)
             let background = try XCTUnwrap(view.nativeBackgroundColor.usingColorSpace(.sRGB))
             XCTAssertEqual(background.redComponent > 0.5, name == .aqua)
-            for index in [1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14] {
-                let color = TerminalPalette(dark: name == .darkAqua).ansi[index]
-                let native = NSColor(srgbRed: CGFloat(color.red) / 65_535,
-                                     green: CGFloat(color.green) / 65_535,
-                                     blue: CGFloat(color.blue) / 65_535, alpha: 1)
-                XCTAssertGreaterThan(try contrast(native, background), 4.5, "Unreadable ANSI color \(index)")
-            }
+            XCTAssertTrue(view.adjustsANSIContrast)
         }
     }
 

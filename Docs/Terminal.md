@@ -93,8 +93,14 @@ macOS Settings (also Terminal → Terminal Appearance) and the mobile Terminal A
 menu expose device-local preferences for following system appearance or choosing
 fixed light/dark colors. Standard uses native background/text and the system accent
 for the cursor and selection. Ocean and Paper provide cool and warm alternatives
-with both light/dark variants. ANSI color roles retain the readable light/dark
-palette; indices 16–255 and explicit RGB colors are unchanged. Settings apply to
+with both light/dark variants. Basic ANSI colors use one stable palette in both
+appearances so colors used as backgrounds (for example tmux status/copy-mode bars)
+remain recognizable. The native renderer adjusts a basic/default ANSI foreground
+only when its contrast against the actual cell background is below 4.5:1, mixing
+toward black or white with the smallest RGB change. Backgrounds and buffer attributes
+are never changed. Identical foreground/background and dim text retain intentional
+low contrast. Pairs containing indices 16–255 or explicit RGB colors are untouched.
+OSC palette queries still report the installed palette, not adjusted per-cell text. Settings apply to
 retained terminal views without resetting buffers, selection or connection state.
 Manual checks: switch each scheme/mode while output streams and text is selected;
 change macOS accent while Standard is active; switch tabs and restart to check persistence.
@@ -163,3 +169,29 @@ links; receive output while scrolled up; resize and switch tabs; jump to latest;
 check tmux wheel versus Shift-wheel. UI checks are left to the user. Arithmetic
 regressions run with `swift test --package-path Vendor/SwiftTerm --filter
 FractionalScrollPositionTests`.
+
+
+## Accent-colored tmux decorations
+
+Native views resolve the application's system accent and terminal background into
+`TerminalDecorationColors`: an 18% accent tint in light appearance, 28% in dark,
+with whichever of black/white provides greater text contrast. This is separate from
+terminal ANSI colors and does not change shell/TUI syntax highlighting.
+`TerminalSession.setDecorationColors` is an optional transport capability with a
+no-op default. The shared model retains the latest colors for reconnects.
+
+The SSH adapter sets session `status-style` and the selected window's `mode-style`
+at attach. Attach uses `tmux -T 256,RGB` to advertise the native renderer's 256-color
+and true-color support for that client. Without RGB, tmux may quantize a pale orange
+tint into a pink palette entry even though its stored style contains the correct hex.
+This does not modify server-wide terminal-features or user configuration. Requires
+a tmux version supporting the `-T` flag. Theme/accent changes use a separate exec channel on the existing SSH
+connection, never inject commands into the interactive shell, and coalesce pending
+updates. Cosmetic update failure does not terminate an established shell. Standard
+SSH has no decoration commands. Commands use fixed option names, UUID-only targets
+and validated 24-bit RGB values. No global tmux options or config files are changed.
+
+Tmux styling belongs to the server session/window: simultaneous clients of the same
+session see the latest applied client colors. Explicit embedded styles in custom
+status formats may override these defaults. New server-side windows created by a
+user keep their own mode-style; Farport targets the current window when applying.

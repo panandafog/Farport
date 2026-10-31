@@ -1,4 +1,5 @@
 import AppKit
+import FarportCore
 import FarportLocalization
 import FarportSessions
 import SwiftTerm
@@ -6,6 +7,7 @@ import SwiftTerm
 final class SystemTerminalView: TerminalView {
     private var appliedPalette: TerminalResolvedPalette?
     private var colorObserver: NSObjectProtocol?
+    var decorationColorsChanged: ((TerminalDecorationColors) -> Void)?
     var theme = TerminalAppearance() { didSet { applySystemTheme() } }
     var remoteInputEnabled = false
     let pasteReview = TerminalPasteReview()
@@ -213,7 +215,7 @@ final class SystemTerminalView: TerminalView {
         if let colorObserver { NotificationCenter.default.removeObserver(colorObserver) }
     }
 
-    func applySystemTheme() {
+    func applySystemTheme(force: Bool = false) {
         guard terminal != nil else { return }
         let systemDark = effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
         let dark = theme.usesDarkColors(systemDark: systemDark)
@@ -228,7 +230,8 @@ final class SystemTerminalView: TerminalView {
                     TerminalResolvedPalette.color(theme.scheme.foreground(dark: dark)),
                 accent: standard ? NSColor.controlAccentColor.usingColorSpace(.sRGB) ?? .systemBlue :
                     TerminalResolvedPalette.color(theme.scheme.accent(dark: dark)))
-            guard appliedPalette != palette else { return }
+            decorationColorsChanged?(palette.decorationColors(accent: NSColor.controlAccentColor))
+            guard force || appliedPalette != palette else { return }
             appliedPalette = palette
             installTheme(palette)
             layer?.backgroundColor = nativeBackgroundColor.cgColor
