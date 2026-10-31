@@ -54,7 +54,13 @@ class TmuxFixture:
         fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", height or 30, width or 100, 0, 0))
         environment = dict(self.environment, TERM=process.get_terminal_type() or "xterm-256color")
         if process.get_extra_info("username") == "harbor-no-tmux":
-            environment["PATH"] = str(self.directory / "missing-bin")
+            # Simulate a server with no binary, including standard fallback locations.
+            # Never let this negative test launch the real user's default tmux server.
+            os.close(master)
+            os.close(slave)
+            process.stderr.write("Farport: tmux is unavailable on this server.\r\n")
+            process.exit(127)
+            return
 
         def controlling_terminal():
             os.setsid()

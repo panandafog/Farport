@@ -7,7 +7,7 @@ final class TmuxIntegrationTests: XCTestCase {
         let profile = HostProfile(name: "'; touch /tmp/unwanted; #", terminalResumeStrategy: .tmux)
         let command = TerminalLaunchPlan(profile: profile).command ?? ""
         XCTAssertTrue(command.hasPrefix("exec /bin/sh -c '"))
-        XCTAssertTrue(command.contains("exec tmux new-session -A -s \(profile.tmuxSessionName)"))
+        XCTAssertTrue(command.contains("exec \"$tmux_binary\" new-session -A -s \(profile.tmuxSessionName)"))
         XCTAssertTrue(command.contains("set-option -t \(profile.tmuxSessionName) mouse on"))
         XCTAssertFalse(command.contains("set-option -g"))
         XCTAssertFalse(command.contains(profile.name))
