@@ -13,9 +13,10 @@ final class TerminalModel: TerminalSessionModel {
         view = SystemTerminalView(frame: NSRect(x: 0, y: 0, width: 800, height: 540),
                                   font: NSFont.monospacedSystemFont(ofSize: 13, weight: .regular))
         super.init(host: host, provider: provider, policy: policy, sessionID: sessionID, trust: trust, output: view)
+        view.decorationColorsChanged = { [weak self] in self?.setDecorationColors($0) }
         view.terminalDelegate = self
         view.changeScrollback(TerminalScrollInput.historyLimit)
-        view.applySystemTheme()
+        view.applySystemTheme(force: true)
     }
 }
 

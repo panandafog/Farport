@@ -16,7 +16,12 @@ public protocol TerminalSession: AnyObject, Sendable {
     func send(_ data: Data) async throws
     func resize(_ size: TerminalSize) async throws
     func checkConnection(timeout: TimeInterval) async throws
+    func setDecorationColors(_ colors: TerminalDecorationColors) async
     func close() async
+}
+
+public extension TerminalSession {
+    func setDecorationColors(_ colors: TerminalDecorationColors) async {}
 }
 
 public struct RemoteEntry: Identifiable, Sendable, Hashable {

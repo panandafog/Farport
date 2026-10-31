@@ -83,9 +83,14 @@ identifier; profile labels and paths never enter that command. Citadel allocates
 a PTY and sends an exec request, rather than typing into an interactive shell.
 `tmux new-session -A -s harbor-<UUID>` creates or attaches without evicting other
 clients. The wrapper uses `/bin/sh` so non-POSIX login shells can launch it too.
+It resolves tmux from the SSH account’s PATH first, then checks the standard
+Homebrew binaries `/opt/homebrew/bin/tmux` and `/usr/local/bin/tmux`. It does not
+source interactive/login shell startup files or modify the account’s PATH.
 It enables `mouse` only on that UUID-named session, including reattachments, so wheel
 and touch scrolling can enter tmux's server-side history. It does not change global
-tmux options, key bindings or the user's configuration file.
+tmux options, key bindings or the user's configuration file. Farport applies
+accent-tinted status/mode decoration styles to its own session/current window;
+see `Terminal.md` for live updates and multiple-client behavior.
 Exit 127 reports an actionable missing-tmux error, with no silent plain-shell fallback.
 
 Native clients forward wheel reports when a connected remote application requests

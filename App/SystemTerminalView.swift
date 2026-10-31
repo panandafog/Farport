@@ -1,4 +1,5 @@
 import AppKit
+import FarportCore
 import FarportLocalization
 import FarportSessions
 import SwiftTerm
@@ -6,6 +7,7 @@ import SwiftTerm
 final class SystemTerminalView: TerminalView {
     private var appliedPalette: TerminalResolvedPalette?
     private var colorObserver: NSObjectProtocol?
+    var decorationColorsChanged: ((TerminalDecorationColors) -> Void)?
     var theme = TerminalAppearance() { didSet { applySystemTheme() } }
     var remoteInputEnabled = false
     let pasteReview = TerminalPasteReview()
@@ -103,6 +105,7 @@ final class SystemTerminalView: TerminalView {
     }
 
     override func setFrameSize(_ newSize: NSSize) {
+        resetSmoothScroll()
         super.setFrameSize(newSize)
         if terminal != nil { updateHistory(history) }
     }
@@ -159,18 +162,20 @@ final class SystemTerminalView: TerminalView {
         if event.phase == .began { scrollInput.reset() }
         let delta = event.hasPreciseScrollingDeltas ? event.scrollingDeltaY / scrollCellSize.height :
             event.scrollingDeltaY * 3
-        let lines = scrollInput.lines(for: Double(delta))
-        guard lines != 0 else { return }
         if remoteInputEnabled, getTerminal().mouseMode != .off,
            !event.modifierFlags.contains(.shift), !isReadingLocalHistory {
+            let lines = scrollInput.lines(for: Double(delta))
+            guard lines != 0 else { return }
             let location = convert(event.locationInWindow, from: nil)
             reportScrollWheel(lines: lines, at: CGPoint(x: location.x, y: bounds.height - location.y),
                               meta: event.modifierFlags.contains(.option),
                               control: event.modifierFlags.contains(.control))
-        } else if lines > 0 {
-            scrollUp(lines: lines)
+        } else if event.hasPreciseScrollingDeltas {
+            scrollSmoothly(byPoints: event.scrollingDeltaY)
         } else {
-            scrollDown(lines: -lines)
+            let lines = scrollInput.lines(for: Double(delta))
+            guard lines != 0 else { return }
+            if lines > 0 { scrollUp(lines: lines) } else { scrollDown(lines: -lines) }
         }
     }
 
@@ -187,7 +192,10 @@ final class SystemTerminalView: TerminalView {
         colorObserver = nil
         inputMonitor = nil
         primaryMouseReportsRemote = false
-        if window == nil { pasteReview.cancel() }
+        if window == nil {
+            pasteReview.cancel()
+            resetSmoothScroll()
+        }
         allowMouseReporting = false
         guard window != nil else { return }
         colorObserver = NotificationCenter.default.addObserver(
@@ -207,7 +215,7 @@ final class SystemTerminalView: TerminalView {
         if let colorObserver { NotificationCenter.default.removeObserver(colorObserver) }
     }
 
-    func applySystemTheme() {
+    func applySystemTheme(force: Bool = false) {
         guard terminal != nil else { return }
         let systemDark = effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
         let dark = theme.usesDarkColors(systemDark: systemDark)
@@ -222,7 +230,8 @@ final class SystemTerminalView: TerminalView {
                     TerminalResolvedPalette.color(theme.scheme.foreground(dark: dark)),
                 accent: standard ? NSColor.controlAccentColor.usingColorSpace(.sRGB) ?? .systemBlue :
                     TerminalResolvedPalette.color(theme.scheme.accent(dark: dark)))
-            guard appliedPalette != palette else { return }
+            decorationColorsChanged?(palette.decorationColors(accent: NSColor.controlAccentColor))
+            guard force || appliedPalette != palette else { return }
             appliedPalette = palette
             installTheme(palette)
             layer?.backgroundColor = nativeBackgroundColor.cgColor

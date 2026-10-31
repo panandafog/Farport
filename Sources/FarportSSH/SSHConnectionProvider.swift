@@ -46,6 +46,10 @@ actor CitadelTerminalSession: TerminalSession {
     let connection: SSHConnection
     var writer: TTYStdinWriter?
     var closed = false
+    var decorationColors: TerminalDecorationColors?
+    var appliedDecorationColors: TerminalDecorationColors?
+    var decorationTask: Task<Void, Never>?
+    var receivedTerminalOutput = false
     let launch: TerminalLaunchPlan
 
     init(connection: SSHConnection, launch: TerminalLaunchPlan) {
@@ -82,16 +86,19 @@ actor CitadelTerminalSession: TerminalSession {
 
     private func runPTY(size: TerminalSize, onReady: @escaping @Sendable () async -> Void,
                         onOutput: @escaping @Sendable (Data) async -> Void) async throws {
+        appliedDecorationColors = decorationColors
+        let command = launch.command(colors: decorationColors)
         try await client.withPTY(.init(wantReply: true, term: "xterm-256color",
                                       terminalCharacterWidth: size.columns, terminalRowHeight: size.rows,
                                       terminalPixelWidth: 0, terminalPixelHeight: 0,
-                                      terminalModes: .init([:])), command: launch.command) { output, input in
+                                      terminalModes: .init([:])), command: command) { output, input in
             self.setWriter(input)
             await onReady()
             for try await chunk in output {
                 try Task.checkCancellation()
                 switch chunk {
                 case .stdout(let buffer), .stderr(let buffer):
+                    self.terminalOutputReceived()
                     await onOutput(Data(buffer.readableBytesView))
                 }
             }
@@ -120,6 +127,8 @@ actor CitadelTerminalSession: TerminalSession {
         guard !closed else { return }
         closed = true
         writer = nil
+        decorationTask?.cancel()
+        decorationTask = nil
         await connection.close()
     }
 }
