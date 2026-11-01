@@ -79,6 +79,10 @@ struct LibraryView: View {
             }
         }
         .navigationTitle("Farport")
+        #if DEBUG
+        .modifier(ScreenshotRootModifier(model: model))
+        .background { ScreenshotWindowSetup() }
+        #endif
         .background {
             if let trust = model.trust { ServerTrustPresentation(model: trust, hosts: model.hosts) }
         }

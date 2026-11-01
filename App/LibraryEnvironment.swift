@@ -1,9 +1,24 @@
 import FarportCore
 import FarportLocalization
+import FarportSSH
 import Foundation
+#if DEBUG
+import FarportDemo
+#endif
 
 extension LibraryModel {
     convenience init() {
+        #if DEBUG
+        if DemoCatalog.isRequested(arguments: ProcessInfo.processInfo.arguments,
+                                   environment: ProcessInfo.processInfo.environment) {
+            let trust = ServerTrustModel(secrets: DemoSecretStore())
+            let live = SSHConnectionProvider(hostKeyVerifier: trust.verifier)
+            self.init(repository: DemoHostRepository(), workspaceRepository: DemoWorkspaceRepository(),
+                      provider: DemoConnectionProvider(publicProvider: live), trust: trust)
+            ScreenshotSupport.prepare(self)
+            return
+        }
+        #endif
         let root = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Harbor", isDirectory: true)
         var libraryURL = root.appendingPathComponent("hosts.json")

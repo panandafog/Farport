@@ -72,6 +72,8 @@ targets:
       - package: FarportKit
         product: FarportLocalization
       - package: FarportKit
+        product: FarportDemo
+      - package: FarportKit
         product: FarportSessions
       - package: FarportKit
         product: FarportCore
@@ -103,7 +105,7 @@ targets:
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
         INFOPLIST_KEY_NSHumanReadableCopyright: "Farport"
         MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "7"
+        CURRENT_PROJECT_VERSION: "8"
         ENABLE_APP_SANDBOX: YES
         ENABLE_OUTGOING_NETWORK_CONNECTIONS: YES
         ENABLE_USER_SELECTED_FILES: readwrite
@@ -158,6 +160,8 @@ targets:
           enabled: 1
     dependencies:
       - package: FarportKit
+        product: FarportDemo
+      - package: FarportKit
         product: FarportSessions
       - package: FarportKit
         product: FarportCore
@@ -182,7 +186,7 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         CODE_SIGN_ENTITLEMENTS: iOS/FarportMobile.entitlements
         MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "7"
+        CURRENT_PROJECT_VERSION: "8"
       configs:
         Local:
           CODE_SIGN_ENTITLEMENTS: iOS/FarportMobileLocal.entitlements
@@ -213,6 +217,8 @@ targets:
       - target: FarportMobile
       - package: FarportKit
         product: FarportCore
+      - package: FarportKit
+        product: FarportDemo
       - package: FarportKit
         product: FarportSessions
       - package: FarportKit
@@ -264,7 +270,7 @@ targets:
         ENABLE_HARDENED_RUNTIME: YES
         SKIP_INSTALL: YES
         MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "7"
+        CURRENT_PROJECT_VERSION: "8"
         LD_RUNPATH_SEARCH_PATHS: $(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks
   FarportAppTests:
     type: bundle.unit-test
@@ -291,7 +297,53 @@ targets:
       base:
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.panandafog.HarborAppTests
+  FarportScreenshots:
+    type: bundle.ui-testing
+    platform: macOS
+    sources: [ScreenshotTests]
+    dependencies:
+      - target: Farport
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.panandafog.harbor.screenshots
+        TEST_TARGET_NAME: Farport
 schemes:
+  Farport Screenshots:
+    build:
+      targets:
+        Farport: all
+        FarportScreenshots: [test]
+    run:
+      config: Debug
+      commandLineArguments:
+        "--screenshot-scene=terminal": true
+    test:
+      config: Debug
+      targets: [FarportScreenshots]
+    archive:
+      config: Release
+  Farport Demo:
+    build:
+      targets:
+        Farport: all
+    run:
+      config: Debug
+      commandLineArguments:
+        "--demo": true
+    archive:
+      config: Release
+  Farport iOS Demo:
+    build:
+      targets:
+        FarportMobile: all
+    run:
+      config: Debug
+      commandLineArguments:
+        "--demo": true
+    archive:
+      config: Release
+
   Farport iOS:
     build:
       targets:

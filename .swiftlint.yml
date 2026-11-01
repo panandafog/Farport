@@ -8,6 +8,7 @@ included:
   - Sources
   - Tests
   - AppTests
+  - ScreenshotTests
   - FinderExtension
   - Scripts
   - Package.swift

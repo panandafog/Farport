@@ -40,7 +40,7 @@ struct FarportApp: App {
             }
         }
         Settings {
-            TerminalAppearanceSettings().frame(width: 480, height: 300)
+            TerminalAppearanceSettings().frame(width: 480, height: 420)
         }
     }
 }

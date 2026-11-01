@@ -228,9 +228,10 @@ final class SystemTerminalView: TerminalView {
                     TerminalResolvedPalette.color(theme.scheme.background(dark: dark)),
                 foreground: standard ? NSColor.textColor.usingColorSpace(.sRGB) ?? .black :
                     TerminalResolvedPalette.color(theme.scheme.foreground(dark: dark)),
-                accent: standard ? NSColor.controlAccentColor.usingColorSpace(.sRGB) ?? .systemBlue :
+                accent: theme.useAppAccent ? NSColor.controlAccentColor.usingColorSpace(.sRGB) ?? .systemBlue :
                     TerminalResolvedPalette.color(theme.scheme.accent(dark: dark)))
-            decorationColorsChanged?(palette.decorationColors(accent: NSColor.controlAccentColor))
+            decorationColorsChanged?(palette.decorationColors(accent: NSColor.controlAccentColor,
+                                                               useAppAccent: theme.useAppAccent))
             guard force || appliedPalette != palette else { return }
             appliedPalette = palette
             installTheme(palette)

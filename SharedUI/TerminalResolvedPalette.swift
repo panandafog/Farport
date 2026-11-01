@@ -31,7 +31,7 @@ struct TerminalResolvedPalette: Equatable {
         #endif
     }
 
-    func decorationColors(accent: TerminalNativeColor) -> TerminalDecorationColors {
+    func decorationColors(accent: TerminalNativeColor, useAppAccent: Bool = true) -> TerminalDecorationColors {
         func rgb(_ color: TerminalNativeColor) -> UInt32 {
             var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 1
             #if os(macOS)
@@ -43,7 +43,8 @@ struct TerminalResolvedPalette: Equatable {
             func byte(_ value: CGFloat) -> UInt32 { UInt32((max(0, min(1, value)) * 255).rounded()) }
             return byte(red) << 16 | byte(green) << 8 | byte(blue)
         }
-        return .tinted(background: rgb(background), accent: rgb(accent), dark: dark)
+        return .tinted(background: rgb(background), accent: rgb(accent), dark: dark,
+                       useAppAccent: useAppAccent)
     }
 
     static func color(_ rgb: UInt32) -> TerminalNativeColor {

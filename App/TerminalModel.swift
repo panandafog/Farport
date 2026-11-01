@@ -16,7 +16,7 @@ final class TerminalModel: TerminalSessionModel {
         view.decorationColorsChanged = { [weak self] in self?.setDecorationColors($0) }
         view.terminalDelegate = self
         view.changeScrollback(TerminalScrollInput.historyLimit)
-        view.applySystemTheme(force: true)
+        view.theme = TerminalAppearanceStorage.current
     }
 }
 

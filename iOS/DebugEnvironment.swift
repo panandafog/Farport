@@ -1,6 +1,10 @@
 import FarportCore
 import FarportSessions
+import FarportSSH
 import Foundation
+#if DEBUG
+import FarportDemo
+#endif
 
 extension MobileLibraryModel {
     static func makeApplication() -> MobileLibraryModel {
@@ -10,10 +14,14 @@ extension MobileLibraryModel {
         if environment["HARBOR_ISOLATED_TESTS"] == "1" {
             return isolated(hosts: [])
         }
-        if arguments.contains("--demo") {
-            let host = SavedHost(profile: HostProfile(name: "Development", hostname: "preview.invalid",
-                                                      username: "demo"))
-            return isolated(hosts: [host], provider: DemoConnectionProvider())
+        if DemoCatalog.isRequested(arguments: arguments, environment: environment) {
+            let trust = ServerTrustModel(secrets: DemoSecretStore())
+            let live = SSHConnectionProvider(hostKeyVerifier: trust.verifier)
+            let model = MobileLibraryModel(repository: DemoHostRepository(),
+                                           workspaceRepository: DemoWorkspaceRepository(),
+                                           trust: trust, provider: DemoConnectionProvider(publicProvider: live))
+            ScreenshotSupport.prepare(model)
+            return model
         }
         // Simulator-only fixture: never imports a real user's library or bypasses host-key verification.
         #if targetEnvironment(simulator)
@@ -69,28 +77,4 @@ final class DebugSecretStore: SecretStore, @unchecked Sendable {
     }
 }
 
-private struct DemoConnectionProvider: ConnectionProvider {
-    func terminal(for host: SavedHost, sessionID: UUID) async throws -> any TerminalSession {
-        DemoTerminalSession()
-    }
-    func files(for host: SavedHost) async throws -> any RemoteFileSession {
-        throw CancellationError()
-    }
-}
-
-private actor DemoTerminalSession: TerminalSession {
-    private let output = AsyncThrowingStream<Data, Error>.makeStream()
-    func run(size: TerminalSize, onReady: @escaping @Sendable () async -> Void,
-             onOutput: @escaping @Sendable (Data) async -> Void) async throws {
-        await onReady()
-        let screen = "\u{1b}[32mdemo@development\u{1b}[0m:~$ ls\r\n" +
-            "\u{1b}[34msrc\u{1b}[0m  README.md\r\n$ "
-        await onOutput(Data(screen.utf8))
-        for try await bytes in output.stream { await onOutput(bytes) }
-    }
-    func send(_ data: Data) async throws { output.continuation.yield(data) }
-    func resize(_ size: TerminalSize) async throws {}
-    func checkConnection(timeout: TimeInterval) async throws {}
-    func close() async { output.continuation.finish() }
-}
 #endif

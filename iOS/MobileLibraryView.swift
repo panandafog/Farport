@@ -7,9 +7,10 @@ struct MobileLibraryView: View {
     @ObservedObject var model: HostLibraryModel<MobileTerminalModel>
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var deleting: SavedHost?
+    @State private var preferredCompactColumn = NavigationSplitViewColumn.sidebar
 
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(preferredCompactColumn: $preferredCompactColumn) {
             List(selection: $model.selection) {
                 ForEach(model.filteredHosts) { host in
                     NavigationLink(value: host.id) {
@@ -74,6 +75,14 @@ struct MobileLibraryView: View {
             }
         }
         .sheet(item: $model.editor) { host in HostEditor(host: host, hosts: model.hosts, save: model.save) }
+        #if DEBUG
+        .modifier(ScreenshotRootModifier(model: model))
+        .onAppear {
+            if ScreenshotSupport.requested {
+                preferredCompactColumn = ScreenshotSupport.scene == .hosts ? .sidebar : .detail
+            }
+        }
+        #endif
         .background {
             if let trust = model.trust { ServerTrustPresentation(model: trust, hosts: model.hosts) }
             if let cloud = model.cloud { CloudSyncPresentation(model: cloud) }

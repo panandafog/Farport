@@ -30,11 +30,14 @@ public struct TerminalAppearance: Equatable, Sendable {
     public var scheme: TerminalColorScheme
     public var followsSystem: Bool
     public var dark: Bool
+    public var useAppAccent: Bool
 
-    public init(scheme: TerminalColorScheme = .standard, followsSystem: Bool = true, dark: Bool = true) {
+    public init(scheme: TerminalColorScheme = .standard, followsSystem: Bool = true, dark: Bool = true,
+                useAppAccent: Bool = true) {
         self.scheme = scheme
         self.followsSystem = followsSystem
         self.dark = dark
+        self.useAppAccent = useAppAccent
     }
 
     public func usesDarkColors(systemDark: Bool) -> Bool { followsSystem ? systemDark : dark }

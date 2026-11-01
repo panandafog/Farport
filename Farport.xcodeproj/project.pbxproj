@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		012699BE3EC9630D6C37F2D4 /* ScreenshotSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 090F7D64205AE441465D0F6D /* ScreenshotSupport.swift */; };
 		041A7A37C9A0E994A4A8CC47 /* MobileWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65939C2D6FAA23D880D4A849 /* MobileWorkspaceView.swift */; };
 		075A7DA2478EE516406B0C86 /* TerminalPastePresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5901B2B8504FC4AFE0E1AF /* TerminalPastePresentation.swift */; };
 		075AB2AEEF4663F10EE90BF2 /* MobileTerminalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A5CBD929644DD5B7AB6ECE /* MobileTerminalModel.swift */; };
@@ -15,10 +16,10 @@
 		0BFB929D06026DA6EF79484A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = CA0AC1F27EDC44699F936B89 /* InfoPlist.strings */; };
 		0C0EAEB467C804C3DC7007DD /* WorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA7371ADED7390F5A3CECD2 /* WorkspaceTests.swift */; };
 		0E94902301B1ECF322841D24 /* LibraryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 736FD4EF519F74C65A8A7C74 /* LibraryModel.swift */; };
-		10F7B42B764E6F3E98FDA132 /* FarportSessions in Frameworks */ = {isa = PBXBuildFile; productRef = DC2CF2A41D2F30E3FA5CAEC4 /* FarportSessions */; };
+		10F7B42B764E6F3E98FDA132 /* FarportDemo in Frameworks */ = {isa = PBXBuildFile; productRef = F8F1C449968A593866A730E9 /* FarportDemo */; };
 		11832C24CD83A3C45106C861 /* DebugEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 072A9E25F29EBD0F2DD811E0 /* DebugEnvironment.swift */; };
 		15B27D05A3260974641C6155 /* HostEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43210A123717B0462B27C8A2 /* HostEditor.swift */; };
-		15C6601F5EFE59F63C910E76 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8DA980B4E0DE67141A3383FB /* FarportCore */; };
+		15C6601F5EFE59F63C910E76 /* FarportSessions in Frameworks */ = {isa = PBXBuildFile; productRef = DC2CF2A41D2F30E3FA5CAEC4 /* FarportSessions */; };
 		15E45B503E053506765A5F80 /* CloudSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0215E23F9AE5552252A0F428 /* CloudSyncView.swift */; };
 		1761A1CB024B34C663EFF472 /* TerminalThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E72DB3B2C3AFE7043D4CE62 /* TerminalThemeTests.swift */; };
 		196E08BC07CBC25D68F48342 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 46B89A7269B4CA50899BE7E1 /* FarportCore */; };
@@ -29,10 +30,10 @@
 		2241672700E92B651A5FD90C /* SystemTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C5C988E605379A3A07F3CD /* SystemTerminalView.swift */; };
 		24A48AF2A6A007E663D7EB3E /* SheetFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91450FAB138F3A7F5D1A8424 /* SheetFrame.swift */; };
 		24D1BE3E6211295E5782E8FC /* AppSecretStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E8DCC44D168626703DE8E2 /* AppSecretStore.swift */; };
-		24EE25C6BFEA2E5E160D071F /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 4FC3F0645FED6E4CF81CAFEA /* SwiftTerm */; };
+		24EE25C6BFEA2E5E160D071F /* FarportCloud in Frameworks */ = {isa = PBXBuildFile; productRef = 6C25136D6515B7E45F12C53C /* FarportCloud */; };
 		25DE25AD45E7B0412E413647 /* EmptyHostLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B62BABA8763B4E76448433 /* EmptyHostLibraryView.swift */; };
 		29A636D5499086FB1EDC89B8 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 886D25B3FEF9744284698F95 /* FarportCore */; };
-		2A4FCB06807381E48A91995A /* FarportSecurity in Frameworks */ = {isa = PBXBuildFile; productRef = C581A12AA03318734C3ABC69 /* FarportSecurity */; };
+		2A4FCB06807381E48A91995A /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8DA980B4E0DE67141A3383FB /* FarportCore */; };
 		2D50FFF2BF42EFEBF057C763 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3C80BC311C2CCE60E152469E /* InfoPlist.strings */; };
 		2F6DA869F8A60D1BB82F9E75 /* TerminalTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80E500ACAB636356D455EA3 /* TerminalTabs.swift */; };
 		2FB0B5690353D5E4D1C93BA5 /* MobileTerminalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3384574DD7D31F73DC2EB71 /* MobileTerminalTests.swift */; };
@@ -42,7 +43,7 @@
 		3DFEFE2D6813F59E454DB8F2 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = C0C23B8FBAF68C1F25E0D56A /* SwiftTerm */; };
 		41E051BE2A05BFA1AD79F49D /* MobileLibraryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6D35EEE0D1EE947FD40318F /* MobileLibraryModel.swift */; };
 		4221F7B4171BAA1C3F35FE10 /* HostEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43210A123717B0462B27C8A2 /* HostEditor.swift */; };
-		4375D8A59C604D30012C6607 /* FarportSessions in Frameworks */ = {isa = PBXBuildFile; productRef = 0DE5908AF76C84CD5858F05B /* FarportSessions */; };
+		4375D8A59C604D30012C6607 /* FarportDemo in Frameworks */ = {isa = PBXBuildFile; productRef = DDD4B1A931247A753DF8E968 /* FarportDemo */; };
 		43FB662A7460503E91F6099D /* CloudSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0215E23F9AE5552252A0F428 /* CloudSyncView.swift */; };
 		4592FD0B134AC6794953A02C /* LibraryEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9DFFF8D38649FE0085D100 /* LibraryEnvironment.swift */; };
 		47F7790D5F40482E9A54CBE1 /* ConnectionRequirement.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF50FD53F435051F2A847A24 /* ConnectionRequirement.swift */; };
@@ -51,9 +52,10 @@
 		4F42C2374FA16E0B2DE4AF34 /* FarportFinderExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 783F52CB198258C012C39CA3 /* FarportFinderExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4FC61727DC0513F3B5ADA894 /* SheetFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91450FAB138F3A7F5D1A8424 /* SheetFrame.swift */; };
 		50BCE95B0B7B1924AF91F998 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 556A06B413EE1CAA4156E42A /* FarportCore */; };
+		527E14D8C2895438E740F3B8 /* StoreScreenshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EDD6E4CC589389885AB8C2 /* StoreScreenshots.swift */; };
 		5332B78D25AD08BE607D8B20 /* MobileWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65939C2D6FAA23D880D4A849 /* MobileWorkspaceView.swift */; };
 		54C60B457A8E8D2AEFBCAF0C /* FinderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C12B5B869AC8247908B362 /* FinderEnumerator.swift */; };
-		5944B2A9E1F9EBFDB7C2D8D0 /* FarportSecurity in Frameworks */ = {isa = PBXBuildFile; productRef = F2DFBBC43E664FABBDE532F4 /* FarportSecurity */; };
+		5944B2A9E1F9EBFDB7C2D8D0 /* FarportSSH in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA674342ED988E1D8DF9692 /* FarportSSH */; };
 		5A48129D0C4EF8A68ABE6F7D /* TerminalModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EBB0F7C62F8A3DA40F58878 /* TerminalModelTests.swift */; };
 		5B6764AC5DA7E3A3DA7EABF0 /* ServerTrustModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43A17C9E2E1FD4C069F9178 /* ServerTrustModelTests.swift */; };
 		5C21538FA87ACC94B88EB254 /* TerminalResolvedPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D8445ED5C0DA48445759B9 /* TerminalResolvedPalette.swift */; };
@@ -62,14 +64,16 @@
 		616741FA52DA68A62DF26409 /* TerminalPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BEE6B2471FD6122155E0C1 /* TerminalPalette.swift */; };
 		6232B74F068876BB3A57AA75 /* TerminalHistoryControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */; };
 		64009EABA53C0623DBBCD4B8 /* AccentColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B41D6E65605D27DDFC7E53E7 /* AccentColorTests.swift */; };
-		698DA130E099CF3B3F67B909 /* FarportLocalization in Frameworks */ = {isa = PBXBuildFile; productRef = 799CC95017CD5E78B3620103 /* FarportLocalization */; };
-		6DAEDFC5C9E9E7400E6D4477 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 6AAFDAF8215FF955BD7BB269 /* SwiftTerm */; };
+		698DA130E099CF3B3F67B909 /* FarportSessions in Frameworks */ = {isa = PBXBuildFile; productRef = 0DE5908AF76C84CD5858F05B /* FarportSessions */; };
+		6DAEDFC5C9E9E7400E6D4477 /* FarportLocalization in Frameworks */ = {isa = PBXBuildFile; productRef = 799CC95017CD5E78B3620103 /* FarportLocalization */; };
 		6FC3D2073BBAF9071A8F6E44 /* KeychainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F95A9C427995CEA839BA4B /* KeychainTests.swift */; };
-		718628684844029F0D1ACF67 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7DD6A761512CBC0FA57A360D /* FarportCore */; };
+		718628684844029F0D1ACF67 /* FarportSessions in Frameworks */ = {isa = PBXBuildFile; productRef = 7BBE18AE7D7BD416732280ED /* FarportSessions */; };
+		7241BD372395F27972CB4253 /* ScreenshotSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 090F7D64205AE441465D0F6D /* ScreenshotSupport.swift */; };
+		72756E67F3DB51E65473D24C /* ScreenshotWindowSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA913B91BC4AFDC2062694E /* ScreenshotWindowSetup.swift */; };
 		762A63876DA9C351EBA70D86 /* AppSecretStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E8DCC44D168626703DE8E2 /* AppSecretStore.swift */; };
 		764F3143CD6905322EDA07FC /* SessionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D3DC3938EDB35366EC3E1A /* SessionModels.swift */; };
 		796282E1847C4DC9173D0A61 /* CloudSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0215E23F9AE5552252A0F428 /* CloudSyncView.swift */; };
-		7A616C6DC45735DF38AAAB11 /* FarportCloud in Frameworks */ = {isa = PBXBuildFile; productRef = 7CEC566B51336461AD40CDD0 /* FarportCloud */; };
+		7A616C6DC45735DF38AAAB11 /* FarportSecurity in Frameworks */ = {isa = PBXBuildFile; productRef = C581A12AA03318734C3ABC69 /* FarportSecurity */; };
 		7B6CFB7EE556FD1027D3A469 /* FarportMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98828CE23807E44A2082B39 /* FarportMobileApp.swift */; };
 		7C0C72E82BD47F0C44031EE0 /* EmptyHostLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B62BABA8763B4E76448433 /* EmptyHostLibraryView.swift */; };
 		7FD7E511A8BA9A951A0C89EC /* FixtureTrust.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4906A02D27C6C3AD68364BF /* FixtureTrust.swift */; };
@@ -84,23 +88,25 @@
 		9AA635655DA8FFBEE8608B69 /* ConnectionOnboardingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D83B1917D9142525DA82D9A /* ConnectionOnboardingTests.swift */; };
 		9F1D4AE67AC91DFA72B698D3 /* LiveConnectionRecoveryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4993D4658EB4EAE21780A1A7 /* LiveConnectionRecoveryTests.swift */; };
 		9F7F30675B8EDFCCF23FA373 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = D1E0BBB3191BFC628CC7666C /* AppIcon.icon */; };
-		A51258A9D5D77700E20912BD /* FarportLocalization in Frameworks */ = {isa = PBXBuildFile; productRef = 84CC4AE236E6A2C670C7085B /* FarportLocalization */; };
+		A51258A9D5D77700E20912BD /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7DD6A761512CBC0FA57A360D /* FarportCore */; };
 		AA9D9B34EE7F4ADA076FC646 /* LibraryRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14541ECB73BEEBE0A6941355 /* LibraryRoutingTests.swift */; };
 		AE3CA87FBDADD3D5CDAC00F6 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4348599A9A0976C9529D95AE /* LibraryView.swift */; };
-		B2DDBE357D3BA5378DB4F330 /* FarportSSH in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA674342ED988E1D8DF9692 /* FarportSSH */; };
+		B2DDBE357D3BA5378DB4F330 /* FarportLocalization in Frameworks */ = {isa = PBXBuildFile; productRef = 84CC4AE236E6A2C670C7085B /* FarportLocalization */; };
 		B401A90F645A9631CC2F8398 /* TerminalPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BEE6B2471FD6122155E0C1 /* TerminalPalette.swift */; };
 		B44A044EF04C1791EC8503DE /* TerminalResolvedPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D8445ED5C0DA48445759B9 /* TerminalResolvedPalette.swift */; };
 		B5AD4CA0EE028EA9AB0DA91F /* HostEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43210A123717B0462B27C8A2 /* HostEditor.swift */; };
+		B6901E23CAD1C52E5B5D4DFB /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 4FC3F0645FED6E4CF81CAFEA /* SwiftTerm */; };
 		C0038E7E60C9DF25E3140A33 /* TerminalHistoryControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */; };
+		C10E1E570F1CB3517620177B /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 6AAFDAF8215FF955BD7BB269 /* SwiftTerm */; };
 		C484A54DEAA35199B3838EB1 /* TerminalPastePresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5901B2B8504FC4AFE0E1AF /* TerminalPastePresentation.swift */; };
 		C6FB6D381F5EECA45E21A99F /* container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = F835DC4D9DAF1826E7F72E03 /* container-migration.plist */; };
 		C977B0C69DF4D0F6AA6A5F0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C6E6C72BF2D4B11553855AB /* Assets.xcassets */; };
 		C9EE76A303141D7EF09B28F3 /* TerminalAppearanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4EE3F72D53B82891C41DA8 /* TerminalAppearanceSettings.swift */; };
 		CA808C2C4FA026D2CD7F5397 /* TerminalScrolling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0790BF194376BDEE95295BF0 /* TerminalScrolling.swift */; };
 		CD75223A6C8C362029628D57 /* ServerTrustViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2A5E24C2F1EC25A784BEE7 /* ServerTrustViews.swift */; };
-		CE7396A6398DD20FCDF53729 /* FarportSessions in Frameworks */ = {isa = PBXBuildFile; productRef = 7BBE18AE7D7BD416732280ED /* FarportSessions */; };
+		CE7396A6398DD20FCDF53729 /* FarportDemo in Frameworks */ = {isa = PBXBuildFile; productRef = 72B242A7FF8136B6C93A5B76 /* FarportDemo */; };
 		D0FADBBBF27D885505FF80C2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2FBCD3EF99F1DF2323E300B6 /* InfoPlist.strings */; };
-		D16FD4EAF7C415FF6A6DDBA9 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = BF9E1B9BF9A81579AEDC9B13 /* SwiftTerm */; };
+		D16FD4EAF7C415FF6A6DDBA9 /* FarportSSH in Frameworks */ = {isa = PBXBuildFile; productRef = EC47AA53AC832EAAEAA937A7 /* FarportSSH */; };
 		D1AB6A5A16A88C1CB8E62B88 /* TerminalHistoryControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */; };
 		D4424DFA435E91C5935A883A /* FinderExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7DAF8DEA638B840F37776A /* FinderExtensionTests.swift */; };
 		DB7050DE86A3CA831056BBB9 /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */; };
@@ -108,19 +114,20 @@
 		DDC08949A89485E56535C695 /* CloudSyncModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA0A3B7977544B614CCF0B4 /* CloudSyncModelTests.swift */; };
 		E1644EDAD02EA89A72FAD708 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = D1E0BBB3191BFC628CC7666C /* AppIcon.icon */; };
 		E2E009AA384A04823B5F62E9 /* TerminalAppearanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4EE3F72D53B82891C41DA8 /* TerminalAppearanceSettings.swift */; };
+		E2F20ADAA5E06A546967EF55 /* FarportFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 423A63DD5D61CFB78800F657 /* FarportFinder */; };
 		E4E8870932D8D5BCFCB361E3 /* FarportCloud in Frameworks */ = {isa = PBXBuildFile; productRef = 80F85E9C3EF90F56B245F2D2 /* FarportCloud */; };
 		E80D99D5AA2B8A0888696347 /* FinderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C12B5B869AC8247908B362 /* FinderEnumerator.swift */; };
 		E9C69113AE138FDA1B6F64DE /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */; };
 		EBD999878EF0E1D67598BD48 /* TerminalScrolling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0790BF194376BDEE95295BF0 /* TerminalScrolling.swift */; };
 		EF1995EC576DD11894187CC9 /* FarportFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 9DC3FA68A450554696260A9D /* FarportFinder */; };
-		F305F784F20CC59C8142B269 /* FarportCloud in Frameworks */ = {isa = PBXBuildFile; productRef = 6C25136D6515B7E45F12C53C /* FarportCloud */; };
+		F305F784F20CC59C8142B269 /* FarportSecurity in Frameworks */ = {isa = PBXBuildFile; productRef = F2DFBBC43E664FABBDE532F4 /* FarportSecurity */; };
 		F331467E91CB8F2418B56F9D /* TerminalPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BEE6B2471FD6122155E0C1 /* TerminalPalette.swift */; };
 		F4ED9119B9F8F12FD04E0F3B /* MobileLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89DA4CCF64732D128CB5C9F2 /* MobileLibraryView.swift */; };
 		F54AD2B54BA70C29B59A9BFD /* FinderWriteCallbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED59DC3EEF392EEEA10C399D /* FinderWriteCallbackTests.swift */; };
-		F8D0CE240E49B3C26B8184D4 /* FarportSSH in Frameworks */ = {isa = PBXBuildFile; productRef = EC47AA53AC832EAAEAA937A7 /* FarportSSH */; };
+		F8D0CE240E49B3C26B8184D4 /* FarportCloud in Frameworks */ = {isa = PBXBuildFile; productRef = 7CEC566B51336461AD40CDD0 /* FarportCloud */; };
 		F9DF8613AB2ED09A63770F21 /* ConnectionAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F757F6A071818553721AF3A /* ConnectionAccessTests.swift */; };
 		FA23DE3A640D44315DBDDF76 /* TerminalResolvedPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D8445ED5C0DA48445759B9 /* TerminalResolvedPalette.swift */; };
-		FBF7237A069297A5C1782B52 /* FarportFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 423A63DD5D61CFB78800F657 /* FarportFinder */; };
+		FBF7237A069297A5C1782B52 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = BF9E1B9BF9A81579AEDC9B13 /* SwiftTerm */; };
 		FE8F781BCEE2676C06FB67AF /* MobileAppRoot.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A14DD3634091334A402459 /* MobileAppRoot.swift */; };
 /* End PBXBuildFile section */
 
@@ -146,6 +153,13 @@
 			remoteGlobalIDString = 63A872EC420878F39DFE8787;
 			remoteInfo = FarportMobile;
 		};
+		A860B62270CD71D8D3155796 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7ADF9C0A803398835C50BB34 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B06BFD99BBD442587219FCD9;
+			remoteInfo = Farport;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -168,12 +182,14 @@
 		03B62BABA8763B4E76448433 /* EmptyHostLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyHostLibraryView.swift; sourceTree = "<group>"; };
 		072A9E25F29EBD0F2DD811E0 /* DebugEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugEnvironment.swift; sourceTree = "<group>"; };
 		0790BF194376BDEE95295BF0 /* TerminalScrolling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalScrolling.swift; sourceTree = "<group>"; };
+		090F7D64205AE441465D0F6D /* ScreenshotSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotSupport.swift; sourceTree = "<group>"; };
 		0BEC48347826798C38FBB1EF /* SwiftTerm */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SwiftTerm; path = Vendor/SwiftTerm; sourceTree = SOURCE_ROOT; };
 		13B02DFF7CF451A3702B2CFA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		14541ECB73BEEBE0A6941355 /* LibraryRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryRoutingTests.swift; sourceTree = "<group>"; };
 		15BEE6B2471FD6122155E0C1 /* TerminalPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalPalette.swift; sourceTree = "<group>"; };
 		16C12B5B869AC8247908B362 /* FinderEnumerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderEnumerator.swift; sourceTree = "<group>"; };
 		2A5973CF2D6DACD7EC28B117 /* MobileLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileLibraryTests.swift; sourceTree = "<group>"; };
+		2CA913B91BC4AFDC2062694E /* ScreenshotWindowSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotWindowSetup.swift; sourceTree = "<group>"; };
 		2FA6C1B441041FF4B2B38ABD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		302C18F0CEC7B2F86E342330 /* FinderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderModel.swift; sourceTree = "<group>"; };
 		3D83B1917D9142525DA82D9A /* ConnectionOnboardingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionOnboardingTests.swift; sourceTree = "<group>"; };
@@ -185,6 +201,7 @@
 		4993D4658EB4EAE21780A1A7 /* LiveConnectionRecoveryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveConnectionRecoveryTests.swift; sourceTree = "<group>"; };
 		4BB1FD631691B165E527426D /* Farport.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Farport.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F757F6A071818553721AF3A /* ConnectionAccessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionAccessTests.swift; sourceTree = "<group>"; };
+		50EDD6E4CC589389885AB8C2 /* StoreScreenshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreScreenshots.swift; sourceTree = "<group>"; };
 		51C5C988E605379A3A07F3CD /* SystemTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTerminalView.swift; sourceTree = "<group>"; };
 		51F28F72A0A18E5600DE89A3 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		55A93F5CBE5D34E73E53E0F8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -208,6 +225,7 @@
 		91450FAB138F3A7F5D1A8424 /* SheetFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetFrame.swift; sourceTree = "<group>"; };
 		93D3DC3938EDB35366EC3E1A /* SessionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionModels.swift; sourceTree = "<group>"; };
 		98AEDA753A2F94570449C062 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		9C0CEA46A7BEB6CE030B1F4F /* FarportScreenshots.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FarportScreenshots.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E72DB3B2C3AFE7043D4CE62 /* TerminalThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalThemeTests.swift; sourceTree = "<group>"; };
 		A011FBCC68C686962EAA1A3D /* FarportMobileTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FarportMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F95A9C427995CEA839BA4B /* KeychainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainTests.swift; sourceTree = "<group>"; };
@@ -249,13 +267,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				908010DCCBD144F3B9F8A505 /* FarportLocalization in Frameworks */,
-				10F7B42B764E6F3E98FDA132 /* FarportSessions in Frameworks */,
-				15C6601F5EFE59F63C910E76 /* FarportCore in Frameworks */,
-				2A4FCB06807381E48A91995A /* FarportSecurity in Frameworks */,
-				7A616C6DC45735DF38AAAB11 /* FarportCloud in Frameworks */,
-				F8D0CE240E49B3C26B8184D4 /* FarportSSH in Frameworks */,
-				D16FD4EAF7C415FF6A6DDBA9 /* SwiftTerm in Frameworks */,
-				FBF7237A069297A5C1782B52 /* FarportFinder in Frameworks */,
+				10F7B42B764E6F3E98FDA132 /* FarportDemo in Frameworks */,
+				15C6601F5EFE59F63C910E76 /* FarportSessions in Frameworks */,
+				2A4FCB06807381E48A91995A /* FarportCore in Frameworks */,
+				7A616C6DC45735DF38AAAB11 /* FarportSecurity in Frameworks */,
+				F8D0CE240E49B3C26B8184D4 /* FarportCloud in Frameworks */,
+				D16FD4EAF7C415FF6A6DDBA9 /* FarportSSH in Frameworks */,
+				FBF7237A069297A5C1782B52 /* SwiftTerm in Frameworks */,
+				E2F20ADAA5E06A546967EF55 /* FarportFinder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,9 +283,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				50BCE95B0B7B1924AF91F998 /* FarportCore in Frameworks */,
-				4375D8A59C604D30012C6607 /* FarportSessions in Frameworks */,
-				698DA130E099CF3B3F67B909 /* FarportLocalization in Frameworks */,
-				6DAEDFC5C9E9E7400E6D4477 /* SwiftTerm in Frameworks */,
+				4375D8A59C604D30012C6607 /* FarportDemo in Frameworks */,
+				698DA130E099CF3B3F67B909 /* FarportSessions in Frameworks */,
+				6DAEDFC5C9E9E7400E6D4477 /* FarportLocalization in Frameworks */,
+				C10E1E570F1CB3517620177B /* SwiftTerm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,13 +313,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE7396A6398DD20FCDF53729 /* FarportSessions in Frameworks */,
-				718628684844029F0D1ACF67 /* FarportCore in Frameworks */,
-				A51258A9D5D77700E20912BD /* FarportLocalization in Frameworks */,
-				B2DDBE357D3BA5378DB4F330 /* FarportSSH in Frameworks */,
-				5944B2A9E1F9EBFDB7C2D8D0 /* FarportSecurity in Frameworks */,
-				F305F784F20CC59C8142B269 /* FarportCloud in Frameworks */,
-				24EE25C6BFEA2E5E160D071F /* SwiftTerm in Frameworks */,
+				CE7396A6398DD20FCDF53729 /* FarportDemo in Frameworks */,
+				718628684844029F0D1ACF67 /* FarportSessions in Frameworks */,
+				A51258A9D5D77700E20912BD /* FarportCore in Frameworks */,
+				B2DDBE357D3BA5378DB4F330 /* FarportLocalization in Frameworks */,
+				5944B2A9E1F9EBFDB7C2D8D0 /* FarportSSH in Frameworks */,
+				F305F784F20CC59C8142B269 /* FarportSecurity in Frameworks */,
+				24EE25C6BFEA2E5E160D071F /* FarportCloud in Frameworks */,
+				B6901E23CAD1C52E5B5D4DFB /* SwiftTerm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,6 +374,7 @@
 				3E9DFFF8D38649FE0085D100 /* LibraryEnvironment.swift */,
 				736FD4EF519F74C65A8A7C74 /* LibraryModel.swift */,
 				4348599A9A0976C9529D95AE /* LibraryView.swift */,
+				2CA913B91BC4AFDC2062694E /* ScreenshotWindowSetup.swift */,
 				93D3DC3938EDB35366EC3E1A /* SessionModels.swift */,
 				51C5C988E605379A3A07F3CD /* SystemTerminalView.swift */,
 				3FB0D50D1FD8A9586EF6ED12 /* TerminalModel.swift */,
@@ -369,6 +391,7 @@
 				892A338EC32AF1BF1379D65D /* FarportAppTests.xctest */,
 				783F52CB198258C012C39CA3 /* FarportFinderExtension.appex */,
 				A011FBCC68C686962EAA1A3D /* FarportMobileTests.xctest */,
+				9C0CEA46A7BEB6CE030B1F4F /* FarportScreenshots.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -389,6 +412,7 @@
 				0215E23F9AE5552252A0F428 /* CloudSyncView.swift */,
 				03B62BABA8763B4E76448433 /* EmptyHostLibraryView.swift */,
 				43210A123717B0462B27C8A2 /* HostEditor.swift */,
+				090F7D64205AE441465D0F6D /* ScreenshotSupport.swift */,
 				BF2A5E24C2F1EC25A784BEE7 /* ServerTrustViews.swift */,
 				91450FAB138F3A7F5D1A8424 /* SheetFrame.swift */,
 				6F4EE3F72D53B82891C41DA8 /* TerminalAppearanceSettings.swift */,
@@ -399,6 +423,14 @@
 				0790BF194376BDEE95295BF0 /* TerminalScrolling.swift */,
 			);
 			path = SharedUI;
+			sourceTree = "<group>";
+		};
+		B8F1418B71E6359844C4A35E /* ScreenshotTests */ = {
+			isa = PBXGroup;
+			children = (
+				50EDD6E4CC589389885AB8C2 /* StoreScreenshots.swift */,
+			);
+			path = ScreenshotTests;
 			sourceTree = "<group>";
 		};
 		BD8427E53854C9C5F82975DD = {
@@ -413,6 +445,7 @@
 				14968AF8B7A7FA3DB62BBFC7 /* iOS */,
 				9A42FC5D033329B018D89BBC /* iOSTests */,
 				EAB365A924A019A616B42EDA /* Packages */,
+				B8F1418B71E6359844C4A35E /* ScreenshotTests */,
 				9DBC78E9EB21A965EEB01585 /* SharedUI */,
 				87737CFB0157661ADC74FFEE /* Products */,
 			);
@@ -509,6 +542,7 @@
 			);
 			name = FarportMobile;
 			packageProductDependencies = (
+				72B242A7FF8136B6C93A5B76 /* FarportDemo */,
 				7BBE18AE7D7BD416732280ED /* FarportSessions */,
 				7DD6A761512CBC0FA57A360D /* FarportCore */,
 				84CC4AE236E6A2C670C7085B /* FarportLocalization */,
@@ -536,6 +570,7 @@
 			name = FarportMobileTests;
 			packageProductDependencies = (
 				556A06B413EE1CAA4156E42A /* FarportCore */,
+				DDD4B1A931247A753DF8E968 /* FarportDemo */,
 				0DE5908AF76C84CD5858F05B /* FarportSessions */,
 				799CC95017CD5E78B3620103 /* FarportLocalization */,
 				6AAFDAF8215FF955BD7BB269 /* SwiftTerm */,
@@ -543,6 +578,24 @@
 			productName = FarportMobileTests;
 			productReference = A011FBCC68C686962EAA1A3D /* FarportMobileTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		93DE4B74CEC21AA312FBAFA9 /* FarportScreenshots */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 997670BD47B818987C43174C /* Build configuration list for PBXNativeTarget "FarportScreenshots" */;
+			buildPhases = (
+				722502A1EBF28B531C9CB7D5 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				217550D12824053C1B34AD4D /* PBXTargetDependency */,
+			);
+			name = FarportScreenshots;
+			packageProductDependencies = (
+			);
+			productName = FarportScreenshots;
+			productReference = 9C0CEA46A7BEB6CE030B1F4F /* FarportScreenshots.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 		B06BFD99BBD442587219FCD9 /* Farport */ = {
 			isa = PBXNativeTarget;
@@ -562,6 +615,7 @@
 			name = Farport;
 			packageProductDependencies = (
 				7A9D282A73C8162443F32BA1 /* FarportLocalization */,
+				F8F1C449968A593866A730E9 /* FarportDemo */,
 				DC2CF2A41D2F30E3FA5CAEC4 /* FarportSessions */,
 				8DA980B4E0DE67141A3383FB /* FarportCore */,
 				C581A12AA03318734C3ABC69 /* FarportSecurity */,
@@ -627,6 +681,11 @@
 						DevelopmentTeam = 3HG9ZBM8AV;
 						ProvisioningStyle = Automatic;
 					};
+					93DE4B74CEC21AA312FBAFA9 = {
+						DevelopmentTeam = 3HG9ZBM8AV;
+						ProvisioningStyle = Automatic;
+						TestTargetID = B06BFD99BBD442587219FCD9;
+					};
 					B06BFD99BBD442587219FCD9 = {
 						DevelopmentTeam = 3HG9ZBM8AV;
 						ProvisioningStyle = Automatic;
@@ -686,6 +745,7 @@
 				C06A711452FB341C0C350753 /* FarportFinderExtension */,
 				63A872EC420878F39DFE8787 /* FarportMobile */,
 				8CAA52B1A5E27A86DE6FD007 /* FarportMobileTests */,
+				93DE4B74CEC21AA312FBAFA9 /* FarportScreenshots */,
 			);
 		};
 /* End PBXProject section */
@@ -779,6 +839,7 @@
 				F4ED9119B9F8F12FD04E0F3B /* MobileLibraryView.swift in Sources */,
 				1EBE7450E76AB4CFED39B6CA /* MobileTerminalModel.swift in Sources */,
 				5332B78D25AD08BE607D8B20 /* MobileWorkspaceView.swift in Sources */,
+				012699BE3EC9630D6C37F2D4 /* ScreenshotSupport.swift in Sources */,
 				CD75223A6C8C362029628D57 /* ServerTrustViews.swift in Sources */,
 				24A48AF2A6A007E663D7EB3E /* SheetFrame.swift in Sources */,
 				82575CA8C3136F323ABB8280 /* TerminalAppearanceSettings.swift in Sources */,
@@ -806,6 +867,8 @@
 				4592FD0B134AC6794953A02C /* LibraryEnvironment.swift in Sources */,
 				0E94902301B1ECF322841D24 /* LibraryModel.swift in Sources */,
 				AE3CA87FBDADD3D5CDAC00F6 /* LibraryView.swift in Sources */,
+				7241BD372395F27972CB4253 /* ScreenshotSupport.swift in Sources */,
+				72756E67F3DB51E65473D24C /* ScreenshotWindowSetup.swift in Sources */,
 				1DD698356548901454D21F5B /* ServerTrustViews.swift in Sources */,
 				764F3143CD6905322EDA07FC /* SessionModels.swift in Sources */,
 				4FC61727DC0513F3B5ADA894 /* SheetFrame.swift in Sources */,
@@ -818,6 +881,14 @@
 				FA23DE3A640D44315DBDDF76 /* TerminalResolvedPalette.swift in Sources */,
 				CA808C2C4FA026D2CD7F5397 /* TerminalScrolling.swift in Sources */,
 				2F6DA869F8A60D1BB82F9E75 /* TerminalTabs.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		722502A1EBF28B531C9CB7D5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				527E14D8C2895438E740F3B8 /* StoreScreenshots.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -884,6 +955,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		217550D12824053C1B34AD4D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B06BFD99BBD442587219FCD9 /* Farport */;
+			targetProxy = A860B62270CD71D8D3155796 /* PBXContainerItemProxy */;
+		};
 		722F8400E2C85FE577AC7EE5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 63A872EC420878F39DFE8787 /* FarportMobile */;
@@ -1019,6 +1095,23 @@
 			};
 			name = Local;
 		};
+		1D48C221DEA8723E5319FCE2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor.screenshots;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = Farport;
+			};
+			name = Debug;
+		};
 		2810B7B18BEA99D02C6A43C0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1088,7 +1181,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/Farport.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -1135,7 +1228,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = iOS/FarportMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1160,7 +1253,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/Farport.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -1205,7 +1298,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = FinderExtension/FarportFinder.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FinderExtension/Info.plist;
@@ -1225,7 +1318,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = iOS/FarportMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1286,7 +1379,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = iOS/FarportMobileLocal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				HARBOR_ICLOUD_CONTAINER = "";
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -1306,12 +1399,29 @@
 			};
 			name = Local;
 		};
+		97210D44A6932D7AE7FD5BA9 /* Local */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor.screenshots;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = Farport;
+			};
+			name = Local;
+		};
 		B085E07C89DB896FB3DA8FE6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = FinderExtension/FarportFinder.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FinderExtension/Info.plist;
@@ -1418,7 +1528,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/FarportLocal.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -1442,12 +1552,29 @@
 			};
 			name = Local;
 		};
+		EA2E34BD06EE7F910754F7EC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor.screenshots;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = Farport;
+			};
+			name = Release;
+		};
 		FD6BABBAEA91E01C09466119 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = FinderExtension/FarportFinder.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FinderExtension/Info.plist;
@@ -1499,6 +1626,16 @@
 				29BCF571F1C974DF471C26B2 /* Debug */,
 				E4AAB1058E31338790661F58 /* Local */,
 				40F97E1B6613494529F08B25 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		997670BD47B818987C43174C /* Build configuration list for PBXNativeTarget "FarportScreenshots" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D48C221DEA8723E5319FCE2 /* Debug */,
+				97210D44A6932D7AE7FD5BA9 /* Local */,
+				EA2E34BD06EE7F910754F7EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
@@ -1569,6 +1706,10 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = FarportCloud;
 		};
+		72B242A7FF8136B6C93A5B76 /* FarportDemo */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportDemo;
+		};
 		799CC95017CD5E78B3620103 /* FarportLocalization */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FarportLocalization;
@@ -1625,6 +1766,10 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = FarportSessions;
 		};
+		DDD4B1A931247A753DF8E968 /* FarportDemo */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportDemo;
+		};
 		EC47AA53AC832EAAEAA937A7 /* FarportSSH */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FarportSSH;
@@ -1632,6 +1777,10 @@
 		F2DFBBC43E664FABBDE532F4 /* FarportSecurity */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FarportSecurity;
+		};
+		F8F1C449968A593866A730E9 /* FarportDemo */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FarportDemo;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -6,6 +6,7 @@ let package = Package(
     defaultLocalization: "en",
     platforms: [.macOS("15.0"), .iOS(.v17)],
     products: [
+        .library(name: "FarportDemo", targets: ["FarportDemo"]),
         .library(name: "FarportLocalization", targets: ["FarportLocalization"]),
         .library(name: "FarportSessions", targets: ["FarportSessions"]),
         .library(name: "FarportCore", targets: ["FarportCore"]),
@@ -21,6 +22,8 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-crypto.git", from: "3.12.3")
     ],
     targets: [
+        .target(name: "FarportDemo", dependencies: ["FarportCore", "FarportLocalization"]),
+        .testTarget(name: "FarportDemoTests", dependencies: ["FarportDemo", "FarportCore"]),
         .target(name: "FarportLocalization", resources: [.process("Resources")]),
         .target(name: "FarportSessions", dependencies: ["FarportCore", "FarportCloud", "FarportLocalization"]),
         .target(name: "FarportCore", dependencies: ["FarportLocalization"]),
@@ -31,7 +34,7 @@ let package = Package(
             .product(name: "NIO", package: "swift-nio"),
             .product(name: "NIOSSH", package: "swift-nio-ssh"),
             .product(name: "Crypto", package: "swift-crypto")
-        ]),
+        ], resources: [.process("Resources")]),
         .target(name: "FarportFinder", dependencies: [
             "FarportCore", "FarportSSH", "FarportSecurity", "FarportLocalization"
         ]),

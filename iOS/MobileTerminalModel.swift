@@ -13,7 +13,7 @@ final class MobileTerminalModel: TerminalSessionModel {
         view = MobileTerminalView()
         super.init(host: host, provider: provider, sessionID: sessionID, trust: trust, output: view)
         view.decorationColorsChanged = { [weak self] in self?.setDecorationColors($0) }
-        view.applySystemTheme(force: true)
+        view.theme = TerminalAppearanceStorage.current
         view.terminalDelegate = self
     }
 }
@@ -186,9 +186,10 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
                 TerminalResolvedPalette.color(theme.scheme.background(dark: dark)),
             foreground: standard ? UIColor.label.resolvedColor(with: traits) :
                 TerminalResolvedPalette.color(theme.scheme.foreground(dark: dark)),
-            accent: standard ? tintColor.resolvedColor(with: traits) :
+            accent: theme.useAppAccent ? tintColor.resolvedColor(with: traits) :
                 TerminalResolvedPalette.color(theme.scheme.accent(dark: dark)))
-        decorationColorsChanged?(palette.decorationColors(accent: tintColor.resolvedColor(with: traits)))
+        decorationColorsChanged?(palette.decorationColors(accent: tintColor.resolvedColor(with: traits),
+                                                           useAppAccent: theme.useAppAccent))
         guard force || appliedPalette != palette else { return }
         appliedPalette = palette
         installTheme(palette)
@@ -214,7 +215,12 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
             _ = resignFirstResponder()
         }
     }
-    func focus() { if window != nil { _ = becomeFirstResponder() } }
+    func focus() {
+        #if DEBUG
+        if ScreenshotSupport.requested { return }
+        #endif
+        if window != nil { _ = becomeFirstResponder() }
+    }
 }
 
 final class MobileTerminalController: UIViewController {

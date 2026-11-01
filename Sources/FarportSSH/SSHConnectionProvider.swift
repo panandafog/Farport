@@ -67,7 +67,7 @@ actor CitadelTerminalSession: TerminalSession {
             if !closed, !client.isConnected {
                 throw TerminalConnectionError.transport(L10n.text("SSH transport closed."))
             }
-        } catch let error as SSHClient.CommandFailed where launch.command != nil && error.exitCode == 127 {
+        } catch let error as SSHClient.CommandFailed where launch.requiresTmux && error.exitCode == 127 {
             throw TerminalConnectionError.configuration(
                 L10n.text(
                     "tmux is not installed or not available in the server's PATH. Install tmux on the " +
@@ -87,7 +87,7 @@ actor CitadelTerminalSession: TerminalSession {
     private func runPTY(size: TerminalSize, onReady: @escaping @Sendable () async -> Void,
                         onOutput: @escaping @Sendable (Data) async -> Void) async throws {
         appliedDecorationColors = decorationColors
-        let command = launch.command(colors: decorationColors)
+        let command = try launch.command(colors: decorationColors)
         try await client.withPTY(.init(wantReply: true, term: "xterm-256color",
                                       terminalCharacterWidth: size.columns, terminalRowHeight: size.rows,
                                       terminalPixelWidth: 0, terminalPixelHeight: 0,

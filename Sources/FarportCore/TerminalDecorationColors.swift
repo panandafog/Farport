@@ -1,16 +1,21 @@
 import Foundation
 
-/// Optional colors for transport-owned terminal decorations, never ANSI cell colors.
+/// Theme metadata for optional transport-owned decorations; does not remap terminal ANSI roles.
 public struct TerminalDecorationColors: Equatable, Sendable {
     public let foreground: UInt32
     public let background: UInt32
+    /// The unmodified application accent, separate from the tinted background.
+    public let accent: UInt32?
+    public let useAppAccent: Bool
 
-    public init(foreground: UInt32, background: UInt32) {
+    public init(foreground: UInt32, background: UInt32, accent: UInt32? = nil, useAppAccent: Bool = true) {
         self.foreground = foreground & 0xFFFFFF
         self.background = background & 0xFFFFFF
+        self.accent = accent.map { $0 & 0xFFFFFF }
+        self.useAppAccent = useAppAccent
     }
 
-    public static func tinted(background: UInt32, accent: UInt32, dark: Bool) -> Self {
+    public static func tinted(background: UInt32, accent: UInt32, dark: Bool, useAppAccent: Bool = true) -> Self {
         let fraction = dark ? 0.28 : 0.18
         var tinted: UInt32 = 0
         var luminance = 0.0
@@ -24,6 +29,7 @@ public struct TerminalDecorationColors: Equatable, Sendable {
         }
         let blackContrast = (luminance + 0.05) / 0.05
         let whiteContrast = 1.05 / (luminance + 0.05)
-        return Self(foreground: blackContrast >= whiteContrast ? 0 : 0xFFFFFF, background: tinted)
+        return Self(foreground: blackContrast >= whiteContrast ? 0 : 0xFFFFFF, background: tinted,
+                    accent: accent, useAppAccent: useAppAccent)
     }
 }

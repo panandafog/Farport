@@ -46,7 +46,21 @@ enum TCPConnectionFailure {
 
     private static func detail(_ error: Error) -> String {
         // NIO errors expose the actual POSIX/DNS failure through description, not Foundation's generic NSError text.
-        if let error = error as? IOError { return error.description }
+        if let error = error as? IOError {
+            let hint: String?
+            switch error.errnoCode {
+            case ECONNREFUSED:
+                hint = L10n.text(
+                    "The server refused the connection. Check that SSH is running and the port is correct."
+                )
+            case ETIMEDOUT:
+                hint = L10n.text("The connection timed out. Check the server address, SSH port, network and VPN.")
+            case ECONNRESET, ECONNABORTED, EPIPE:
+                hint = L10n.text("The server or network closed the SSH connection. Connect again.")
+            default: hint = nil
+            }
+            return hint.map { "\($0) \(error.description)" } ?? error.description
+        }
         return (error as? LocalizedError)?.errorDescription ?? String(describing: error)
     }
 

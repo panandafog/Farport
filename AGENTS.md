@@ -70,11 +70,34 @@ Info.plist for CloudKit silent pushes; it does not keep SSH alive in the backgro
 One mobile window is supported; adding multi-window requires per-scene ownership/lifecycle.
 Keep iOS Keychain/iCloud identifiers identical to macOS where appropriate, but never
 include macOS sandbox, File Provider or container-migration resources in the mobile target.
-Release must not include demo/fixture data or test-only credential stores. Debug --demo,
+Release must not include demo/fixture data or test-only credential stores. FarportDemo
+is a sample provider/catalog whose complete implementation is under
+#if DEBUG, as are both app entry points for --demo and screenshot scenes.
+See Docs/FramePilot.md: the sibling
+FramePilot CLI is local tooling only; Scripts/framepilot.sh prepare generates ignored
+machine-local configs without launching UI. ScreenshotTests and Farport Screenshots
+are opt-in macOS capture adapters, excluded from ordinary tests/CI. Never run captures
+or UI tests without a user request; screenshot scenes must stay offline and isolated.
+Farport Demo / Farport iOS Demo schemes run Debug with --demo; Archive remains Release. Never add a production toggle,
+public demo credentials in Release or accept-any SSH verification. Fictional hosts stay
+in-process; only the three allowlisted public catalog entries use injected SSH/SFTP,
+normal explicit host-key verification and memory-only pins. Changed public endpoint,
+auth, route or session settings must fail before transport. Use memory host/workspace
+stores, no Finder/Keychain/iCloud. Run Scripts/verify-demo-release.py against built
+Release apps (enforced in macOS/iOS CI); see Docs/Demo.md. Debug --demo,
 HARBOR_ISOLATED_TESTS and Simulator HARBOR_TEST_PORT use memory stores, no real iCloud/Keychain.
 Localize all application-owned visible text with FarportLocalization.L10n, including
 dynamic model strings. Keep en/ru catalogs and format arguments aligned. Never localize
 storage IDs, persisted enum raw values, commands, paths, user labels or remote output.
+HostEditor uses the shared HostEditorDraft for live validation, including dependent
+ProxyJump routes. Keep its validation notice outside the scrolling Form on both
+platforms, and disable Save (including its keyboard shortcut) until the draft passes.
+Save must revalidate. Import/write errors use native alerts; failed imports must not
+replace a valid draft key. Empty passwords need explicit consent; imported unconfigured
+hosts must never become credential-ready by opening the editor. Only cheap structural
+key checks run while typing; cryptographic decoding and passphrase validation stay in
+the connection path. SSH errors must explain the failure and suggest a relevant action,
+retain protocol codes when useful, and preserve trust/reconnect classifications.
 
 The application uses ProtectedHostRepository: profiles/references in schema-5 JSON,
 password/private-key/passphrase bundles in the shared Keychain. JSONHostRepository
@@ -132,6 +155,16 @@ RGB SGR output as well as stored style options to catch tmux color quantization.
 Scope options to the UUID session/current window, never global options or user config.
 Cosmetic failures must not disconnect the shell; colors are shared by all clients of
 the same server session/window. See Docs/Terminal.md.
+terminal.useAppAccent is the unified device-local switch, on by default. It controls
+the SSH prompt, tmux panels, native cursor and selection. Disabling it unsets only
+the managed UUID session/window tmux style overrides and uses the palette's own
+cursor/selection colors. Prompt changes apply to new Bash/Zsh shells via FarportSSH's
+bundled startup shims, never the input queue,
+server home configuration or ANSI palette roles. Existing tmux sessions retain their
+shells; do not kill/restart them to apply this setting. Temporary helper files are
+private, owned by a wrapper process and removed on shell exit; never use recursive
+deletion. Preserve normal prompt hooks and custom ZDOTDIR, and test with isolated
+homes in the local PTY fixture. See Docs/ShellPrompt.md for startup limitations.
 Repaint the existing terminal; never recreate
 it, replay output, alter cell attributes, clear selection/history, or send input
 when changing theme. Do not reinstall palettes on unchanged appearance callbacks.
@@ -181,6 +214,12 @@ which send remote keys in alternate-screen mode. Native user Copy is allowed;
 remote OSC 52 clipboard writes are ignored on both platforms. See Docs/Terminal.md.
 
 Native ProxyJump uses Citadel `jump(to:)` and direct-tcpip, shared by SSH and SFTP.
+SSHTransportAlgorithms keeps NIOSSH's default AES-GCM preference and appends Citadel
+AES-128-CTR through a SHA-2-only MAC adapter for Dropbear compatibility. Apply it to
+every endpoint via SSHRouteConnector, including gateways and Finder. Do not enable
+SSHAlgorithms.all, SHA-1 or unchecked host keys as a negotiation fallback. The
+isolated fixture's CTR listener must test actual terminal/SFTP traffic and trust
+rejection in addition to the default GCM route. See Docs/Security.md.
 `HostProfile.jumpHostIDs` stores ordered saved-host references, not copied secrets
 or shell commands. `ConnectionRoute` expands nested routes, rejects missing or
 duplicate nodes/cycles, and bounds the route to eight endpoints including target.

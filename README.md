@@ -116,6 +116,9 @@ not a synchronous mounted SFTP disk. Persistent remote history requires server-s
 - [Session recovery](Docs/SessionRecovery.md)
 - [iCloud](Docs/iCloud.md)
 - [Contributor guide](AGENTS.md)
+- [Screenshot and presentation mode](Docs/Demo.md)
+- [FramePilot screenshot setup and presets](Docs/FramePilot.md)
+- [Public SSH/SFTP accounts and App Review notes](Docs/AppReview.md)
 
 SSH/SFTP uses vendored [Citadel](https://github.com/orlandos-nl/Citadel) with documented
 patches; the terminal uses [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm).

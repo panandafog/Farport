@@ -1,5 +1,4 @@
 import Citadel
-import Crypto
 import FarportCore
 import FarportLocalization
 import Foundation
@@ -105,38 +104,17 @@ struct SSHRouteConnector {
     private func settings(for host: SavedHost) throws -> SSHClientSettings {
         do {
             try host.validate()
-            let authentication = try Self.authentication(host)
+            let authentication = try SSHCredentialValidation.authentication(for: host)
             var settings = SSHClientSettings(
                 host: host.profile.hostname, port: host.profile.port,
                 authenticationMethod: { authentication },
                 hostKeyValidator: .custom(ServerKeyValidator(endpoint: ServerEndpoint(host.profile),
                                                              verify: hostKeyVerifier))
             )
+            settings.algorithms = SSHTransportAlgorithms.client
             settings.connectTimeout = .milliseconds(Int64(timeout * 1_000))
             return settings
         } catch { throw TerminalConnectionError.configuration(error.localizedDescription) }
     }
 
-    private static func authentication(_ host: SavedHost) throws -> SSHAuthenticationMethod {
-        let username = host.profile.username
-        if host.profile.authentication == .password {
-            return .passwordBased(username: username, password: host.credentials.password)
-        }
-        let key = host.credentials.privateKey
-        let passphrase = host.credentials.passphrase.isEmpty ? nil : Data(host.credentials.passphrase.utf8)
-        let type = try SSHKeyDetection.detectPrivateKeyType(from: key)
-        switch type {
-        case .ed25519:
-            return .ed25519(
-                username: username,
-                privateKey: try Curve25519.Signing.PrivateKey(sshEd25519: key, decryptionKey: passphrase)
-            )
-        case .rsa:
-            return .rsa(
-                username: username, privateKey: try Insecure.RSA.PrivateKey(sshRsa: key, decryptionKey: passphrase)
-            )
-        default:
-            throw HarborError.message(L10n.text("This MVP supports Ed25519 and RSA keys in OpenSSH format."))
-        }
-    }
 }
