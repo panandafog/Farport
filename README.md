@@ -133,6 +133,7 @@ for archive paths, display/runtime identifiers, verification and earlier diagnos
 - [FramePilot screenshot setup and presets](Docs/FramePilot.md)
 - [Public SSH/SFTP accounts and App Review notes](Docs/AppReview.md)
 - [App Store metadata and review instructions — English / Russian](AppStore/app-store-metadata.md)
+- [Privacy policy — English / Russian](AppStore/privacy-policy.md) ([RTF copy](privacypolicy.rtf))
 
 SSH/SFTP uses vendored [Citadel](https://github.com/orlandos-nl/Citadel) with documented
 patches; the terminal uses [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm).
