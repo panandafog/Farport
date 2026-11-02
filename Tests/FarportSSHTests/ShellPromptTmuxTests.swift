@@ -20,29 +20,30 @@ final class ShellPromptTmuxTests: XCTestCase {
             try ("#!/bin/sh\nexec " + ShellPromptFixture.quote(binary) + " -S " + ShellPromptFixture.quote(socket) +
                  " -f /dev/null \"$@\"\n").write(to: wrapper, atomically: true, encoding: .utf8)
             try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: wrapper.path)
-            try "printf 'FARPORT_TMUX_READY\\n'\n".write(to: home.appendingPathComponent(".bash_profile"),
-                                                       atomically: true, encoding: .utf8)
+            let ready = root.appendingPathComponent("startup-ready")
+            try ("printf 'FARPORT_TMUX_READY\\n'\n: > " + ShellPromptFixture.quote(ready.path) + "\n")
+                .write(to: home.appendingPathComponent(".bash_profile"), atomically: true, encoding: .utf8)
             var fixture = ShellPromptFixture(root: root, home: home, shell: "/bin/bash")
             fixture.path = bin.path + ":" + fixture.path
-            fixture.readyMarker = "FARPORT_TMUX_READY"
+            fixture.readyPath = ready
             // Force prompt wrapping even on machines with short user/host names.
             fixture.columns = 32
             let profile = HostProfile(terminalResumeStrategy: .tmux)
             let plan = TerminalLaunchPlan(profile: profile)
+            fixture.clientPIDsCommand = [binary, "-S", socket, "list-clients", "-t", profile.tmuxSessionName,
+                                         "-F", "#{client_pid}"]
             let firstReport = root.appendingPathComponent("first-report")
             let secondReport = root.appendingPathComponent("second-report")
             fixture.finishPath = firstReport
             _ = try fixture.run(command: XCTUnwrap(plan.command(colors: colors(0xCC5500))),
                                 input: "for farport_line in {1..40}; do " +
                                     "printf 'FARPORT_HISTORY_%s\\n' \"$farport_line\"; done\n" +
-                                    input("FIRST", report: firstReport))
+                                    input(report: firstReport))
             let initialDirectories = try helpers(root)
             XCTAssertEqual(initialDirectories.count, 1)
-            // Reattach redraws the visible pane; the startup marker can already be in tmux scrollback.
-            fixture.readyMarker = "FARPORT_CAPTURE_FIRST"
             fixture.finishPath = secondReport
             let second = try fixture.run(command: XCTUnwrap(plan.command(colors: colors(0xAABBCC))),
-                                          input: input("SECOND", report: secondReport))
+                                          input: input(report: secondReport))
             XCTAssertFalse(second.output.contains("FARPORT_TMUX_READY"), "Startup output must be outside the pane")
             // Tmux can insert cursor/erase sequences inside printed text. Read shell state separately.
             XCTAssertEqual(try String(contentsOf: firstReport, encoding: .utf8),
@@ -99,10 +100,9 @@ final class ShellPromptTmuxTests: XCTestCase {
             .filter { $0.hasPrefix("farport-shell.") }.sorted()
     }
 
-    private func input(_ tag: String, report: URL) -> String {
+    private func input(report: URL) -> String {
         let temporary = ShellPromptFixture.quote(report.path + ".pending")
         return "printf '%s\\n' \"$$\" \"$PS1\" > \(temporary)\n" +
-            "printf 'FARPORT_CAPTURE_%s\\n' \(tag)\n" +
             "mv \(temporary) \(ShellPromptFixture.quote(report.path))\n"
     }
 
