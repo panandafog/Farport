@@ -12,7 +12,7 @@ extension CitadelTerminalSession {
     }
 
     private func scheduleDecorationUpdate() {
-        guard !closed, receivedTerminalOutput, launch.command != nil,
+        guard !closed, receivedTerminalOutput, launch.requiresTmux,
               decorationTask == nil, decorationColors != appliedDecorationColors else { return }
         decorationTask = Task { [weak self] in await self?.applyDecorationColors() }
     }

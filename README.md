@@ -105,6 +105,19 @@ No SSH agent or `~/.ssh/config` import, recursive deletion, resumable transfers,
 or on-disk terminal scrollback yet. Finder uses asynchronous File Provider caching,
 not a synchronous mounted SFTP disk. Persistent remote history requires server-side tmux.
 
+## Screenshots
+
+iPhone/iPad captures are complete in light/dark appearance and English/Russian
+(32 PNGs). The same matrix is complete for both iPhone Duo displays (32 more PNGs).
+Duo runs pause for manual Closed/Open preparation in Device Hub before capturing
+each display; fully automatic posture switching remains future work. macOS dark
+capture also passed: the complete macOS set has 20 PNGs across both themes and
+languages. All 84 selected PNGs are stored in [AppStore/screenshots](AppStore/screenshots)
+alongside the metadata and are included in Git. Local ZIP archives remain under
+ignored `Build/FramePilot/Exports`.
+See [FramePilot capture status](Docs/FramePilot.md#capture-status-2026-11-02)
+for archive paths, display/runtime identifiers, verification and earlier diagnostics.
+
 ## Documentation
 
 - [Usage and implementation](Docs/Usage.md)
@@ -116,6 +129,11 @@ not a synchronous mounted SFTP disk. Persistent remote history requires server-s
 - [Session recovery](Docs/SessionRecovery.md)
 - [iCloud](Docs/iCloud.md)
 - [Contributor guide](AGENTS.md)
+- [Screenshot and presentation mode](Docs/Demo.md)
+- [FramePilot screenshot setup and presets](Docs/FramePilot.md)
+- [Public SSH/SFTP accounts and App Review notes](Docs/AppReview.md)
+- [App Store metadata and review instructions — English / Russian](AppStore/app-store-metadata.md)
+- [Privacy policy — English / Russian](AppStore/privacy-policy.md) ([RTF copy](privacypolicy.rtf))
 
 SSH/SFTP uses vendored [Citadel](https://github.com/orlandos-nl/Citadel) with documented
 patches; the terminal uses [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm).

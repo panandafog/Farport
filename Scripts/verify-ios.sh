@@ -22,3 +22,5 @@ for configuration in Debug Release; do
         -derivedDataPath "$build_directory" -onlyUsePackageVersionsFromResolvedFile -skipPackagePluginValidation \
         CODE_SIGNING_ALLOWED=NO build
 done
+
+python3 Scripts/verify-demo-release.py "$build_directory/Build/Products/Release-iphoneos/Farport.app"

@@ -127,6 +127,10 @@ jobs:
             -onlyUsePackageVersionsFromResolvedFile -skipPackagePluginValidation \
             CODE_SIGNING_ALLOWED=NO build 2>&1 | tee "$RUNNER_TEMP/FarportDiagnostics/build.log"
 
+      - name: Verify demo is absent from Release
+        if: matrix.configuration == 'Release'
+        run: python3 Scripts/verify-demo-release.py "$RUNNER_TEMP/FarportBuild/Build/Products/Release/Farport.app"
+
       - name: Preserve build diagnostics on failure
         if: failure()
         uses: actions/upload-artifact@v7

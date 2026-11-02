@@ -2,6 +2,10 @@ import FarportSessions
 import XCTest
 
 final class TerminalAppearanceTests: XCTestCase {
+    func testApplicationAccentIsEnabledByDefaultAndCanBeDisabled() {
+        XCTAssertTrue(TerminalAppearance().useAppAccent)
+        XCTAssertFalse(TerminalAppearance(useAppAccent: false).useAppAccent)
+    }
     func testManualAppearanceDoesNotChangeWithSystem() {
         for dark in [false, true] {
             let manual = TerminalAppearance(followsSystem: false, dark: dark)

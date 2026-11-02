@@ -117,6 +117,28 @@ async def main(port, run_tests, with_tmux):
             allow_scp=False,
         )
         port = server.get_port()
+        # Match a modern Dropbear router: no AES-GCM, only SHA-2 MACs and an Ed25519 host key.
+        class RouterServer(Server):
+            def connection_made(self, connection):
+                self.connection = connection
+
+            def validate_password(self, username, password):
+                for direction in ("send", "recv"):
+                    if self.connection.get_extra_info(f"{direction}_cipher") != "aes128-ctr":
+                        return False
+                    if self.connection.get_extra_info(f"{direction}_mac") != "hmac-sha2-256":
+                        return False
+                return super().validate_password(username, password)
+
+        router = await asyncssh.create_server(
+            RouterServer, "127.0.0.1", 0, server_host_keys=[host_key],
+            encryption_algs=["chacha20-poly1305@openssh.com", "aes256-ctr", "aes128-ctr"],
+            mac_algs=["hmac-sha2-256"],
+            kex_algs=["curve25519-sha256", "curve25519-sha256@libssh.org", "diffie-hellman-group14-sha256"],
+            process_factory=shell,
+            sftp_factory=lambda channel: asyncssh.SFTPServer(channel, chroot=str(root)),
+            allow_scp=False,
+        )
         control_file = directory / "blackhole"
         proxy = BlackholeProxy(port, control_file)
         proxy_port = await proxy.start()
@@ -145,14 +167,16 @@ async def main(port, run_tests, with_tmux):
         library["hosts"].extend([gateway, target])
         library["schemaVersion"] = 3
         (directory / "hosts.json").write_text(json.dumps(library))
-        print(json.dumps({"port": port, "directory": str(directory), "library": str(directory / "hosts.json"),
+        print(json.dumps({"port": port, "ctrPort": router.get_port(),
+                          "directory": str(directory), "library": str(directory / "hosts.json"),
                           "proxyPort": proxy_port, "blackhole": str(control_file), "jumpPort": jump.port,
                           "jumpProxyPort": jump.proxy_port, "jumpBlackhole": str(jump.blackhole),
                           "jumpStats": str(jump.stats_path), "stallPort": jump.stall_port}), flush=True)
         try:
-            async with server:
+            async with server, router:
                 if run_tests:
                     environment = dict(os.environ, HARBOR_TEST_PORT=str(port), HARBOR_TEST_KEYS=str(directory))
+                    environment["HARBOR_TEST_CTR_PORT"] = str(router.get_port())
                     environment.update(HARBOR_TEST_PROXY_PORT=str(proxy_port), HARBOR_TEST_BLACKHOLE=str(control_file))
                     environment.update(HARBOR_TEST_JUMP_PORT=str(jump.port),
                                        HARBOR_TEST_STALL_PORT=str(jump.stall_port),

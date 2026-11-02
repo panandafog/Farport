@@ -2,14 +2,30 @@ import FarportCore
 import Foundation
 
 struct TerminalLaunchPlan {
-    private let launchScript: String?
-    var command: String? { launchScript.map { "exec /bin/sh -c " + Self.quote($0) } }
+    var command: String? { launchScript(shell: nil).map(Self.shellCommand) }
     private let discovery: String
     private let sessionName: String?
+    var requiresTmux: Bool { sessionName != nil }
 
-    func command(colors: TerminalDecorationColors?) -> String? {
-        guard let launchScript, let colors else { return command }
-        return "exec /bin/sh -c " + Self.quote(launchScript + " \\; " + styleCommands(colors))
+    func command(colors: TerminalDecorationColors?) throws -> String? {
+        let shell: String?
+        if let colors, colors.useAppAccent, let accent = colors.accent {
+            shell = try ShellPromptBootstrap.script(accent: accent)
+        } else { shell = nil }
+        guard var script = launchScript(shell: shell) else { return nil }
+        if let colors, requiresTmux { script += " \\; " + styleCommands(colors) }
+        return Self.shellCommand(script)
+    }
+
+    private func launchScript(shell: String?) -> String? {
+        guard let sessionName else { return shell }
+        var launch = discovery + "exec \"$tmux_binary\" -T 256,RGB new-session -A -s \(sessionName)"
+        if let shell { launch += " " + Self.quote(Self.shellCommand(shell)) }
+        return launch + " \\; set-option -t \(sessionName) mouse on"
+    }
+
+    private static func shellCommand(_ script: String) -> String {
+        "exec /bin/sh -c " + Self.quote(script)
     }
 
     func decorationCommand(_ colors: TerminalDecorationColors) -> String? {
@@ -19,6 +35,10 @@ struct TerminalLaunchPlan {
 
     private func styleCommands(_ colors: TerminalDecorationColors) -> String {
         guard let sessionName else { return "" }
+        guard colors.useAppAccent else {
+            return "set-option -u -t \(sessionName) status-style \\; " +
+                "set-window-option -u -t \(sessionName) mode-style"
+        }
         let style = String(format: "fg=#%06x,bg=#%06x", colors.foreground, colors.background)
         return "set-option -t \(sessionName) status-style \(Self.quote(style)) \\; " +
             "set-window-option -t \(sessionName) mode-style \(Self.quote(style))"
@@ -28,7 +48,6 @@ struct TerminalLaunchPlan {
          tmuxSearchPaths: [String] = ["/opt/homebrew/bin/tmux", "/usr/local/bin/tmux"]) {
         switch profile.terminalResumeStrategy {
         case .none:
-            launchScript = nil
             discovery = ""
             sessionName = nil
         case .tmux:
@@ -45,10 +64,6 @@ struct TerminalLaunchPlan {
                 "printf '%s\\n' 'Farport: tmux is unavailable on this server.' >&2; exit 127; fi; "
             discovery = script
             // Advertise the native renderer's capabilities for this client, not all server clients.
-            let launch = script + "exec \"$tmux_binary\" -T 256,RGB new-session -A -s \(name) " +
-                "\\; set-option -t \(name) mouse on"
-            // SSH runs exec requests through the account's login shell, which may not be POSIX.
-            launchScript = launch
         }
     }
     private static func quote(_ value: String) -> String {

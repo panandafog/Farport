@@ -108,8 +108,39 @@ default without an injected verifier rejects unknown keys, including package cli
 This is explicit TOFU/pinning, not independent server identity proof. There is no
 system `known_hosts` import, SSH CA/certificate trust policy, DNS SSHFP validation,
 automatic key rotation, multiple-algorithm pin set, or cryptographic/security audit.
-Existing library algorithm negotiation is unchanged. First-use fingerprints must
-still be verified through a trusted channel.
+First-use fingerprints must still be verified through a trusted channel.
+
+## SSH Algorithm Compatibility
+
+SSH failures include a localized explanation and a relevant next step: negotiation,
+unsupported SSH version, rejected session, invalid protocol traffic, key decoding,
+connection timeout/refusal and transport closure are distinguished. Protocol failures
+retain the SSH error code without presenting it as the whole explanation. Authentication,
+server verification and configuration errors remain non-retryable; network closures
+remain eligible for the existing bounded tmux recovery policy.
+
+The shared host editor validates profile fields, local credential readiness and affected
+ProxyJump routes before enabling Save. Its notice is outside the scrolling form on macOS
+and iOS; persistence and import failures use native alerts and retain the draft. Importing
+an invalid key preserves the previous key. The editor checks OpenSSH key structure/type
+without decrypting it on every keystroke; a passphrase or server authentication failure
+can still occur when connecting. New empty passwords require explicit consent, while
+an existing configured empty password retains that consent. Cloud-imported profiles
+remain unconfigured until the user enters credentials or explicitly confirms an empty password.
+
+All routes (direct SSH/SFTP, ProxyJump endpoints and Finder) prefer NIOSSH's default
+AES-GCM ciphers. AES-128-CTR with HMAC-SHA-256/512 is additionally available for servers
+such as Dropbear routers which offer CTR/ChaCha20 but no AES-GCM. A thin transport
+adapter restricts Citadel's existing AES-CTR implementation to SHA-2 MACs; encryption,
+packet authentication and rekeying remain implemented by Citadel/NIOSSH.
+No SHA-1 MAC, SHA-1 key exchange, CBC, `ssh-rsa` signature or accept-any key policy is
+enabled by this compatibility addition. Key exchange and host-key preferences remain
+the NIOSSH defaults; ChaCha20-only and other unsupported configurations still fail closed.
+
+The loopback SSH fixture includes a separate listener matching the router algorithm
+offer. It accepts test credentials only if both directions negotiated AES-128-CTR with
+HMAC-SHA-256. Tests exercise terminal traffic, SFTP and rejection of untrusted host keys;
+the ordinary fixture continues to cover the preferred AES-GCM path.
 
 ## Local Network Privacy
 

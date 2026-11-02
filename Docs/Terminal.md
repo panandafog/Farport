@@ -92,7 +92,10 @@ This does not retrieve server-side tmux scrollback into the local buffer.
 macOS Settings (also Terminal → Terminal Appearance) and the mobile Terminal Actions
 menu expose device-local preferences for following system appearance or choosing
 fixed light/dark colors. Standard uses native background/text and the system accent
-for the cursor and selection. Ocean and Paper provide cool and warm alternatives
+for the cursor and selection by default. Use App Accent is on by default and controls
+SSH prompts, tmux panels, cursor and selection together. When disabled, cursor/selection
+use the terminal scheme's own accent and tmux inherits its server styles. Shell prompt
+changes need a new shell; native and tmux decorations update live. Ocean and Paper provide alternatives
 with both light/dark variants. Basic ANSI colors use one stable palette in both
 appearances so colors used as backgrounds (for example tmux status/copy-mode bars)
 remain recognizable. The native renderer adjusts a basic/default ANSI foreground
@@ -172,6 +175,10 @@ FractionalScrollPositionTests`.
 
 
 ## Accent-colored tmux decorations
+
+An optional device-local accent prompt is also available for new Bash/Zsh shells.
+See [session-local shell integration](ShellPrompt.md) for setup, startup behavior,
+temporary-file cleanup, tmux reattach rules and supported servers.
 
 Native views resolve the application's system accent and terminal background into
 `TerminalDecorationColors`: an 18% accent tint in light appearance, 28% in dark,

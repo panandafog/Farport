@@ -6,6 +6,7 @@ struct TerminalAppearanceSettings: View {
     @AppStorage("terminal.colorScheme") private var scheme = TerminalColorScheme.standard.rawValue
     @AppStorage("terminal.followsSystemAppearance") private var followsSystem = true
     @AppStorage("terminal.darkAppearance") private var dark = true
+    @AppStorage("terminal.useAppAccent") private var useAppAccent = true
 
     var body: some View {
         Form {
@@ -22,6 +23,13 @@ struct TerminalAppearanceSettings: View {
                 Text(L10n.text("Paper")).tag(TerminalColorScheme.paper.rawValue)
             }
             Text(L10n.text("Applies to all terminals on this device.")).font(.footnote).foregroundStyle(.secondary)
+            Toggle(L10n.text("Use App Accent"), isOn: $useAppAccent)
+            Text(L10n.text("SSH prompts, tmux panels, cursor and selection."))
+                .font(.footnote).foregroundStyle(.secondary)
+            Text(L10n.text(
+                "Prompt changes apply to new Bash/Zsh shells. Reconnect SSH or open a new tmux tab."
+            ))
+                .font(.footnote).foregroundStyle(.secondary)
         }
         .formStyle(.grouped)
         .navigationTitle(L10n.text("Terminal Appearance"))
@@ -39,7 +47,7 @@ struct TerminalAppearanceSheet: View {
                         Button(L10n.text("Done")) { dismiss() }
                     }
                 }
-        }.sheetFrame(width: 480, height: 320)
+        }.sheetFrame(width: 480, height: 420)
     }
 }
 
@@ -49,9 +57,27 @@ struct TerminalAppearanceStorage: DynamicProperty {
     @AppStorage("terminal.colorScheme") private var scheme = TerminalColorScheme.standard.rawValue
     @AppStorage("terminal.followsSystemAppearance") private var followsSystem = true
     @AppStorage("terminal.darkAppearance") private var dark = true
+    @AppStorage("terminal.useAppAccent") private var useAppAccent = true
+
+    /// Native renderers need this before automatic connect/reattach, not only their first SwiftUI update.
+    static var current: TerminalAppearance {
+        #if DEBUG
+        if ScreenshotSupport.requested { return TerminalAppearance() }
+        #endif
+        let defaults = UserDefaults.standard
+        return TerminalAppearance(
+            scheme: defaults.string(forKey: "terminal.colorScheme").flatMap(TerminalColorScheme.init) ?? .standard,
+            followsSystem: defaults.object(forKey: "terminal.followsSystemAppearance") as? Bool ?? true,
+            dark: defaults.object(forKey: "terminal.darkAppearance") as? Bool ?? true,
+            useAppAccent: defaults.object(forKey: "terminal.useAppAccent") as? Bool ?? true
+        )
+    }
 
     var wrappedValue: TerminalAppearance {
-        TerminalAppearance(scheme: TerminalColorScheme(rawValue: scheme) ?? .standard,
-                           followsSystem: followsSystem, dark: dark)
+        #if DEBUG
+        if ScreenshotSupport.requested { return TerminalAppearance() }
+        #endif
+        return TerminalAppearance(scheme: TerminalColorScheme(rawValue: scheme) ?? .standard,
+                                  followsSystem: followsSystem, dark: dark, useAppAccent: useAppAccent)
     }
 }
