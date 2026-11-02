@@ -29,12 +29,16 @@ final class ShellPromptTmuxTests: XCTestCase {
             let plan = TerminalLaunchPlan(profile: profile)
             fixture.finishMarker = "FARPORT_CAPTURE_FIRST"
             let first = try fixture.run(command: XCTUnwrap(plan.command(colors: colors(0xCC5500))),
-                                         input: input("FIRST"))
+                                         input: "for farport_line in {1..40}; do " +
+                                            "printf 'FARPORT_HISTORY_%s\\n' \"$farport_line\"; done\n" + input("FIRST"))
             let initialDirectories = try helpers(root)
             XCTAssertEqual(initialDirectories.count, 1)
+            // Reattach redraws the visible pane; the startup marker can already be in tmux scrollback.
+            fixture.readyMarker = "FARPORT_CAPTURE_FIRST"
             fixture.finishMarker = "FARPORT_CAPTURE_SECOND"
             let second = try fixture.run(command: XCTUnwrap(plan.command(colors: colors(0xAABBCC))),
                                           input: input("SECOND"))
+            XCTAssertFalse(second.output.contains("FARPORT_TMUX_READY"), "Startup output must be outside the pane")
             XCTAssertEqual(try pid(first.output, tag: "FIRST"), try pid(second.output, tag: "SECOND"))
             XCTAssertTrue(second.output.contains("38;2;204;85;0"), second.output)
             XCTAssertEqual(try helpers(root), initialDirectories, "Existing tmux shells must not create another helper")
