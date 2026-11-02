@@ -1,12 +1,15 @@
 """Disposable local PTY for shell-startup tests. No SSH, UI automation or real user home."""
 import errno
+import fcntl
 import json
 import os
 import pathlib
 import pty
 import select
 import signal
+import struct
 import sys
+import termios
 import time
 
 
@@ -25,6 +28,7 @@ def main():
     status = None
     deadline = time.monotonic() + 15
     try:
+        fcntl.ioctl(terminal, termios.TIOCSWINSZ, struct.pack("HHHH", 24, config.get("columns", 80), 0, 0))
         while time.monotonic() < deadline:
             if select.select([terminal], [], [], 0.1)[0]:
                 try:
@@ -41,6 +45,8 @@ def main():
                     sent = True
                 if config.get("finishMarker") and config["finishMarker"].encode() in output:
                     break
+            if config.get("finishPath") and pathlib.Path(config["finishPath"]).is_file():
+                break
             if len(output) > 1_048_576:
                 raise RuntimeError("PTY output exceeded the fixture limit")
         else:
