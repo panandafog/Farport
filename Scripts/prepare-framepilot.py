@@ -64,7 +64,23 @@ def main():
     desktop.update(scheme="Farport Screenshots", mode="uiTests", scenes=MAC_SCENES,
                    devices=[dict(id="local-mac", name="Mac", family="macOS", runtime="macOS", deviceType="mac")])
     DESTINATION.mkdir(parents=True, exist_ok=True)
-    for platform, base in [("ios", mobile), ("macos", desktop)]:
+    presets = [("ios", mobile), ("macos", desktop)]
+    listing = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "-j"], timeout=30))
+    duo_devices = [(runtime, device) for runtime, devices in listing["devices"].items() for device in devices
+                   if device.get("deviceTypeIdentifier") == "com.apple.CoreSimulator.SimDeviceType.iPhone-Duo"
+                   and not device["name"].startswith("FramePilot ")]
+    if duo_devices:
+        runtime, device = max(duo_devices, key=lambda entry: tuple(map(int, re.findall(r"\d+", entry[0]))))
+        duo = copy.deepcopy(mobile)
+        duo["devices"] = [dict(id=device["udid"], name=device["name"], family="iPhone", runtime=runtime,
+                               deviceType=device["deviceTypeIdentifier"], displays=["primary", "primary-1"])]
+        presets.append(("ios-duo", duo))
+    else:
+        # Do not leave stale local Duo configs selectable after its runtime was removed.
+        for appearance in ["light", "dark"]:
+            (DESTINATION / f"ios-duo-{appearance}.json").unlink(missing_ok=True)
+        print("Duo presets skipped: no available iPhone Duo simulator.")
+    for platform, base in presets:
         for appearance in ["light", "dark"]:
             configuration = copy.deepcopy(base)
             configuration["appearance"] = appearance

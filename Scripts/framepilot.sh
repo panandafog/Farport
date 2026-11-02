@@ -10,7 +10,7 @@ case "$action" in
     prepare|capture) ;;
     *)
         echo 'Usage: sh Scripts/framepilot.sh prepare'
-        echo '       sh Scripts/framepilot.sh capture ios-light|ios-dark|macos-light|macos-dark'
+        echo '       sh Scripts/framepilot.sh capture ios-light|ios-dark|ios-duo-light|ios-duo-dark|macos-light|macos-dark'
         echo 'Optional: FRAMEPILOT_ROOT=/path/to/FramePilot or FRAMEPILOT_CLI=/path/to/framepilot'
         exit 2 ;;
 esac
@@ -29,12 +29,15 @@ if [ "$action" = prepare ]; then
 fi
 
 case "${2:-}" in
-    ios-light|ios-dark|macos-light|macos-dark) preset=$2 ;;
-    *) echo 'Choose ios-light, ios-dark, macos-light or macos-dark.' >&2; exit 2 ;;
+    ios-light|ios-dark|ios-duo-light|ios-duo-dark|macos-light|macos-dark) preset=$2 ;;
+    *) echo 'Choose ios-light, ios-dark, ios-duo-light, ios-duo-dark, macos-light or macos-dark.' >&2; exit 2 ;;
 esac
 configuration="$farport_root/Build/FramePilot/$preset.json"
 if [ ! -f "$configuration" ]; then
     echo 'Run sh Scripts/framepilot.sh prepare first.' >&2
     exit 1
 fi
-exec "$framepilot_cli" capture "$configuration"
+case "$preset" in
+    ios-duo-*) exec "$framepilot_cli" capture "$configuration" --interactive ;;
+    *) exec "$framepilot_cli" capture "$configuration" ;;
+esac
