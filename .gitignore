@@ -17,6 +17,9 @@ DerivedData/
 *.hmap
 *.log
 
+# Downloaded CI diagnostics
+/[Ll]ogs/
+
 # Personal Xcode / SwiftPM state; keep projects, shared schemes and lockfiles
 *.xcuserstate
 xcuserdata/

@@ -1,13 +1,33 @@
 """Disposable local PTY for shell-startup tests. No SSH, UI automation or real user home."""
 import errno
+import fcntl
 import json
 import os
 import pathlib
 import pty
 import select
 import signal
+import struct
+import subprocess
 import sys
+import termios
 import time
+
+
+def input_ready(config, output, child):
+    if config.get("readyPath") and not pathlib.Path(config["readyPath"]).is_file():
+        return False
+    if config.get("clientPIDsCommand"):
+        try:
+            result = subprocess.run(config["clientPIDsCommand"], stdout=subprocess.PIPE,
+                                    stderr=subprocess.DEVNULL, timeout=1)
+        except subprocess.TimeoutExpired:
+            return False
+        # The launch plan execs tmux: wait for this PTY child, not another attached client.
+        return result.returncode == 0 and str(child).encode() in result.stdout.split()
+    if config.get("readyPath"):
+        return True
+    return config.get("readyMarker", "\x1b[38;2;").encode() in output
 
 
 def main():
@@ -25,6 +45,7 @@ def main():
     status = None
     deadline = time.monotonic() + 15
     try:
+        fcntl.ioctl(terminal, termios.TIOCSWINSZ, struct.pack("HHHH", 24, config.get("columns", 80), 0, 0))
         while time.monotonic() < deadline:
             if select.select([terminal], [], [], 0.1)[0]:
                 try:
@@ -36,11 +57,13 @@ def main():
                 if not chunk:
                     break
                 output.extend(chunk)
-                if not sent and config.get("readyMarker", "\x1b[38;2;").encode() in output:
-                    os.write(terminal, config["input"].encode())
-                    sent = True
                 if config.get("finishMarker") and config["finishMarker"].encode() in output:
                     break
+            if not sent and input_ready(config, output, child):
+                os.write(terminal, config["input"].encode())
+                sent = True
+            if config.get("finishPath") and pathlib.Path(config["finishPath"]).is_file():
+                break
             if len(output) > 1_048_576:
                 raise RuntimeError("PTY output exceeded the fixture limit")
         else:

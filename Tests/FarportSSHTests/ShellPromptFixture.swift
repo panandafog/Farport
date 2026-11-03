@@ -9,6 +9,10 @@ struct ShellPromptFixture {
     var path = "/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin"
     var readyMarker = "\u{1b}[38;2;"
     var finishMarker: String?
+    var finishPath: URL?
+    var readyPath: URL?
+    var clientPIDsCommand: [String]?
+    var columns = 80
 
     func run(command: String, input: String) throws -> ShellPromptResult {
         let commandURL = root.appendingPathComponent("command.sh"), configURL = root.appendingPathComponent("pty.json")
@@ -17,8 +21,11 @@ struct ShellPromptFixture {
         try FileManager.default.createDirectory(at: temporary, withIntermediateDirectories: true)
         var config: [String: Any] = ["commandPath": commandURL.path, "home": home.path, "shell": shell, "path": path,
             "temporaryDirectory": temporary.path, "environment": environment, "input": input,
-            "readyMarker": readyMarker]
+            "readyMarker": readyMarker, "columns": columns]
         if let finishMarker { config["finishMarker"] = finishMarker }
+        if let finishPath { config["finishPath"] = finishPath.path }
+        if let readyPath { config["readyPath"] = readyPath.path }
+        if let clientPIDsCommand { config["clientPIDsCommand"] = clientPIDsCommand }
         try JSONSerialization.data(withJSONObject: config).write(to: configURL)
         let process = Process(), pipe = Pipe()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
