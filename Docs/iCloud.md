@@ -8,7 +8,7 @@ with the current Apple Account, not a public/shared database.
 
 Synced fields are the host UUID, name, hostname, port, username, authentication
 kind, terminal/file provider identifiers, initial directory, notes, tmux preference
-and ordered ProxyJump host UUIDs. Terminal tab UUIDs, names and order now sync too.
+and ordered ProxyJump host UUIDs. Host order and terminal tab UUIDs, names, order and session modes sync too.
 Never put secrets in host/tab names or notes.
 
 Passwords, imported keys, passphrases, Keychain references, credential readiness,
@@ -30,9 +30,27 @@ application-managed end-to-end encryption or a replacement for account security.
 
 Tab definitions live in HostProfile.terminalTabs, inside that same encrypted field;
 no new CloudKit record type or server schema field is required. Payload schema 2
-marks records containing tabs; older apps fail closed instead of silently dropping
-their metadata. Update both desktop and mobile apps before using tab sync. Legacy
-schema-1 host records without tabs still load normally.
+marks records containing tabs. Schema 3 adds per-host position/revision metadata and
+an independent settings revision, so dragging hosts cannot overwrite a concurrent
+connection-settings edit. Schema 4 protects per-tab SSH/tmux modes, including
+those retained in closed-tab tombstones. Earlier apps fail closed instead of dropping
+these fields. Update both desktop and mobile apps before using the new settings;
+schemas 1, 2 and 3 remain readable. The existing encrypted CloudKit field is unchanged,
+so no new schema deployment in CloudKit Console is needed.
+
+Each tab stores a concrete SSH/tmux mode. The host preference is only the initial
+value for new tabs. Legacy missing modes are filled once; applying a host-default
+change does not change or disconnect existing tabs. An incoming legacy tab without
+a mode retains the matching local tab's saved mode when available.
+
+Drag hosts in the macOS sidebar and tabs in the terminal tab bar. On iOS/iPadOS,
+use the sidebar's standard Edit mode to drag hosts, and Terminal Actions → Arrange
+Tabs for native tab reorder handles. Moving items preserves selection, terminal
+instances, output and connections. A filtered list move keeps hidden rows in place.
+Host positions merge by their own Lamport revisions; equal positions use UUID order.
+Concurrent reorders converge deterministically and may interleave. New hosts append
+to the current order. Before the first persisted order, legacy cloud records keep
+UUID ordering. Order changes require no new CloudKit Console deployment.
 
 Existing local multi-tab workspaces are migrated into the host profile, preserving
 UUIDs and names. An untouched one-tab workspace remains implicit, so a new phone's
@@ -43,7 +61,8 @@ offline edits. No tombstone compaction is performed. Recovering a host as a copy
 creates new tab UUIDs to avoid attaching the original host's tmux sessions.
 
 Incoming additions/renames keep current terminal instances, output and connections.
-Closing an active tab waits for Apply Changes; applying closes only removed tabs
+Closing an active tab or changing its effective SSH/tmux mode waits for Apply Changes.
+Applying disconnects/reconfigures only the affected terminals and retains their buffers,
 unless host connection settings also changed. New tabs restore disconnected. For
 tmux hosts, attaching the same tab UUID reaches the same remote session when it still
 exists on the server. Plain SSH cannot resume a previous shell or synchronize history.
@@ -52,7 +71,10 @@ The atomic owner-only `hosts.icloud.json` beside `hosts.json` contains schema-1
 sync metadata, the journal, change tokens and cached record system fields. It also
 contains profile metadata in plaintext locally, never secret bundles. Keep it with
 the host library; deleting only the journal loses the device's causal history.
-Host-library schema 5 adds local credential readiness; schemas 1-4 migrate safely.
+Host-library schema 7 preserves per-tab modes, schema 6 added host positions and
+schema 5 introduced local credential readiness. Schemas 1–6 remain readable; subsequent
+writes use schema 7 so older apps cannot silently erase these fields. The separate
+workspace snapshot now uses schema 2 and still reads schema 1.
 
 - First enabling fetches before publishing unversioned local profiles. Cloud
   versions take precedence for an existing UUID; differing local copies are retained
@@ -69,6 +91,14 @@ Host-library schema 5 adds local credential readiness; schemas 1-4 migrate safel
   does not automatically repair other profiles' gateway references.
 - Up to 50 recovery copies are retained per device. They are not a cloud backup or
   a full version history. Dismissing a copy removes only that local recovery entry.
+- Remote host deletions always wait for explicit **Apply Changes**, even when no
+  sessions are active. Closing the editor or saving a password never accepts deletion.
+  Saving an already deleted host presents **Save a Copy**, retaining entered local
+  credentials under a new host UUID and new tab UUIDs; tombstones are not resurrected.
+- A CloudKit `.unknownItem` save failure is not treated as a remote deletion. Sync
+  pauses, keeps local profiles/credentials/the pending queue, and clears the stale
+  server fields for a retry after explicit re-enabling. Only fetched deletions create
+  server-deletion tombstones.
 - Received changes affecting active sessions, the editor or connected Finder routes
   wait for **Apply Changes**. Confirmation disconnects affected transports/revokes
   Finder locations. Updated host tabs/buffers survive; deleted hosts close their
@@ -124,6 +154,12 @@ Use **FarportLocal**, configuration **Local**, when developing without cloud-cap
 provisioning. The UI explicitly says iCloud is unavailable; this is not cloud success.
 
 ## Verification Boundaries
+
+The 2026-11-10 deletion-conflict and host/tab ordering changes include regression
+cases for deleted-host credential recovery, missing-record save failures, cross-device
+order propagation, concurrent settings/order edits and retained terminal instances.
+Builds, unit/integration tests and UI checks have not been run for these changes at
+the user's request. Only static style/file-format checks and project generation were run.
 
 Portable tests exercise independent/concurrent edits, deletion precedence, stale
 acknowledgments, first import, offline persistence and credential readiness. Hosted

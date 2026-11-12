@@ -11,6 +11,8 @@ struct MobileWorkspaceView: View {
     @State private var title = ""
     @State private var closing = false
     @State private var showingAppearance = false
+    @State private var showingTabs = false
+    @State private var pendingSessionMode: TerminalTab?
     @AppStorage("terminal.optionAsMeta") private var optionAsMeta = true
 
     var body: some View {
@@ -34,7 +36,11 @@ struct MobileWorkspaceView: View {
                     Picker(L10n.text("Terminal"), selection: $workspace.selectedTerminalID) {
                         ForEach(workspace.tabs) { tab in Text(tab.title).tag(Optional(tab.id)) }
                     }
+                    if let tab = workspace.tabs.first(where: { $0.id == workspace.selectedTerminalID }) {
+                        TerminalSessionModePicker(tab: tab, request: requestSessionMode)
+                    }
                     Button(L10n.text("New Terminal Tab"), systemImage: "plus") { workspace.addTerminal() }
+                    Button(L10n.text("Arrange Tabs"), systemImage: "arrow.up.arrow.down") { showingTabs = true }
                     Button(L10n.text("Rename Tab"), systemImage: "pencil") {
                         title = workspace.tabs.first { $0.id == workspace.selectedTerminalID }?.title ?? ""
                         renaming = true
@@ -72,9 +78,50 @@ struct MobileWorkspaceView: View {
             }
         }
         .sheet(isPresented: $showingAppearance) { TerminalAppearanceSheet() }
+        .sheet(isPresented: $showingTabs) { MobileTerminalOrderSheet(workspace: workspace) }
+        .modifier(TerminalSessionModeConfirmation(workspace: workspace, candidate: $pendingSessionMode))
         .confirmationDialog(L10n.text("Close Tab"), isPresented: $closing, titleVisibility: .visible) {
             Button(L10n.text("Close Tab"), role: .destructive) {
                 if let id = workspace.selectedTerminalID { workspace.closeTerminal(id) }
+            }
+        }
+    }
+
+    private func requestSessionMode(_ tab: TerminalTab) {
+        guard let strategy = tab.resumeStrategy else { return }
+        if workspace.requiresDisconnect(for: tab.id, resumeStrategy: strategy) {
+            pendingSessionMode = tab
+        } else { workspace.setResumeStrategy(strategy, for: tab.id) }
+    }
+}
+
+private struct MobileTerminalOrderSheet: View {
+    @ObservedObject var workspace: SessionWorkspace<MobileTerminalModel>
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(workspace.tabs) { tab in
+                    Button {
+                        workspace.selectedTerminalID = tab.id
+                    } label: {
+                        HStack {
+                            Text(tab.title).foregroundStyle(.primary)
+                            Spacer()
+                            if tab.id == workspace.selectedTerminalID { Image(systemName: "checkmark") }
+                        }
+                    }
+                }
+                .onMove(perform: workspace.moveTerminals)
+            }
+            .environment(\.editMode, .constant(.active))
+            .navigationTitle(L10n.text("Arrange Tabs"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(L10n.text("Done")) { dismiss() }
+                }
             }
         }
     }

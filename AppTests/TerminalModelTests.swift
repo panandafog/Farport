@@ -94,7 +94,7 @@ final class TerminalModelTests: XCTestCase {
         XCTAssertTrue(model.usesTmux)
         XCTAssertEqual(model.connectLabel, "Attach")
         XCTAssertEqual(model.disconnectLabel, "Detach")
-        XCTAssertEqual(model.sessionLabel, host.profile.tmuxSessionName)
+        XCTAssertEqual(model.sessionLabel, "Persistent session: " + host.id.uuidString.lowercased())
         model.connect()
         try await waitUntil { model.state == .connected }
         await session.emit("persistent-screen\r\n")

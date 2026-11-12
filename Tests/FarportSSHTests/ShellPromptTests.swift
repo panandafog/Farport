@@ -16,7 +16,7 @@ final class ShellPromptTests: XCTestCase {
         let persistent = TerminalLaunchPlan(profile: HostProfile(terminalResumeStrategy: .tmux))
         XCTAssertTrue(persistent.requiresTmux)
         let command = try XCTUnwrap(persistent.command(colors: colors))
-        XCTAssertTrue(command.contains("new-session -A -s harbor-"))
+        XCTAssertTrue(command.contains("new-session -A -s farport-"))
         XCTAssertTrue(command.contains("farport-shell."))
         XCTAssertTrue(command.contains("status-style"))
         let reset = try XCTUnwrap(persistent.command(colors: disabled))

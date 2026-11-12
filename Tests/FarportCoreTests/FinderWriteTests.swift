@@ -43,7 +43,7 @@ final class FinderWriteTests: XCTestCase {
         XCTAssertTrue(result.refetchContents)
         XCTAssertEqual(try String(contentsOf: remote, encoding: .utf8), "bbbb")
         let entries = try await reader.list(FinderPath.rootIdentifier)
-        let conflict = try XCTUnwrap(entries.first { $0.name.contains("Harbor conflict") })
+        let conflict = try XCTUnwrap(entries.first { $0.name.contains("Farport conflict") })
         let conflictURL = fixture.remote.appendingPathComponent(conflict.relativePath)
         XCTAssertEqual(try String(contentsOf: conflictURL, encoding: .utf8), "cccc")
         _ = try await reader.modify(request, progress: { _, _ in })
@@ -67,6 +67,31 @@ final class FinderWriteTests: XCTestCase {
         let count = await fixture.files.uploadCount
         XCTAssertEqual(count, 1)
         XCTAssertEqual(restored.name, "retry.txt")
+    }
+
+    func testRetryReusesLegacyConflictCopyWithoutRenamingOrUploadingAgain() async throws {
+        let fixture = try FinderWriteFixture()
+        defer { fixture.cleanup() }
+        let reader = try fixture.reader()
+        let file = try await fixture.create(reader, name: "hello.txt", text: "aaaa")
+        let source = try fixture.source("cccc")
+        let digest = try FileDigest.sha256(source)
+        let suffix = digest.prefix(8).map { String(format: "%02x", $0) }.joined()
+        let legacyName = "hello (Harbor conflict \(suffix)).txt"
+        _ = try await fixture.create(reader, name: legacyName, text: "cccc",
+                                      token: "conflict-" + file.identifier + "-" + suffix)
+        let original = fixture.remote.appendingPathComponent("hello.txt")
+        try Data("bbbb".utf8).write(to: original)
+        let uploads = await fixture.files.uploadCount
+        let restarted = try fixture.reader()
+        let result = try await restarted.modify(FinderModifyRequest(identifier: file.identifier,
+            baseVersion: file.contentVersion, contents: source), progress: { _, _ in })
+        XCTAssertTrue(result.refetchContents)
+        let entries = try await restarted.list(FinderPath.rootIdentifier)
+        XCTAssertEqual(Set(entries.map(\.name)), ["hello.txt", legacyName])
+        XCTAssertEqual(try String(contentsOf: original, encoding: .utf8), "bbbb")
+        let after = await fixture.files.uploadCount
+        XCTAssertEqual(after, uploads)
     }
 
     func testLostRenameReplyPreservesDescendantIdentityAndDoesNotMoveAnythingTwice() async throws {

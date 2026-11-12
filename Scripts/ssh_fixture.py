@@ -20,7 +20,7 @@ async def main(port, run_tests, with_tmux):
         root = directory / "files"
         root.mkdir()
         (root / "Documents").mkdir()
-        (root / "hello.txt").write_text("Hello from Harbor's isolated SFTP fixture.\n")
+        (root / "hello.txt").write_text("Hello from Farport's isolated SFTP fixture.\n")
         tmux = TmuxFixture(root) if with_tmux else None
         keys = {}
         for algorithm, name in [("ssh-ed25519", "ed25519"), ("ssh-rsa", "rsa")]:
@@ -61,8 +61,8 @@ async def main(port, run_tests, with_tmux):
                     process.stderr.write("tmux is unavailable\r\n")
                     process.exit(127)
                 return
-            process.stdout.write("\x1b[32mHarbor SSH test server\x1b[0m\r\n")
-            process.stdout.write("harbor@test ~ % ")
+            process.stdout.write("\x1b[32mFarport SSH test server\x1b[0m\r\n")
+            process.stdout.write("farport@test ~ % ")
             try:
                 while not process.stdin.at_eof():
                     try:
@@ -103,7 +103,7 @@ async def main(port, run_tests, with_tmux):
                                              "\x1b[38;2;180;90;150mTrue color\x1b[0m\r\n")
                     else:
                         process.stdout.write("fixture: echo, pwd, ls, colors, stty size, exit, drop, eof\r\n")
-                    process.stdout.write("harbor@test ~ % ")
+                    process.stdout.write("farport@test ~ % ")
             except asyncssh.BreakReceived:
                 process.exit(0)
 

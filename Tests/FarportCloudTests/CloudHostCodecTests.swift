@@ -7,9 +7,11 @@ final class CloudHostCodecTests: XCTestCase {
     func testOnlyEncryptedProfileMetadataIsEncodedAndRoundTripsWithSystemFields() throws {
         var profile = HostProfile(hostname: "host.internal", username: "user", notes: "Private profile metadata")
         var tabs = SyncedTerminalTabs()
-        try tabs.record([TerminalTab(id: profile.id, title: "Shell"), TerminalTab(title: "Logs")], device: UUID())
+        try tabs.record([TerminalTab(id: profile.id, title: "Shell"),
+                         TerminalTab(title: "Logs", resumeStrategy: .tmux)], device: UUID())
         profile.terminalTabs = tabs
         let value = CloudHostRecord(id: profile.id, revision: .init(counter: 1, device: UUID()), profile: profile)
+        XCTAssertEqual(value.schemaVersion, 4)
         let record = try CloudHostCodec.encode(value, fields: nil)
         XCTAssertEqual(Set(record.allKeys()), ["profile"])
         XCTAssertEqual(Set(record.encryptedValues.allKeys()), ["profile"])
@@ -37,6 +39,18 @@ final class CloudHostCodecTests: XCTestCase {
         try bytes.write(to: url)
         XCTAssertThrowsError(try CloudSyncFile(url: url).load())
         XCTAssertEqual(try Data(contentsOf: url), bytes)
+    }
+
+    func testHostOrderAndIndependentSettingsRevisionRoundTripInsideEncryptedPayload() throws {
+        var profile = HostProfile(hostname: "ordered.invalid", username: "test")
+        let device = UUID()
+        profile.position = HostPosition(index: 2, revision: ProfileRevision(counter: 4, device: device))
+        let value = CloudHostRecord(id: profile.id, revision: ProfileRevision(counter: 8, device: device),
+                                    profile: profile, settingsRevision: ProfileRevision(counter: 1, device: device))
+        XCTAssertEqual(value.schemaVersion, 3)
+        let record = try CloudHostCodec.encode(value, fields: nil)
+        XCTAssertEqual(Set(record.encryptedValues.allKeys()), ["profile"])
+        XCTAssertEqual(try CloudHostCodec.decode(record), value)
     }
 
     func testOfflineQueuePersistsWithoutCreatingACloudContainerOrTouchingAnAccount() async throws {
@@ -75,6 +89,26 @@ final class CloudHostCodecTests: XCTestCase {
         try corrupted.write(to: file.url)
         XCTAssertThrowsError(try file.load())
         XCTAssertEqual(try Data(contentsOf: file.url), corrupted)
+    }
+
+    func testMissingRecordSavePausesWithoutDeletingHostOrLosingQueue() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let file = CloudSyncFile(url: directory.appendingPathComponent("state.json"))
+        let profile = HostProfile(hostname: "offline.invalid", username: "test")
+        var saved = CloudSyncDocument()
+        saved.enabled = true
+        saved.initialized = true
+        try saved.ledger.bootstrap([profile])
+        saved.serverFields[profile.id.uuidString] = Data("stale tag".utf8)
+        try file.save(saved)
+        let service = try CloudHostSync(url: file.url, containerIdentifier: "iCloud.test.invalid", changed: { _ in })
+        try await service.missingRecord(CloudHostCodec.id(profile.id))
+        let paused = try file.load()
+        XCTAssertFalse(paused.enabled)
+        XCTAssertEqual(paused.ledger.profiles, [profile])
+        XCTAssertEqual(paused.ledger.pending, [profile.id])
+        XCTAssertNil(paused.serverFields[profile.id.uuidString])
     }
 
     func testAccountChangePauseKeepsProfilesAndQueueAndRequiresExplicitReset() async throws {

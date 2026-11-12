@@ -41,6 +41,7 @@ final class ShellPromptTmuxTests: XCTestCase {
                                     input(report: firstReport))
             let initialDirectories = try helpers(root)
             XCTAssertEqual(initialDirectories.count, 1)
+            try verifyStatusLabel(binary, socket: socket, profile: profile, customize: true)
             fixture.finishPath = secondReport
             let second = try fixture.run(command: XCTUnwrap(plan.command(colors: colors(0xAABBCC))),
                                           input: input(report: secondReport))
@@ -50,7 +51,18 @@ final class ShellPromptTmuxTests: XCTestCase {
                            try String(contentsOf: secondReport, encoding: .utf8))
             XCTAssertTrue(second.output.contains("38;2;204;85;0"), second.output)
             XCTAssertEqual(try helpers(root), initialDirectories, "Existing tmux shells must not create another helper")
+            try verifyStatusLabel(binary, socket: socket, profile: profile, customize: false)
             try verifyDisabledStyles(plan, profile: profile, fixture: fixture, binary: binary, socket: socket)
+        }
+    }
+
+    private func verifyStatusLabel(_ binary: String, socket: String, profile: HostProfile, customize: Bool) throws {
+        let label = try value(binary, socket: socket,
+                              arguments: ["show-options", "-v", "-t", profile.tmuxSessionName, "status-left"])
+        XCTAssertEqual(label, customize ? "[Farport]" : "Custom status")
+        if customize {
+            try control(binary, socket: socket, arguments: ["set-option", "-t", profile.tmuxSessionName,
+                                                           "status-left", "Custom status"])
         }
     }
 

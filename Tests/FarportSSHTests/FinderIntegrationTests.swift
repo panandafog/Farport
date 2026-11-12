@@ -15,7 +15,7 @@ final class FinderIntegrationTests: XCTestCase {
         let item = try XCTUnwrap(initial.first { $0.name == "hello.txt" })
         let url = directory.appendingPathComponent("hello.txt")
         _ = try await reader.download(item.identifier, version: item.contentVersion, to: url) { _, _ in }
-        XCTAssertEqual(try String(contentsOf: url, encoding: .utf8), "Hello from Harbor's isolated SFTP fixture.\n")
+        XCTAssertEqual(try String(contentsOf: url, encoding: .utf8), "Hello from Farport's isolated SFTP fixture.\n")
         let anchor = await reader.currentAnchor()
         try await reader.refreshKnownFolders()
         let changes = try await reader.changes(since: anchor, container: nil)

@@ -3,7 +3,7 @@
 ## Credential Storage
 
 The signed application uses `ProtectedHostRepository`, not the legacy plaintext
-`JSONHostRepository` codec. Host-library schema 5 stores profiles, device-local
+`JSONHostRepository` codec. Host-library schema 7 stores profiles, device-local
 credential readiness and opaque
 credential references. Passwords, imported OpenSSH private-key text, and passphrases
 are encoded together in a generic-password Keychain item, resolved into memory
@@ -31,8 +31,8 @@ and [accessibility definition](https://developer.apple.com/documentation/securit
 
 ## Migration And Failure Handling
 
-The application reads legacy host-library schemas 1/2/3/4 and migrates to schema 5
-on load. Each new secret gets an immutable UUID reference and is read back before
+The application reads legacy host-library schemas 1/2/3/4/5/6 and writes schema 7.
+Plaintext schemas and schema 4 migrate on load; schemas 5/6 upgrade on the next save. Each new secret gets an immutable UUID reference and is read back before
 the JSON document is atomically replaced. Editing credentials rotates the reference;
 profile-only changes reuse it. Missing/inaccessible Keychain items are errors,
 never empty passwords. Corrupt or newer documents are not silently replaced.
@@ -62,8 +62,8 @@ of an existing profile. No server pins or Finder locations are synced.
 See [iCloud](iCloud.md) for account changes, conflicts and remaining verification.
 
 This is not secure erasure of the old plaintext: APFS snapshots, backups, copied
-libraries, crash logs, and older app builds are outside this migration. Quit older
-Harbor builds before using the new version; old code cannot read the new schemas
+libraries, crash logs, and older app builds are outside this migration. Quit all
+older builds before using the new version; old code cannot read the new schemas
 and could recreate plaintext if still allowed to save legacy data.
 
 ## Host-Key Policy
@@ -205,7 +205,7 @@ The test target has its own plist and must never advertise itself as a File Prov
   JSON. The unknown-key prompt matched `ssh-keygen -lf -E sha256`; explicit approval
   enabled SSH, and trust/credentials survived restarting the app. The Server Keys
   panel displayed the pin and confirmed forgetting it. The test host/domain/pin
-  were removed through Harbor; real SSH sessions were left running.
+  were removed through the app; real SSH sessions were left running.
 - Finder registration was exercised and a test-plist configuration defect was fixed.
   End-to-end Finder/editor saving was NOT verified: the user requested finishing
   without that check. No real/corporate server was used for verification.

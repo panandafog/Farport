@@ -14,6 +14,8 @@ public struct SyncedTerminalTabs: Codable, Equatable, Sendable {
 
     public init() {}
 
+    public var hasSessionModes: Bool { changes.contains { $0.tab.resumeStrategy != nil } }
+
     public var tabs: [TerminalTab] {
         changes.filter { !$0.deleted }.sorted {
             $0.position == $1.position ? $0.tab.id.uuidString < $1.tab.id.uuidString : $0.position < $1.position
@@ -84,7 +86,7 @@ public struct SyncedTerminalTabs: Codable, Equatable, Sendable {
     public func copy(for hostID: UUID) throws -> Self {
         var copy = Self()
         let copied = tabs.enumerated().map { index, tab in
-            TerminalTab(id: index == 0 ? hostID : UUID(), title: tab.title)
+            TerminalTab(id: index == 0 ? hostID : UUID(), title: tab.title, resumeStrategy: tab.resumeStrategy)
         }
         try copy.record(copied, device: UUID())
         return copy

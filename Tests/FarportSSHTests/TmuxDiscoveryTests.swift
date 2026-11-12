@@ -12,9 +12,12 @@ final class TmuxDiscoveryTests: XCTestCase {
             let binary = try stub(in: root.appendingPathComponent("Home brew's bin"), marker: "fallback")
             let result = try run(path: root.path, candidates: [missing.path, notExecutable.path, binary.path])
             XCTAssertEqual(result.status, 0)
-            XCTAssertTrue(result.output.hasPrefix("fallback\n-T\n256,RGB\nnew-session\n-A\n-s\nharbor-"))
-            XCTAssertTrue(result.output.contains("\n;\nset-option\n-t\nharbor-"))
-            XCTAssertTrue(result.output.hasSuffix("\nmouse\non\n"))
+            XCTAssertTrue(result.output.hasPrefix("fallback\n-T\n256,RGB\nnew-session\n-A\n-s\nfarport-"))
+            XCTAssertTrue(result.output.contains("\n;\nset-option\n-t\n=farport-"))
+            XCTAssertTrue(result.output.contains("\nmouse\non\n"))
+            XCTAssertTrue(result.output.contains("\nif-shell\n-F\n-t\n"))
+            XCTAssertTrue(result.output.contains("#{==:#{status-left},[##S] }"))
+            XCTAssertTrue(result.output.contains("status-left '[Farport] '"))
         }
     }
 
@@ -39,7 +42,9 @@ final class TmuxDiscoveryTests: XCTestCase {
     private func stub(in directory: URL, marker: String) throws -> URL {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let binary = directory.appendingPathComponent("tmux")
-        try Data("#!/bin/sh\nprintf '%s\\n' '\(marker)' \"$@\"\n".utf8).write(to: binary)
+        let script = "#!/bin/sh\nif [ \"$1\" = display-message ]; then exit 1; fi\n" +
+            "printf '%s\\n' '\(marker)' \"$@\"\n"
+        try Data(script.utf8).write(to: binary)
         try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: binary.path)
         return binary
     }

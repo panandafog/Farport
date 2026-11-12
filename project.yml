@@ -45,6 +45,13 @@ targets:
       properties:
         CFBundleDisplayName: Farport
         CFBundleLocalizations: [en, ru]
+        UTExportedTypeDeclarations:
+          - UTTypeIdentifier: com.panandafog.harbor.host-order
+            UTTypeDescription: Farport Host Order
+            UTTypeConformsTo: [public.data]
+          - UTTypeIdentifier: com.panandafog.harbor.tab-order
+            UTTypeDescription: Farport Terminal Tab Order
+            UTTypeConformsTo: [public.data]
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         HarborAppGroup: $(HARBOR_APP_GROUP)
@@ -104,8 +111,8 @@ targets:
         INFOPLIST_KEY_CFBundleDisplayName: Farport
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
         INFOPLIST_KEY_NSHumanReadableCopyright: "Farport"
-        MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "9"
+        MARKETING_VERSION: "0.1.1"
+        CURRENT_PROJECT_VERSION: "10"
         ENABLE_APP_SANDBOX: YES
         ENABLE_OUTGOING_NETWORK_CONNECTIONS: YES
         ENABLE_USER_SELECTED_FILES: readwrite
@@ -132,6 +139,13 @@ targets:
       properties:
         CFBundleDisplayName: Farport
         CFBundleLocalizations: [en, ru]
+        UTExportedTypeDeclarations:
+          - UTTypeIdentifier: com.panandafog.harbor.host-order
+            UTTypeDescription: Farport Host Order
+            UTTypeConformsTo: [public.data]
+          - UTTypeIdentifier: com.panandafog.harbor.tab-order
+            UTTypeDescription: Farport Terminal Tab Order
+            UTTypeConformsTo: [public.data]
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         HarborKeychainGroup: $(HARBOR_KEYCHAIN_GROUP)
@@ -185,8 +199,8 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         CODE_SIGN_ENTITLEMENTS: iOS/FarportMobile.entitlements
-        MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "9"
+        MARKETING_VERSION: "0.1.1"
+        CURRENT_PROJECT_VERSION: "10"
       configs:
         Local:
           CODE_SIGN_ENTITLEMENTS: iOS/FarportMobileLocal.entitlements
@@ -208,7 +222,9 @@ targets:
       - SharedUI/TerminalScrolling.swift
       - SharedUI/TerminalPastePresentation.swift
       - SharedUI/TerminalHistoryControls.swift
+      - SharedUI/TerminalSessionModePicker.swift
       - SharedUI/HostEditor.swift
+      - SharedUI/HostAndTabReordering.swift
       - SharedUI/CloudSyncView.swift
       - SharedUI/EmptyHostLibraryView.swift
       - SharedUI/ServerTrustViews.swift
@@ -269,8 +285,8 @@ targets:
         ENABLE_APP_SANDBOX: YES
         ENABLE_HARDENED_RUNTIME: YES
         SKIP_INSTALL: YES
-        MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "9"
+        MARKETING_VERSION: "0.1.1"
+        CURRENT_PROJECT_VERSION: "10"
         LD_RUNPATH_SEARCH_PATHS: $(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks
   FarportAppTests:
     type: bundle.unit-test

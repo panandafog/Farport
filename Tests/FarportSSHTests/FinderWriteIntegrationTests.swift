@@ -32,7 +32,7 @@ final class FinderWriteIntegrationTests: XCTestCase {
         try await reader.delete(item.identifier, baseVersion: moved.item.contentVersion)
         let entries = try await reader.list(FinderPath.rootIdentifier)
         XCTAssertFalse(entries.contains { $0.identifier == item.identifier })
-        XCTAssertFalse(entries.contains { $0.name.contains(".harbor-") })
+        XCTAssertFalse(entries.contains { $0.name.contains(".farport-") })
         try await fixture.waitClosed()
         XCTAssertEqual(try fixture.stats().shells, 0)
     }
@@ -75,7 +75,7 @@ final class FinderWriteIntegrationTests: XCTestCase {
             try await session.download(path, to: download) { _, _ in }
             XCTAssertEqual(try Data(contentsOf: download), original)
             let remaining = try await session.list("/")
-            XCTAssertFalse(remaining.contains { $0.path.hasPrefix(path + ".harbor-") })
+            XCTAssertFalse(remaining.contains { $0.path.hasPrefix(path + ".farport-") })
             try await session.remove(item)
             await session.close()
             try await fixture.waitClosed()

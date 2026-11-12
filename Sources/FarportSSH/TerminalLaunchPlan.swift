@@ -4,7 +4,8 @@ import Foundation
 struct TerminalLaunchPlan {
     var command: String? { launchScript(shell: nil).map(Self.shellCommand) }
     private let discovery: String
-    private let sessionName: String?
+    private let identity: TmuxSessionIdentity?
+    private var sessionName: String? { identity?.name }
     var requiresTmux: Bool { sessionName != nil }
 
     func command(colors: TerminalDecorationColors?) throws -> String? {
@@ -18,10 +19,17 @@ struct TerminalLaunchPlan {
     }
 
     private func launchScript(shell: String?) -> String? {
-        guard let sessionName else { return shell }
-        var launch = discovery + "exec \"$tmux_binary\" -T 256,RGB new-session -A -s \(sessionName)"
+        guard let identity else { return shell }
+        let sessionName = identity.name
+        var launch = discovery + TmuxSessionMigration.script(for: identity) +
+            "exec \"$tmux_binary\" -T 256,RGB new-session -A -s \(sessionName)"
         if let shell { launch += " " + Self.quote(Self.shellCommand(shell)) }
-        return launch + " \\; set-option -t \(sessionName) mouse on"
+        // The default status label is independent of both the old and the migrated server session name.
+        // A custom status-left belongs to the server user and must remain unchanged.
+        let label = "set-option -t =\(sessionName) status-left '[Farport] '"
+        return launch + " \\; set-option -t =\(sessionName) mouse on \\; " +
+            "if-shell -F -t =\(sessionName): " + Self.quote("#{==:#{status-left},[##S] }") + " " +
+            Self.quote(label) + " \"$@\""
     }
 
     private static func shellCommand(_ script: String) -> String {
@@ -36,12 +44,12 @@ struct TerminalLaunchPlan {
     private func styleCommands(_ colors: TerminalDecorationColors) -> String {
         guard let sessionName else { return "" }
         guard colors.useAppAccent else {
-            return "set-option -u -t \(sessionName) status-style \\; " +
-                "set-window-option -u -t \(sessionName) mode-style"
+            return "set-option -u -t =\(sessionName) status-style \\; " +
+                "set-window-option -u -t =\(sessionName): mode-style"
         }
         let style = String(format: "fg=#%06x,bg=#%06x", colors.foreground, colors.background)
-        return "set-option -t \(sessionName) status-style \(Self.quote(style)) \\; " +
-            "set-window-option -t \(sessionName) mode-style \(Self.quote(style))"
+        return "set-option -t =\(sessionName) status-style \(Self.quote(style)) \\; " +
+            "set-window-option -t =\(sessionName): mode-style \(Self.quote(style))"
     }
 
     init(profile: HostProfile, sessionID: UUID? = nil,
@@ -49,10 +57,9 @@ struct TerminalLaunchPlan {
         switch profile.terminalResumeStrategy {
         case .none:
             discovery = ""
-            sessionName = nil
+            identity = nil
         case .tmux:
-            let name = "harbor-" + (sessionID ?? profile.id).uuidString.lowercased()
-            sessionName = name
+            identity = TmuxSessionIdentity(id: sessionID ?? profile.id)
             // Preserve the SSH account's PATH precedence; noninteractive macOS shells
             // often omit Homebrew. Never source shell startup files to discover a binary.
             let candidates = tmuxSearchPaths.map(Self.quote).joined(separator: " ")

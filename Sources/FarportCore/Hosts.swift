@@ -23,9 +23,10 @@ public struct HostProfile: Identifiable, Codable, Equatable, Sendable {
     public var terminalResumeStrategy: TerminalResumeStrategy
     public var jumpHostIDs: [UUID]
     public var terminalTabs: SyncedTerminalTabs?
+    public var position: HostPosition?
 
     // The host UUID is persisted, so reconnects and app restarts use the same remote session.
-    public var tmuxSessionName: String { "harbor-" + id.uuidString.lowercased() }
+    public var tmuxSessionName: String { TmuxSessionIdentity(id: id).name }
 
     public init(id: UUID = UUID(), name: String = "", hostname: String = "", port: Int = 22,
                 username: String = "", authentication: AuthenticationKind = .password,
@@ -51,6 +52,7 @@ public struct HostProfile: Identifiable, Codable, Equatable, Sendable {
     private enum CodingKeys: String, CodingKey {
         case id, name, hostname, port, username, authentication, terminalProvider, fileProvider
         case initialDirectory, notes, terminalResumeStrategy, jumpHostIDs, terminalTabs
+        case position
     }
 
     public init(from decoder: Decoder) throws {
@@ -70,13 +72,17 @@ public struct HostProfile: Identifiable, Codable, Equatable, Sendable {
         ) ?? .none
         jumpHostIDs = try values.decodeIfPresent([UUID].self, forKey: .jumpHostIDs) ?? []
         terminalTabs = try values.decodeIfPresent(SyncedTerminalTabs.self, forKey: .terminalTabs)
+        position = try values.decodeIfPresent(HostPosition.self, forKey: .position)
     }
 
-    public func hasSameSettings(as other: Self) -> Bool {
+    public func hasSameSettings(as other: Self, includingSessionDefault: Bool = true) -> Bool {
         var left = self
         var right = other
         left.terminalTabs = nil
         right.terminalTabs = nil
+        left.position = nil
+        right.position = nil
+        if !includingSessionDefault { left.terminalResumeStrategy = right.terminalResumeStrategy }
         return left == right
     }
 
@@ -88,11 +94,34 @@ public struct HostProfile: Identifiable, Codable, Equatable, Sendable {
         return result
     }
 
+    public func mergingSyncedMetadata(from other: Self) throws -> Self {
+        var result = try mergingTerminalTabs(from: other)
+        if let incoming = other.position {
+            if let current = position, current.revision == incoming.revision, current != incoming {
+                throw HarborError.message(L10n.text("Invalid saved host order."))
+            }
+            if position == nil || position.map({ $0.revision < incoming.revision }) == true {
+                result.position = incoming
+            }
+        }
+        return result
+    }
+
+    public func recoveredCopy() throws -> Self {
+        var copy = self
+        copy.id = UUID()
+        copy.name = L10n.text("%@ (Recovered)", displayName)
+        copy.terminalTabs = try terminalTabs?.copy(for: copy.id)
+        copy.position = nil
+        return copy
+    }
+
     public var displayName: String { name.isEmpty ? hostname : name }
     public var address: String { "\(username)@\(hostname):\(port)" }
 
     public func validate() throws {
         try terminalTabs?.validate()
+        try position?.validate()
         guard !hostname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               !hostname.contains(where: { $0.isWhitespace }), !hostname.contains("://"),
               !hostname.contains("/"), !hostname.contains("\0") else {
@@ -155,4 +184,12 @@ public struct SavedHost: Identifiable, Codable, Equatable, Sendable {
 public enum HarborError: LocalizedError {
     case message(String)
     public var errorDescription: String? { if case .message(let text) = self { return text }; return nil }
+}
+
+public enum HostSaveConflict: LocalizedError {
+    case deletedInCloud
+
+    public var errorDescription: String? {
+        L10n.text("This host was deleted in iCloud. Save a copy to keep this host and the credentials entered here.")
+    }
 }

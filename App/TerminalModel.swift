@@ -30,7 +30,7 @@ extension SystemTerminalView: TerminalOutput {
         if !visible { pasteReview.cancel() }
         if visible { getTerminal().showCursor() } else { getTerminal().hideCursor() }
     }
-    func focus() { window?.makeFirstResponder(self) }
+    func focus() { requestAutomaticFocus() }
 }
 
 extension TerminalModel: @preconcurrency TerminalViewDelegate {
@@ -53,7 +53,10 @@ struct TerminalSurface: NSViewRepresentable {
     let model: TerminalModel
     @AppStorage("terminal.optionAsMeta") private var optionAsMeta = true
     @TerminalAppearanceStorage private var theme
-    func makeNSView(context: Context) -> TerminalView { model.view }
+    func makeNSView(context: Context) -> TerminalView {
+        model.view.requestAutomaticFocus()
+        return model.view
+    }
     func updateNSView(_ nsView: TerminalView, context: Context) {
         nsView.optionAsMetaKey = optionAsMeta
         model.view.theme = theme

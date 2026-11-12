@@ -79,4 +79,27 @@ final class SyncedTerminalTabsTests: XCTestCase {
         let next = try JSONDecoder().decode(WorkspaceSnapshot.self, from: JSONEncoder().encode(restored))
         XCTAssertEqual(next.deviceID, restored.deviceID)
     }
+
+    func testPerTabModesMergeAndRecoveryCopiesRetainThemUnderNewIdentities() throws {
+        let tab = TerminalTab(title: "Shell")
+        var original = SyncedTerminalTabs()
+        try original.record([tab], device: UUID())
+        var changed = tab
+        changed.resumeStrategy = .some(.none)
+        var first = original
+        try first.record([changed], device: UUID())
+        let merged = try original.merging(first)
+        XCTAssertEqual(merged.tabs[0].resumeStrategy, .some(.none))
+        let copy = try merged.copy(for: UUID())
+        XCTAssertEqual(copy.tabs[0].resumeStrategy, .some(.none))
+        XCTAssertNotEqual(copy.tabs[0].id, tab.id)
+        var profile = HostProfile(hostname: "sync.invalid", username: "test")
+        profile.terminalTabs = merged
+        let record = CloudHostRecord(id: profile.id, revision: .init(counter: 5, device: UUID()), profile: profile)
+        XCTAssertEqual(record.schemaVersion, 4)
+        try record.validate()
+        var closed = merged
+        try closed.record([], device: UUID())
+        XCTAssertTrue(closed.hasSessionModes)
+    }
 }

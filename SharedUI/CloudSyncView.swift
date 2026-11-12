@@ -55,6 +55,16 @@ struct CloudSyncView: View {
                     LabeledContent(L10n.text("Last contact")) { Text(date, style: .time) }
                 }
                 if model.pendingChanges {
+                    if !model.pendingDeletedProfiles.isEmpty {
+                        Label(L10n.text("Some hosts were deleted in iCloud. Applying changes removes them locally."),
+                              systemImage: "exclamationmark.triangle")
+                            .foregroundStyle(.orange)
+                        ForEach(model.pendingDeletedProfiles) { profile in
+                            Text(profile.displayName).font(.callout)
+                        }
+                        Text(L10n.text("To keep a host, edit it and choose Save a Copy when saving."))
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
                     HStack {
                         Label(L10n.text("Host updates available"), systemImage: "arrow.triangle.2.circlepath")
                         Spacer()

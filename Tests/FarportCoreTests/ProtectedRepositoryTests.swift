@@ -99,7 +99,7 @@ final class ProtectedRepositoryTests: XCTestCase {
         XCTAssertEqual(try repository.load(), [original])
         XCTAssertEqual(secrets.snapshot, references)
         let migrated = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])
-        XCTAssertEqual(migrated["schemaVersion"] as? Int, 5)
+        XCTAssertEqual(migrated["schemaVersion"] as? Int, 7)
     }
 
     func testFinderMigrationIsAppOnlyAndKeepsDomainAccessAndRouteIdentity() throws {
@@ -124,6 +124,27 @@ final class ProtectedRepositoryTests: XCTestCase {
         try extensionStore.remove(location.id)
         XCTAssertTrue(secrets.snapshot.isEmpty)
         XCTAssertThrowsError(try extensionStore.load(location.id))
+    }
+
+    func testSchemaFiveLibraryKeepsSecretsWhenWritingOrderedSchemaSeven() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let secrets = TestSecretStore()
+        let url = directory.appendingPathComponent("hosts.json")
+        let repository = ProtectedHostRepository(url: url, secrets: secrets)
+        let original = host()
+        try repository.save([original])
+        let references = secrets.snapshot
+        var legacy = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])
+        legacy["schemaVersion"] = 5
+        try JSONSerialization.data(withJSONObject: legacy).write(to: url)
+        XCTAssertEqual(try repository.load(), [original])
+        let ordered = try HostOrdering.record([original], device: UUID())
+        try repository.save(ordered)
+        XCTAssertEqual(try repository.load(), ordered)
+        XCTAssertEqual(secrets.snapshot, references)
+        let saved = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])
+        XCTAssertEqual(saved["schemaVersion"] as? Int, 7)
     }
 
     private func hostWithIdentity(of value: SavedHost) -> SavedHost {

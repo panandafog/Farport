@@ -37,7 +37,40 @@ No global Xcode trust settings are changed by the repository scripts.
   the separate iOS controller containers remain in place. No engine fork or new
   rendering backend is introduced.
 
+## Per-Tab Session Modes
+
+Each terminal tab has its own SSH or tmux mode. The host's Default Session setting
+is copied when creating a new tab; changing that default leaves existing tabs and
+connections unchanged. Missing mode fields in legacy tabs are filled once from the
+current host default. Imported legacy metadata cannot reset an existing tab's mode.
+On macOS, choose Session Mode in a tab's context menu. On iOS/iPadOS it is in Terminal
+Actions for the selected tab. The choice survives restart and syncs with tab metadata
+through opt-in iCloud. There is no live inheritance or “Host default” menu option.
+
+Changing a connected/connecting/recovering tab's mode asks for confirmation,
+disconnects only that terminal and retains its native view, UUID and local history.
+The user reconnects explicitly. A plain SSH shell ends on disconnect; a tmux shell
+stays on the server, and selecting tmux again reuses its existing session identity.
+Choosing the current mode keeps the connection. Files/Finder, credentials and gateway
+profiles are unaffected by tab-mode edits or a host-default-only edit.
+
+Cloud mode changes to active tabs wait for Apply Changes; the host default alone
+does not interrupt them. Applying retains other active terminals. Modes use local
+library schema 7, workspace schema 2 and CloudHostRecord schema 4 to stop older writers
+from discarding them. Old libraries/snapshots remain readable. Builds/tests/UI checks
+for these changes have not been run at the user's request.
+
 ## Keyboard, Selection And Paste
+
+Selecting another host/tab on macOS requests terminal focus once after the native
+view attaches and the selection event finishes. Pending requests are invalidated on
+detachment; background windows, sheets and active text fields/editors retain focus.
+Ordinary representable updates (output, theme, layout) never request focus. On iOS,
+the controller's first appearance focuses an already connected terminal after the
+navigation transition, in the active scene only. Disconnected sessions do not open
+the keyboard. Dismissing a sheet does not force a deliberately hidden keyboard back.
+These 2026-11-12 focus changes were linted; builds/tests/UI verification were not run
+at the user's request.
 
 The Terminal menu on macOS and Terminal Actions on iOS expose the per-device
 "Use Option as Meta" preference. Hardware special keys and IME remain handled by
@@ -175,6 +208,14 @@ FractionalScrollPositionTests`.
 
 
 ## Accent-colored tmux decorations
+
+Server sessions now use `farport-<UUID>`, with the same persisted host/tab UUID.
+On attachment, an existing `harbor-<UUID>` session is renamed in place, preserving
+its shell, jobs, windows, history and attached clients. The UI tooltip shows a
+localized persistent-session label. See SessionRecovery.md for name collisions. On attach, only
+tmux's default `status-left` (`[#S] `) is replaced with `[Farport] ` in this session;
+custom status formats and global options are preserved. This branding is independent
+of accent-color settings and does not rename or restart an existing server session.
 
 An optional device-local accent prompt is also available for new Bash/Zsh shells.
 See [session-local shell integration](ShellPrompt.md) for setup, startup behavior,

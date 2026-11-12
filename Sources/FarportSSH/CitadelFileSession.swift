@@ -133,7 +133,7 @@ actor CitadelFileSession: RemoteFileSession {
         try local.seek(toOffset: 0)
         try await withSFTP { sftp in
             // Upload to a sibling first, so a cancelled transfer never replaces an existing file.
-            let staging = path + ".harbor-\(UUID().uuidString).part"
+            let staging = path + ".farport-\(UUID().uuidString).part"
             let file = try await sftp.openFile(filePath: staging, flags: [.write, .create, .forceCreate])
             do {
                 var offset: UInt64 = 0

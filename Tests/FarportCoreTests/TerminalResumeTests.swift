@@ -35,6 +35,9 @@ final class TerminalResumeTests: XCTestCase {
         renamed.name = "'; kill-session; #"
         XCTAssertEqual(renamed.tmuxSessionName, original.tmuxSessionName)
         XCTAssertNotEqual(HostProfile().tmuxSessionName, original.tmuxSessionName)
-        XCTAssertNotNil(original.tmuxSessionName.range(of: "^harbor-[a-f0-9-]+$", options: .regularExpression))
+        XCTAssertNotNil(original.tmuxSessionName.range(of: "^farport-[a-f0-9-]+$", options: .regularExpression))
+        let identity = TmuxSessionIdentity(id: original.id)
+        XCTAssertEqual(identity.name, original.tmuxSessionName)
+        XCTAssertEqual(identity.legacyName, "harbor-" + original.id.uuidString.lowercased())
     }
 }

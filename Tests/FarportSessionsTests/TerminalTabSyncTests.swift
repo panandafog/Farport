@@ -57,7 +57,8 @@ final class TerminalTabSyncTests: XCTestCase {
         try phone.bootstrap(mobile.library.hosts.map(\.profile))
         try mobile.library.applySyncedProfiles(phone.profiles)
         let workspace = try XCTUnwrap(mobile.library.selectedWorkspace)
-        XCTAssertEqual(workspace.tabs, legacy.terminals)
+        let migrated = legacy.terminals.map { $0.fillingMissingResumeStrategy(with: .tmux) }
+        XCTAssertEqual(workspace.tabs, migrated)
         XCTAssertEqual(workspace.selectedTerminalID, host.id)
         XCTAssertEqual(workspace.mode, .terminal)
         XCTAssertEqual(workspace.terminal?.state, .disconnected)
@@ -67,7 +68,46 @@ final class TerminalTabSyncTests: XCTestCase {
         XCTAssertEqual(desktop.library.selectedWorkspace?.mode, .files)
         XCTAssertEqual(desktop.library.selectedWorkspace?.selectedTerminalID, legacy.selectedTerminalID)
         let restarted = TabSyncDevice(hosts: mobile.hosts.hosts, saved: mobile.workspaces.snapshot)
-        XCTAssertEqual(restarted.library.selectedWorkspace?.tabs, legacy.terminals)
+        XCTAssertEqual(restarted.library.selectedWorkspace?.tabs, migrated)
+    }
+
+    func testHostAndTabOrderReachAnotherDeviceWithoutReplacingTerminals() async throws {
+        let hosts = (0..<3).map { SavedHost(profile: HostProfile(hostname: "host\($0).invalid", username: "test")) }
+        let (firstStream, firstUpdates) = AsyncStream<HostSyncSnapshot>.makeStream()
+        let (secondStream, secondUpdates) = AsyncStream<HostSyncSnapshot>.makeStream()
+        defer { firstUpdates.finish(); secondUpdates.finish() }
+        let firstService = TabSyncService(updates: firstUpdates)
+        let secondService = TabSyncService(updates: secondUpdates)
+        let firstCloud = CloudSyncModel(service: firstService, updates: firstStream)
+        let secondCloud = CloudSyncModel(service: secondService, updates: secondStream)
+        let desktop = TabSyncDevice(hosts: hosts, cloud: firstCloud)
+        let mobile = TabSyncDevice(hosts: hosts, cloud: secondCloud)
+        try await wait { firstCloud.snapshot.initialized && secondCloud.snapshot.initialized }
+        let workspace = try XCTUnwrap(mobile.library.selectedWorkspace)
+        let terminal = try XCTUnwrap(workspace.terminal)
+        terminal.connect()
+        try await wait { terminal.state == .connected }
+        desktop.library.moveHost(hosts[0].id, to: hosts[2].id)
+        try await wait { firstCloud.snapshot.profiles.first?.position != nil }
+        try await secondService.merge(firstService.records())
+        try await wait { mobile.library.hosts.map(\.id) == desktop.library.hosts.map(\.id) }
+        XCTAssertTrue(mobile.library.selectedWorkspace === workspace)
+        XCTAssertTrue(workspace.terminal === terminal)
+        XCTAssertEqual(terminal.state, .connected)
+        let source = try XCTUnwrap(desktop.library.selectedWorkspace)
+        source.addTerminal()
+        source.addTerminal()
+        let originalTabs = source.tabs
+        source.moveTerminal(source.tabs[2].id, to: source.tabs[0].id)
+        let expected = source.tabs
+        XCTAssertEqual(expected, [originalTabs[2], originalTabs[0], originalTabs[1]])
+        try await wait { firstCloud.snapshot.profiles.first { $0.id == hosts[0].id }?.terminalTabs?.tabs == expected }
+        try await secondService.merge(firstService.records())
+        try await wait { workspace.tabs == expected }
+        XCTAssertTrue(workspace.terminal === terminal)
+        XCTAssertEqual(terminal.state, .connected)
+        desktop.library.closeAll()
+        mobile.library.closeAll()
     }
 
     func testIncomingTabRenameAndAddKeepAnActiveTerminalAndItsOutput() async throws {
@@ -166,79 +206,67 @@ final class TerminalTabSyncTests: XCTestCase {
 }
 
 @MainActor
-private final class TabSyncDevice {
-    let hosts: TabSyncHosts
-    let workspaces: TabSyncWorkspaces
-    let library: HostLibraryModel<RecordingTerminal>
-
-    init(hosts: [SavedHost], saved: WorkspaceSnapshot = WorkspaceSnapshot(), cloud: CloudSyncModel? = nil) {
-        self.hosts = TabSyncHosts(hosts)
-        workspaces = TabSyncWorkspaces(saved)
-        library = HostLibraryModel(repository: self.hosts, workspaceRepository: workspaces,
-                                   cloud: cloud,
-                                   makeProvider: { _ in TabSyncProvider() }, makeTerminal: {
-            RecordingTerminal(host: $0, provider: $1, sessionID: $2, trust: $3)
-        })
+final class CloudHostEditingTests: XCTestCase {
+    func testSaveAfterRemoteDeletionKeepsEditorAndCredentialsCanBeSavedAsCopy() async throws {
+        let original = SavedHost(profile: HostProfile(hostname: "deleted.invalid", username: "test"),
+                                 credentialsConfigured: false)
+        let (stream, updates) = AsyncStream<HostSyncSnapshot>.makeStream()
+        defer { updates.finish() }
+        let service = TabSyncService(updates: updates)
+        let cloud = CloudSyncModel(service: service, updates: stream)
+        let device = TabSyncDevice(hosts: [original], cloud: cloud)
+        try await wait { cloud.snapshot.initialized }
+        device.library.editor = original
+        try await service.delete(original.id)
+        try await wait { cloud.pendingChanges }
+        var edited = original
+        edited.credentials.password = "new-local-password"
+        edited.credentialsConfigured = true
+        XCTAssertThrowsError(try device.library.save(edited)) { XCTAssertTrue($0 is HostSaveConflict) }
+        XCTAssertNotNil(device.library.editor)
+        XCTAssertEqual(device.library.hosts, [original])
+        device.library.editor = nil
+        XCTAssertEqual(device.library.hosts, [original])
+        var copy = edited
+        copy.profile = try edited.profile.recoveredCopy()
+        try device.library.save(copy)
+        try await wait {
+            cloud.pendingDeletedProfiles.count == 1 && cloud.snapshot.baseline.contains { $0.id == copy.id }
+        }
+        XCTAssertEqual(device.library.hosts.count, 2)
+        XCTAssertEqual(device.library.hosts.first { $0.id == copy.id }?.credentials.password, "new-local-password")
+        cloud.applyChanges()
+        XCTAssertEqual(device.library.hosts.map(\.id), [copy.id])
+        XCTAssertTrue(device.library.hosts[0].credentialsConfigured)
+        XCTAssertEqual(device.library.hosts[0].credentials.password, "new-local-password")
+        device.library.closeAll()
     }
-}
 
-private actor TabSyncService: HostSyncService {
-    private var ledger = ProfileSyncLedger()
-    private let updates: AsyncStream<HostSyncSnapshot>.Continuation
-
-    init(updates: AsyncStream<HostSyncSnapshot>.Continuation) { self.updates = updates }
-    func records() -> [CloudHostRecord] { Array(ledger.records.values) }
-    func merge(_ records: [CloudHostRecord]) throws {
-        for record in records { try ledger.merge(record) }
-        publish()
+    func testRemoteDeletionArrivingAfterPasswordSaveStillRequiresExplicitApply() async throws {
+        let original = SavedHost(profile: HostProfile(hostname: "deleted.invalid", username: "test"))
+        let (stream, updates) = AsyncStream<HostSyncSnapshot>.makeStream()
+        defer { updates.finish() }
+        let service = TabSyncService(updates: updates)
+        let cloud = CloudSyncModel(service: service, updates: stream)
+        let device = TabSyncDevice(hosts: [original], cloud: cloud)
+        try await wait { cloud.snapshot.initialized }
+        var edited = original
+        edited.credentials.password = "new-local-password"
+        try device.library.save(edited)
+        try await wait { cloud.snapshot.profiles.first?.position != nil }
+        try await service.delete(original.id)
+        try await wait { !cloud.pendingDeletedProfiles.isEmpty }
+        XCTAssertEqual(device.library.hosts.first?.credentials.password, "new-local-password")
+        XCTAssertEqual(device.hosts.hosts, device.library.hosts)
+        cloud.applyChanges()
+        XCTAssertTrue(device.library.hosts.isEmpty)
     }
-    func resume(profiles: [HostProfile]) {
-        do { try ledger.bootstrap(profiles); publish() } catch { XCTFail(error.localizedDescription) }
-    }
-    func enable(profiles: [HostProfile]) { resume(profiles: profiles) }
-    func disable() {}
-    func refresh(profiles: [HostProfile]) throws { try localChanged(profiles: profiles) }
-    func localChanged(profiles: [HostProfile]) throws { try ledger.localChanged(profiles); publish() }
-    func applied(profiles: [HostProfile]) throws { try ledger.applied(profiles); publish() }
-    func dismissConflict(_ id: String) {}
-    private func publish() {
-        updates.yield(HostSyncSnapshot(enabled: true, initialized: true, profiles: ledger.profiles,
-                                       baseline: Array(ledger.baseline.values)))
-    }
-}
 
-private final class TabSyncHosts: HostRepository {
-    var hosts: [SavedHost]
-    init(_ hosts: [SavedHost]) { self.hosts = hosts }
-    func load() -> [SavedHost] { hosts }
-    func save(_ hosts: [SavedHost]) { self.hosts = hosts }
-}
-
-private final class TabSyncWorkspaces: WorkspaceRepository {
-    var snapshot: WorkspaceSnapshot
-    var failWrites = false
-    init(_ snapshot: WorkspaceSnapshot) { self.snapshot = snapshot }
-    func load() -> WorkspaceSnapshot { snapshot }
-    func save(_ snapshot: WorkspaceSnapshot) throws {
-        if failWrites { throw HarborError.message("Test workspace write failure") }
-        try snapshot.validate()
-        self.snapshot = snapshot
+    private func wait(_ condition: () -> Bool) async throws {
+        for _ in 0..<100 {
+            if condition() { return }
+            try await Task.sleep(for: .milliseconds(10))
+        }
+        XCTFail("Cloud update was not delivered")
     }
-}
-
-private struct TabSyncProvider: ConnectionProvider {
-    func terminal(for host: SavedHost, sessionID: UUID) async throws -> any TerminalSession { TabSyncSession() }
-    func files(for host: SavedHost) async throws -> any RemoteFileSession { throw CancellationError() }
-}
-
-private actor TabSyncSession: TerminalSession {
-    func run(size: TerminalSize, onReady: @escaping @Sendable () async -> Void,
-             onOutput: @escaping @Sendable (Data) async -> Void) async throws {
-        await onReady()
-        try await Task.sleep(for: .seconds(60))
-    }
-    func send(_ data: Data) {}
-    func resize(_ size: TerminalSize) {}
-    func checkConnection(timeout: TimeInterval) {}
-    func close() {}
 }

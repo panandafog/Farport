@@ -8,6 +8,7 @@ public struct HostSyncSnapshot: Sendable {
     public var initialized: Bool
     public var profiles: [HostProfile]
     public var baseline: [HostProfile]
+    public var deletedHostIDs: Set<UUID>
     public var pendingCount: Int
     public var conflicts: [CloudProfileConflict]
     public var status: String
@@ -15,10 +16,11 @@ public struct HostSyncSnapshot: Sendable {
 
     public init(enabled: Bool = false, initialized: Bool = false, profiles: [HostProfile] = [], pendingCount: Int = 0,
                 conflicts: [CloudProfileConflict] = [], status: String = L10n.text("Off"), lastContact: Date? = nil,
-                baseline: [HostProfile] = []) {
+                baseline: [HostProfile] = [], deletedHostIDs: Set<UUID> = []) {
         self.enabled = enabled; self.initialized = initialized; self.profiles = profiles
         self.pendingCount = pendingCount; self.conflicts = conflicts; self.status = status
         self.lastContact = lastContact; self.baseline = baseline
+        self.deletedHostIDs = deletedHostIDs
     }
 }
 

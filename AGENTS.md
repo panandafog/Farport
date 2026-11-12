@@ -11,8 +11,15 @@ the iOS app's Debug/Release device builds. See Docs/iOS.md for runtime verificat
 
 Project, targets, schemes, package and module names use Farport. Keep
 `com.panandafog.harbor` / `.finder`, CloudKit container/zone/record names, App Group,
-Keychain services/keys, Application Support/Harbor, tmux `harbor-` names and deterministic
-`Harbor conflict` filenames unchanged. Preserve the legacy Harbor* Info.plist keys and
+Keychain services/keys and Application Support/Harbor unchanged. Tmux names use
+`farport-<UUID>`; migrate legacy `harbor-<UUID>` sessions by renaming the live session,
+never recreating its shell. Keep tab/host UUIDs unchanged. If both names exist, retain
+the canonical session and rename the legacy one to `farport-<UUID>-recovered-<server ID>`,
+with a visible attach instruction. Failed migration must stop before creating a new
+shell. Preserve active clients, pane identities, processes and history.
+User-visible labels use Farport; new conflict copies use `Farport conflict`, but retries
+must recognize legacy conflict-copy receipts without renaming existing files. Preserve
+the legacy Harbor* Info.plist keys and
 HARBOR_* build/environment variables. The app product is Farport (macOS module Farport,
 iOS module FarportMobile); the repository directory and Xcode project are Farport
 and Farport.xcodeproj.
@@ -99,7 +106,7 @@ key checks run while typing; cryptographic decoding and passphrase validation st
 the connection path. SSH errors must explain the failure and suggest a relevant action,
 retain protocol codes when useful, and preserve trust/reconnect classifications.
 
-The application uses ProtectedHostRepository: profiles/references in schema-5 JSON,
+The application uses ProtectedHostRepository: profiles/references in schema-7 JSON,
 password/private-key/passphrase bundles in the shared Keychain. JSONHostRepository
 is a legacy import/test-fixture codec, never the application's save path. Migrate
 only after inserting and verifying secrets; never default to plaintext or empty
@@ -112,7 +119,7 @@ implemented per terminal tab, with a UUID-derived server session name and PTY ex
 Disconnect, app exit, host editing, and deletion detach without killing remote
 sessions. Standard SSH remains the default for existing and new hosts. Missing
 tmux is an explicit error; do not silently fall back to a fresh shell. The host
-library migrates schemas 1/2/3/4 to schema 5, preserving routing and session mode.
+library migrates schemas 1/2/3/4/5/6 to schema 7, preserving routing and session mode.
 Terminal heartbeat and bounded automatic tmux reconnect are implemented. Shared
 `ConnectionRecoveryPolicy` defaults to a 15-second heartbeat, 10-second response
 timeout, and retry delays of 1/2/4/8/16/30 seconds. Only typed transient transport
@@ -126,10 +133,15 @@ iCloud sync is opt-in, using CKSyncEngine and encrypted per-host records in the
 private CloudKit database. Keep CloudKit out of Core. Sync HostProfile only, never
 SavedHost, Keychain references/secrets, server pins, Finder locations, terminal output,
 selected host/tab, workspace mode or connection intent. HostProfile.terminalTabs carries
-only UUID/name/order definitions and per-tab revision/tombstone metadata. Merge each
-tab independently; closed UUIDs never resurrect. CloudHostRecord schema 2 protects
-these definitions from older apps that cannot preserve the new payload; schema 1
-without tab metadata remains readable. Keep the existing encrypted CloudKit field/type.
+only UUID/name/order/session-mode definitions and per-tab revision/tombstone metadata. Merge each
+tab independently; closed UUIDs never resurrect. CloudHostRecord schema 4 protects
+per-tab session modes; schema 3 protects host positions and independent connection
+settings revisions. Schemas 1/2/3 remain readable. Merge host position revisions separately from settings and tabs.
+Reordering must retain native terminal instances, selection, output and connections.
+Remote host deletions always require explicit Apply Changes; editor dismissal/save
+must not accept them. A deleted-host save throws HostSaveConflict and offers Save a
+Copy retaining entered credentials under fresh host/tab UUIDs. A CloudKit unknownItem
+save failure pauses/retries without creating a tombstone; only fetched deletions do. Keep the existing encrypted CloudKit field/type.
 Imported hosts require explicit local credential setup, even for an empty password.
 Endpoint/authentication/route changes invalidate local credential readiness. Keep
 whole-profile deterministic revisions, durable tombstones, pending edits and bounded
@@ -192,6 +204,11 @@ Each mobile controller must own a separate root container, never use the retaine
 terminal as its root view: SwiftUI replacements may overlap in lifetime. Detach only
 when that controller still owns the terminal's superview; stale teardown must not
 remove a newer attachment or dismiss its keyboard.
+Request macOS terminal focus once on attachment, deferred past the selection event;
+cancel stale requests on detachment and preserve key-window, sheet and text-editor
+ownership. Never refocus on ordinary representable updates. Mobile initial appearance
+may focus connected terminals only in the active scene; do not reopen a deliberately
+hidden keyboard on sheet dismissal or open it for a disconnected session.
 TerminalKeyboardInput owns control-byte encoding and Russian-layout fallback;
 apply these legacy overrides only while keyboardEnhancementFlags is empty. Once a
 remote program negotiates Kitty keyboard input, let SwiftTerm encode its events.
@@ -247,6 +264,19 @@ activity. Never persist live connection/retry intent. The first default tab uses
 the host UUID to preserve pre-tabs tmux sessions; subsequent tabs get independent
 UUIDs. Rename must not change identity. Switching hosts/tabs/views retains native
 terminal instances and their buffers; closing a tab detaches only its connection.
+TerminalTab.resumeStrategy is optional only for legacy decoding. Materialize a missing
+mode once from the host default when restoring/importing a tab; preserve an existing
+tab's captured mode if incoming legacy metadata omits it. New tabs copy the current
+host default. There is no inheritance choice in the UI: each tab has SSH or tmux.
+Changing a host default must not reconfigure existing tabs or revoke Finder routes.
+Keep an untouched implicit first tab out of initial cloud publication by comparing
+against a default tab with the captured initial mode; preserve existing cloud names
+and choices on bootstrap. Explicit tab edits persist in the canonical host library.
+Resolve the tab mode into a copied target host, never canonical/gateway profiles.
+Mode changes keep the terminal instance/history/UUID and reconfigure only that tab,
+without auto-connecting. Native UI confirms an active mode change; cloud changes
+wait for Apply Changes. Plain SSH disconnect ends its shell; tmux only detaches.
+Workspace schema 2 and host-library schema 7 protect modes from older writers.
 Tab definitions also sync through opt-in host iCloud sync. Preserve existing local
 multi-tab workspaces on first migration; an untouched implicit default tab must not
 overwrite the cloud's renamed/default tab. Save definitions in the host library before

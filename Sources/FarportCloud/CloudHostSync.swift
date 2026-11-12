@@ -174,7 +174,8 @@ public actor CloudHostSync: HostSyncService {
         changed(HostSyncSnapshot(enabled: document.enabled, initialized: document.initialized,
             profiles: document.ledger.profiles, pendingCount: document.ledger.pending.count,
             conflicts: document.ledger.conflicts, status: status, lastContact: document.lastContact,
-            baseline: Array(document.ledger.baseline.values)))
+            baseline: Array(document.ledger.baseline.values),
+            deletedHostIDs: Set(document.ledger.records.values.filter(\.deleted).map(\.id))))
     }
 
     func report(_ error: Error) {

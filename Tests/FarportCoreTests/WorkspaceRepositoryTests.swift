@@ -7,7 +7,7 @@ final class WorkspaceRepositoryTests: XCTestCase {
         defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appendingPathComponent("workspace.json")
         var host = HostWorkspace(hostID: UUID())
-        let second = TerminalTab(title: "Logs")
+        let second = TerminalTab(title: "Logs", resumeStrategy: .tmux)
         host.terminals.append(second)
         host.selectedTerminalID = second.id
         host.mode = .files
@@ -26,6 +26,21 @@ final class WorkspaceRepositoryTests: XCTestCase {
         let workspace = HostWorkspace(hostID: host.id)
         XCTAssertEqual(workspace.terminals.first?.tmuxSessionName, host.tmuxSessionName)
         XCTAssertEqual(workspace.selectedTerminalID, workspace.terminals.first?.id)
+    }
+
+    func testPerTabModesRoundTripAndLegacyModeCanBeFilledOnce() throws {
+        let old = try JSONDecoder().decode(TerminalTab.self, from: Data(
+            "{\"id\":\"00000000-0000-0000-0000-000000000001\",\"title\":\"Legacy\"}".utf8
+        ))
+        XCTAssertNil(old.resumeStrategy)
+        let migrated = old.fillingMissingResumeStrategy(with: .tmux)
+        XCTAssertEqual(migrated.effectiveResumeStrategy(default: .none), .tmux)
+        let tabs = [old, TerminalTab(title: "SSH", resumeStrategy: .some(.none)),
+                    TerminalTab(title: "Persistent", resumeStrategy: .tmux)]
+        let restored = try JSONDecoder().decode([TerminalTab].self, from: JSONEncoder().encode(tabs))
+        XCTAssertEqual(restored, tabs)
+        XCTAssertEqual(restored[1].effectiveResumeStrategy(default: .tmux), .none)
+        XCTAssertEqual(restored[2].effectiveResumeStrategy(default: .none), .tmux)
     }
 
     func testInvalidSelectionsAndDuplicateIdentitiesAreRejected() {
@@ -50,7 +65,7 @@ final class WorkspaceRepositoryTests: XCTestCase {
     func testCorruptAndFutureDocumentsAreNotReplaced() throws {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: url) }
-        for text in ["broken json", "{\"schemaVersion\":2,\"hosts\":[]}"] {
+        for text in ["broken json", "{\"schemaVersion\":99,\"hosts\":[]}"] {
             let bytes = Data(text.utf8)
             try bytes.write(to: url)
             XCTAssertThrowsError(try JSONWorkspaceRepository(url: url).load())

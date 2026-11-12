@@ -74,6 +74,9 @@ actor CitadelTerminalSession: TerminalSession {
                     "server or select Standard SSH in the host settings."
                 )
             )
+        } catch let error as SSHClient.CommandFailed where launch.requiresTmux &&
+            error.exitCode == TmuxSessionMigration.failureExitCode {
+            throw TerminalConnectionError.configuration(TmuxSessionMigration.failureMessage)
         } catch let error as SSHClient.CommandFailed {
             throw TerminalConnectionError.configuration(
                 L10n.text("Remote terminal exited with status %lld.", Int64(error.exitCode))
