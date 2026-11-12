@@ -127,7 +127,8 @@ final class TerminalTabSyncTests: XCTestCase {
         remote.terminalTabs = layout
         XCTAssertTrue(device.library.canApplySyncedProfiles([remote]))
         try device.library.applySyncedProfiles([remote])
-        XCTAssertEqual(workspace.tabs, tabs)
+        let expected = tabs.map { $0.fillingMissingResumeStrategy(with: remote.terminalResumeStrategy) }
+        XCTAssertEqual(workspace.tabs, expected)
         XCTAssertTrue(workspace.terminal === terminal)
         XCTAssertEqual(terminal.state, .connected)
         XCTAssertEqual(terminal.screen.data, output)

@@ -26,9 +26,10 @@ struct TerminalLaunchPlan {
         if let shell { launch += " " + Self.quote(Self.shellCommand(shell)) }
         // The default status label is independent of both the old and the migrated server session name.
         // A custom status-left belongs to the server user and must remain unchanged.
-        let label = "set-option -t =\(sessionName) status-left '[Farport] '"
-        return launch + " \\; set-option -t =\(sessionName) mouse on \\; " +
-            "if-shell -F -t =\(sessionName): " + Self.quote("#{==:#{status-left},[##S] }") + " " +
+        let target = "=\(sessionName):"
+        let label = "set-option -t \(target) status-left '[Farport] '"
+        return launch + " \\; set-option -t \(target) mouse on \\; " +
+            "if-shell -F -t \(target) " + Self.quote("#{==:#{status-left},[##S] }") + " " +
             Self.quote(label) + " \"$@\""
     }
 
@@ -43,13 +44,15 @@ struct TerminalLaunchPlan {
 
     private func styleCommands(_ colors: TerminalDecorationColors) -> String {
         guard let sessionName else { return "" }
+        // set-option resolves a target pane, so the exact session component needs its trailing colon.
+        let target = "=\(sessionName):"
         guard colors.useAppAccent else {
-            return "set-option -u -t =\(sessionName) status-style \\; " +
-                "set-window-option -u -t =\(sessionName): mode-style"
+            return "set-option -u -t \(target) status-style \\; " +
+                "set-window-option -u -t \(target) mode-style"
         }
         let style = String(format: "fg=#%06x,bg=#%06x", colors.foreground, colors.background)
-        return "set-option -t =\(sessionName) status-style \(Self.quote(style)) \\; " +
-            "set-window-option -t =\(sessionName): mode-style \(Self.quote(style))"
+        return "set-option -t \(target) status-style \(Self.quote(style)) \\; " +
+            "set-window-option -t \(target) mode-style \(Self.quote(style))"
     }
 
     init(profile: HostProfile, sessionID: UUID? = nil,
