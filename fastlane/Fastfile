@@ -1,0 +1,20 @@
+# Binary transport only. Version, metadata and draft management use the Apple API.
+opt_out_usage
+
+lane :upload_binary do
+  artifact = ENV.fetch("ASC_BINARY_PATH")
+  platform = ENV.fetch("ASC_PLATFORM")
+  UI.user_error!("Expected an ipa or pkg") unless File.extname(artifact) == (platform == "IOS" ? ".ipa" : ".pkg")
+  options = {
+    api_key: {
+      key_id: ENV.fetch("ASC_KEY_ID"), issuer_id: ENV.fetch("ASC_ISSUER_ID"),
+      key: File.read(ENV.fetch("ASC_KEY_PATH")), in_house: false
+    },
+    app_identifier: ENV.fetch("ASC_BUNDLE_ID"),
+    platform: platform == "IOS" ? "ios" : "osx",
+    skip_metadata: true, skip_screenshots: true, skip_app_version_update: true,
+    submit_for_review: false, run_precheck_before_submit: false, force: true
+  }
+  options[platform == "IOS" ? :ipa : :pkg] = artifact
+  upload_to_app_store(**options)
+end

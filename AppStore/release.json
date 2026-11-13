@@ -1,0 +1,129 @@
+{
+  "metadataSource": "AppStore/app-store-metadata.md",
+  "reviewLocale": "en-US",
+  "processingTimeoutSeconds": 1800,
+  "assetTimeoutSeconds": 600,
+  "appInfoCategories": {
+    "primaryCategory": "DEVELOPER_TOOLS"
+  },
+  "ageRating": {
+    "advertising": false,
+    "ageAssurance": false,
+    "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+    "contests": "NONE",
+    "gambling": false,
+    "gamblingSimulated": "NONE",
+    "gunsOrOtherWeapons": "NONE",
+    "healthOrWellnessTopics": false,
+    "horrorOrFearThemes": "NONE",
+    "lootBox": false,
+    "matureOrSuggestiveThemes": "NONE",
+    "medicalOrTreatmentInformation": "NONE",
+    "messagingAndChat": null,
+    "parentalControls": false,
+    "profanityOrCrudeHumor": "NONE",
+    "sexualContentGraphicAndNudity": "NONE",
+    "sexualContentOrNudity": "NONE",
+    "socialMedia": false,
+    "unrestrictedWebAccess": null,
+    "userGeneratedContent": null,
+    "violenceCartoonOrFantasy": "NONE",
+    "violenceRealistic": "NONE",
+    "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+    "socialMediaAgeRestricted": false
+  },
+  "screenshotGroups": [
+    {
+      "platform": "IOS",
+      "folder": "iOS/iPhone",
+      "displayType": "APP_IPHONE_67",
+      "size": [
+        1320,
+        2868
+      ],
+      "scenes": [
+        "hosts",
+        "terminal",
+        "logs",
+        "host-settings"
+      ],
+      "count": 8
+    },
+    {
+      "platform": "IOS",
+      "folder": "iOS/iPad",
+      "displayType": "APP_IPAD_PRO_3GEN_129",
+      "size": [
+        2064,
+        2752
+      ],
+      "scenes": [
+        "hosts",
+        "terminal",
+        "logs",
+        "host-settings"
+      ],
+      "count": 8
+    },
+    {
+      "platform": "MAC_OS",
+      "folder": "macOS",
+      "displayType": "APP_DESKTOP",
+      "size": [
+        1280,
+        800
+      ],
+      "scenes": [
+        "hosts",
+        "terminal",
+        "logs",
+        "host-settings",
+        "files"
+      ],
+      "count": 10
+    },
+    {
+      "platform": "IOS",
+      "folder": "iPhone-Duo/primary",
+      "displayType": null,
+      "size": [
+        1398,
+        2034
+      ],
+      "optional": true,
+      "scenes": [
+        "hosts",
+        "terminal",
+        "logs",
+        "host-settings"
+      ],
+      "count": 8
+    },
+    {
+      "platform": "IOS",
+      "folder": "iPhone-Duo/primary-1",
+      "displayType": null,
+      "size": [
+        2853,
+        2007
+      ],
+      "optional": true,
+      "scenes": [
+        "hosts",
+        "terminal",
+        "logs",
+        "host-settings"
+      ],
+      "count": 8
+    }
+  ],
+  "encryption": {
+    "policy": "existing-owner-declaration",
+    "usesNonExemptEncryption": null
+  },
+  "icon": {
+    "ownerApproved": true,
+    "decisionDate": "2026-11-13",
+    "note": "Owner explicitly keeps the existing Icon Composer artwork for this upload."
+  }
+}

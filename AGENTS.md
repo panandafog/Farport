@@ -42,8 +42,8 @@ and Farport.xcodeproj.
   every additional patch in `Vendor/Citadel/UPSTREAM.md`.
 - `project.yml`: XcodeGen source of truth; regenerate the included Xcode project
   after project-configuration changes. Do not hand-edit generated project files.
-- `AppIcon.icon`: temporary Icon Composer artwork copied from MediaPlayer/Trackfold;
-  replace before distribution. Requires Xcode 26.3+; keep it as one resource bundle.
+- `AppIcon.icon`: Icon Composer artwork originally copied from MediaPlayer/Trackfold;
+  the owner approved retaining it for this release on 2026-11-13. Requires Xcode 26.3+; keep it as one resource bundle.
 - `App/Assets.xcassets/AccentColor.colorset`: shared UI accent, with light/dark
   variants. Use `Color.accentColor`; keep semantic status and terminal ANSI colors separate.
 
@@ -494,7 +494,8 @@ in CI, and pass a built app/archive product path to verify actual signed entitle
 The verifier rejects stale extensions/test bundles too. After a target/project rename,
 ensure a fresh app bundle is assembled rather than shipping cached old plugins beside
 the new extension; use project-scoped build cleanup, never remove real app containers.
-See Docs/Sandbox.md for migration/runtime checks. There is no automated distribution pipeline yet.
+See Docs/Sandbox.md for migration/runtime checks. Distribution automation is documented
+in Docs/APP_STORE_RELEASE_AUTOMATION.md; it is manual-only and never submits/publishes.
 After an Xcode test action, run a normal build before manual verification or delivery:
 the test runner temporarily injects extra signing permissions. Check the signed
 extension has no test-only absolute-path read or testmanager Mach-lookup exceptions.
@@ -573,3 +574,24 @@ lost acknowledgments/restarts, read-only rejection, nonempty-folder protection, 
 real atomic replacement/cancellation through the disposable ProxyJump fixture.
 Test File Provider callbacks independently; report manual Finder/editor verification
 separately rather than equating callback tests with an end-to-end system check.
+
+## App Store Release Automation
+
+Use the manual app-store-release workflow only on trusted main/dev with the app-store
+GitHub environment. Preserve ordinary CI's lack of signing secrets. Never submit,
+publish, cancel reviews, set pricing/territories or invent owner compliance answers.
+Canonical texts are AppStore/app-store-metadata.md (platform-specific EN/RU blocks),
+with API locale ru and asset folder ru-RU. Use existing PNGs, never capture/UI tests
+implicitly. Duo API upload stays explicitly excluded until Apple documents valid slots.
+
+Keep separate macOS app/Finder profiles and iOS profile, production Release push/CloudKit
+entitlements, working Debug/Local entitlements, existing legacy identifiers and strict
+package/plugin checks. Validate archive AND exported product signatures/resources,
+including Finder extension and sandbox verifier; preserve the signed package before upload.
+Restore only verified same-repository trusted release artifacts with run/commit SHA,
+identity and checksum. Reuse exact accepted builds/receipts and the same build on retries.
+
+Run Python unittest discovery in Tests/ReleaseAutomation and the offline Fastlane option
+validator when changing automation. Never use real app libraries/servers/cloud records.
+See Docs/ReleaseCompliance.md for privacy manifest reasons, SSH encryption and age gates;
+never copy game exemptions, privacy labels or legal declarations into this client.

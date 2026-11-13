@@ -28,8 +28,11 @@ struct TerminalLaunchPlan {
         // A custom status-left belongs to the server user and must remain unchanged.
         let target = "=\(sessionName):"
         let label = "set-option -t \(target) status-left '[Farport] '"
+        // tmux 3.6 spells the same default with session_name instead of #S.
+        let defaultLabel = "#{||:#{==:#{status-left},[##S] }," +
+            "#{==:#{status-left},#{l:[#{session_name}] }}}"
         return launch + " \\; set-option -t \(target) mouse on \\; " +
-            "if-shell -F -t \(target) " + Self.quote("#{==:#{status-left},[##S] }") + " " +
+            "if-shell -F -t \(target) " + Self.quote(defaultLabel) + " " +
             Self.quote(label) + " \"$@\""
     }
 
