@@ -188,10 +188,13 @@ class PortableAPIStagesTests(unittest.TestCase):
         for platform in ("ios", "macos"):
             with self.subTest(platform=platform), tempfile.TemporaryDirectory() as temp:
                 api = FakeAPI()
-                api.pre["attributes"]["platform"] = identity(platform)["platform"]
+                ident = identity(platform)
+                api.pre["attributes"]["platform"] = ident["platform"]
                 with patch.object(cli, "ROOT", pathlib.Path(temp)), patch.object(cli, "Client", return_value=api):
                     with patch.object(signing, "run", side_effect=AssertionError("API-only stage invoked a native tool")):
                         with patch.dict(os.environ, {"ASC_REVIEW_CONTACT_PHONE": "+10000000000"}):
-                            self.assertEqual(cli.main(["review", "--platform", platform, "--build-number", "10"]), 0)
-                            self.assertEqual(cli.main(["cleanup", "--platform", platform, "--build-number", "10"]), 0)
+                            self.assertEqual(cli.main(["review", "--platform", platform,
+                                                       "--build-number", ident["build"]]), 0)
+                            self.assertEqual(cli.main(["cleanup", "--platform", platform,
+                                                       "--build-number", ident["build"]]), 0)
                 self.assertTrue(any(method == "POST" and path == "/v1/appStoreReviewDetails" for method, path in api.calls))
