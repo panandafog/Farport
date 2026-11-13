@@ -270,7 +270,7 @@ def verify_bundle(app, identity, extension=False):
     check_profile(profile, identity, extension)
     with tempfile.TemporaryDirectory(prefix="farport-cert-") as temp:
         prefix = str(pathlib.Path(temp) / "signer")
-        run(["codesign", "-d", "--extract-certificates", prefix, str(app)])
+        run(["codesign", "-d", "--extract-certificates=" + prefix, str(app)])
         if pathlib.Path(prefix + "0").read_bytes() not in profile["DeveloperCertificates"]:
             raise ReleaseError("Signed bundle certificate is not authorized by its embedded profile.")
     print("Verified production signature/capabilities: " + bundle_id, flush=True)
