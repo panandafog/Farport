@@ -19,7 +19,7 @@ ACTIVE = {"WAITING_FOR_REVIEW", "IN_REVIEW", "UNRESOLVED_ISSUES", "CANCELING", "
 # appStoreVersionSubmissions, release request, phased release or pricing endpoint.
 MUTATIONS = {
     "POST": [r"/v1/(appStoreVersions|appStoreVersionLocalizations|appInfoLocalizations|appStoreReviewDetails|appScreenshotSets|appScreenshots|reviewSubmissions|reviewSubmissionItems)"],
-    "PATCH": [r"/v1/(appStoreVersions|appStoreVersionLocalizations|appInfos|appInfoLocalizations|appStoreReviewDetails|appScreenshots|ageRatingDeclarations|builds)/[\w-]+",
+    "PATCH": [r"/v1/(appStoreVersions|appStoreVersionLocalizations|appInfos|appInfoLocalizations|appStoreReviewDetails|appScreenshots|ageRatingDeclarations)/[\w-]+",
               r"/v1/appScreenshotSets/[\w-]+/relationships/appScreenshots"],
     "DELETE": [r"/v1/appScreenshots/[\w-]+"]
 }
@@ -568,6 +568,13 @@ def upload_asset_operations(operations, data, opener=None, sleep=time.sleep):
                 sleep(2 ** attempt)
 
 
+def managed_screenshot(asset):
+    # Friendly app-prefixed filenames may belong to the owner. Only our complete
+    # theme/scene/content-hash convention is an automation ownership marker.
+    return bool(re.fullmatch(r"farport-(light|dark)-[0-9]{2}-[a-z0-9-]+-[0-9a-f]{16}\.png",
+                             asset.get("attributes", {}).get("fileName", "")))
+
+
 def screenshots(store, localization, group, files):
     api = store.api
     store.guard()
@@ -579,7 +586,7 @@ def screenshots(store, localization, group, files):
                                                 {"appStoreVersionLocalization": ("appStoreVersionLocalizations", localization["id"])})
     existing = api.list(f"/v1/appScreenshotSets/{aset['id']}/appScreenshots", {"limit": 200})
     expected_checksums = {hashlib.md5(f.read_bytes()).hexdigest() for f in files}
-    foreign = [a for a in existing if not a["attributes"].get("fileName", "").startswith("farport-")
+    foreign = [a for a in existing if not managed_screenshot(a)
                and a["attributes"].get("sourceFileChecksum", "").lower() not in expected_checksums]
     if foreign:
         raise NeedsAction("Screenshot set contains unrelated unmanaged images. Existing images were preserved; review this set in ASC.")
@@ -593,7 +600,7 @@ def screenshots(store, localization, group, files):
                           or a["attributes"].get("fileName") == "farport-" + f.parent.name + "-" + f.stem + "-" + hashlib.sha256(f.read_bytes()).hexdigest()[:16] + ".png"
                           for a in existing) for f in files)
     if len(existing) + missing > 10:
-        obsolete = [a for a in existing if a["attributes"].get("fileName", "").startswith("farport-")
+        obsolete = [a for a in existing if managed_screenshot(a)
                     and a["attributes"].get("fileName") not in wanted_names
                     and a["attributes"].get("sourceFileChecksum", "").lower() not in desired_hashes]
         for old in obsolete:
@@ -653,7 +660,7 @@ def screenshots(store, localization, group, files):
     store.guard()
     for old in existing:
         if (old["id"] not in desired and old["id"] not in discarded
-                and old["attributes"].get("fileName", "").startswith("farport-")):
+                and managed_screenshot(old)):
             api.request("DELETE", "/v1/appScreenshots/" + old["id"])
     api.request("PATCH", f"/v1/appScreenshotSets/{aset['id']}/relationships/appScreenshots",
                 {"data": [{"type": "appScreenshots", "id": id} for id in desired]})

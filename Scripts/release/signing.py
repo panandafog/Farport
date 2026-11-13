@@ -130,19 +130,28 @@ def expected_capabilities(identity, extension=False):
 
 
 def check_capabilities(entitlements, identity, extension=False, profile=False):
+    failures = []
     for key, required in expected_capabilities(identity, extension).items():
         actual = entitlements.get(key)
-        if isinstance(required, list):
-            allowed = actual if isinstance(actual, list) else []
-            valid = all(any(fnmatch.fnmatchcase(value, pattern) if profile else value == pattern
-                            for pattern in allowed) for value in required)
-            if not profile:
-                valid = valid and set(allowed) == set(required)
+        if profile:
+            # Apple's profile allowlist may encode iCloud services as a scalar
+            # wildcard, even though the signed entitlement must be an array.
+            allowed = actual if isinstance(actual, list) else [actual] if isinstance(actual, str) else []
+            wanted = required if isinstance(required, list) else [required]
+            valid = all(any(isinstance(pattern, str) and fnmatch.fnmatchcase(value, pattern)
+                            for pattern in allowed) for value in wanted)
+        elif isinstance(required, list):
+            valid = isinstance(actual, list) and set(actual) == set(required)
         else:
             valid = actual == required
         if not valid:
-            raise NeedsAction(f"{'Profile' if profile else 'Signed bundle'} does not authorize {key} for " +
-                              (identity.get("extensionBundleId", "Finder extension") if extension else identity["bundleId"]) + ".")
+            # Only these public capability identifiers/types are reported,
+            # never an entire provisioning payload or credentials.
+            failures.append(key + " (expected " + repr(required) + "; allowed " + repr(actual) + ")")
+    if failures:
+        bundle_id = identity.get("extensionBundleId", "Finder extension") if extension else identity["bundleId"]
+        raise NeedsAction(f"{'Profile' if profile else 'Signed bundle'} does not authorize " +
+                          bundle_id + ": " + "; ".join(failures))
     if not profile and any(key.startswith("com.apple.security.temporary-exception.") for key in entitlements):
         raise ReleaseError("Test-only sandbox exceptions must not ship.")
 
@@ -261,7 +270,7 @@ def verify_bundle(app, identity, extension=False):
     check_profile(profile, identity, extension)
     with tempfile.TemporaryDirectory(prefix="farport-cert-") as temp:
         prefix = str(pathlib.Path(temp) / "signer")
-        run(["codesign", "-d", "--extract-certificates", prefix, str(app)])
+        run(["codesign", "-d", "--extract-certificates=" + prefix, str(app)])
         if pathlib.Path(prefix + "0").read_bytes() not in profile["DeveloperCertificates"]:
             raise ReleaseError("Signed bundle certificate is not authorized by its embedded profile.")
     print("Verified production signature/capabilities: " + bundle_id, flush=True)

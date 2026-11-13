@@ -8,6 +8,10 @@ change store availability, publish App Privacy or certify compliance for the own
 FarportSSH → vendored Citadel → swift-nio-ssh / swift-crypto includes SSH transport
 and SFTP, password/public-key authentication and standard cryptographic algorithms.
 Swift Crypto includes BoringSSL; this is **not limited to Apple's built-in HTTPS**.
+In particular, `Sources/FarportSSH/SSHTransportAlgorithms.swift` enables Citadel's
+AES-CTR/SHA-2 transport fallback, and `Vendor/Citadel/Sources/Citadel/OpenSSHKey.swift`
+directly calls BoringSSL for encrypted key import. Some standard Crypto APIs can use
+CryptoKit on Apple platforms; that does not make this entire binary OS-crypto-only.
 `Package.resolved` pins the exact dependencies. Source app Info.plists have no
 `ITSAppUsesNonExemptEncryption=false`; the release scripts do not add it.
 

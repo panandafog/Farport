@@ -51,6 +51,18 @@ class FarportReleaseTests(unittest.TestCase):
             with self.assertRaises(NeedsAction):
                 signing.check_capabilities(bad, mac, True, profile=True)
 
+    def test_profile_wildcard_and_array_allowlists_are_not_signed_entitlement_values(self):
+        ident = identity("ios")
+        capabilities = signing.expected_capabilities(ident)
+        profile = capabilities | {"com.apple.developer.icloud-services": "*",
+                                   "com.apple.developer.icloud-container-environment": ["Development", "Production"]}
+        signing.check_capabilities(profile, ident, profile=True)
+        with self.assertRaises(NeedsAction):
+            signing.check_capabilities(profile, ident)
+        for invalid in (None, [], ["CloudDocuments"]):
+            with self.assertRaises(NeedsAction):
+                signing.check_capabilities(profile | {"com.apple.developer.icloud-services": invalid}, ident, profile=True)
+
     def test_production_push_and_cloud_are_required(self):
         for platform in ("ios", "macos"):
             ident = identity(platform);cap = signing.expected_capabilities(ident)
@@ -140,3 +152,46 @@ class FarportReleaseTests(unittest.TestCase):
             self.assertEqual(signing.binary(root,ident),artifact)
             (root/"artifact-source.json").write_text(json.dumps(source|{"sha":"b"*40}))
             with self.assertRaises(ReleaseError):signing.binary(root,ident)
+
+
+class ReleaseSafetyTests(unittest.TestCase):
+    def test_app_prefixed_owner_screenshot_is_preserved(self):
+        api = FakeAPI()
+        config, locales, _, copyright = metadata()
+        store = Store(api, identity("ios"), config, {})
+        version = store.ensure_version()
+        localization = store.metadata(version, locales, copyright)["en-US"]
+        group = config["screenshotGroups"][0]
+        aset = api.create("appScreenshotSets", {"screenshotDisplayType": group["displayType"]},
+                          {"appStoreVersionLocalization": ("appStoreVersionLocalizations", localization["id"])})
+        owner = api.create("appScreenshots", {"fileName": "farport-owner.png", "fileSize": 5},
+                           {"appScreenshotSet": ("appScreenshotSets", aset["id"])})
+        api.calls.clear()
+        with self.assertRaises(NeedsAction):
+            screenshots(store, localization, group, screenshot_files(group, "en-US"))
+        self.assertIn(("appScreenshots", owner["id"]), api.records)
+        self.assertFalse(any(method != "GET" for method, _ in api.calls))
+
+    def test_api_cannot_set_an_encryption_exemption(self):
+        from Scripts.release.asc import Client, payload
+        from test_release import Opener
+        opener = Opener()
+        client = Client(lambda: "offline", opener)
+        with self.assertRaises(ReleaseError):
+            client.request("PATCH", "/v1/builds/build", payload("builds", {"usesNonExemptEncryption": False}, id="build"))
+        self.assertEqual(opener.requests, [])
+
+
+class PortableAPIStagesTests(unittest.TestCase):
+    def test_review_and_cleanup_require_no_macos_tools(self):
+        from Scripts.release import cli
+        for platform in ("ios", "macos"):
+            with self.subTest(platform=platform), tempfile.TemporaryDirectory() as temp:
+                api = FakeAPI()
+                api.pre["attributes"]["platform"] = identity(platform)["platform"]
+                with patch.object(cli, "ROOT", pathlib.Path(temp)), patch.object(cli, "Client", return_value=api):
+                    with patch.object(signing, "run", side_effect=AssertionError("API-only stage invoked a native tool")):
+                        with patch.dict(os.environ, {"ASC_REVIEW_CONTACT_PHONE": "+10000000000"}):
+                            self.assertEqual(cli.main(["review", "--platform", platform, "--build-number", "10"]), 0)
+                            self.assertEqual(cli.main(["cleanup", "--platform", platform, "--build-number", "10"]), 0)
+                self.assertTrue(any(method == "POST" and path == "/v1/appStoreReviewDetails" for method, path in api.calls))

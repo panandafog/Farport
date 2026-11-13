@@ -26,7 +26,7 @@ jobs:
       - run: python3 -m unittest discover -s Tests/ReleaseAutomation -v
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.4.7'
+          ruby-version: '3.4'
           bundler-cache: true
       - run: ruby -c fastlane/Fastfile
       - run: bundle exec ruby Scripts/release/check-fastlane.rb
