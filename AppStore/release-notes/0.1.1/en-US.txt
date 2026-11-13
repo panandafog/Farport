@@ -2,3 +2,4 @@
 • Choose standard SSH or tmux independently for each terminal tab. The host setting is the default for new tabs.
 • Improved handling of iCloud host deletions and saving edited connection credentials.
 • Terminal focus and tmux compatibility improvements.
+• On macOS, dragged hosts have a readable preview in light and dark appearance.
