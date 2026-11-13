@@ -198,15 +198,29 @@ readiness. Настоящие подписи/processing/draft подтвержд
   iOS IPA прошёл проверку архива и экспорта, сохранён до upload, загружен в Apple и
   обработан до VALID. Metadata EN/RU, полная возрастная анкета с read-back и 32 PNG
   iPhone/iPad успешно подготовлены. Этап review остановился на незаполненном
-  Export Compliance; владелец затем сообщил о заполнении, read-back будет в review.
+  Export Compliance; после ответа владельца подтверждён отдельным review resume ниже.
   Mac app и Finder extension подписаны/проверены, включая распакованный installer
-  PKG, sandbox, profiles, сертификаты и release/demo isolation; PKG сохранён и
-  передаётся в Apple. Дальнейший processing/metadata/review ещё ожидаются.
+  PKG, sandbox, profiles, сертификаты и release/demo isolation; PKG сохранён,
+  загружен и обработан до VALID. Mac metadata EN/RU и все 20 PNG приняты.
+  Mac review также остановился на Export Compliance, затем продолжен без пересборки.
+- [Review resume / both / build 10, b88c2c9](https://github.com/panandafog/Farport/actions/runs/43526107337)
+  — **полностью успешен** (2026-11-14 по московскому времени). Для IOS и MAC_OS
+  Apple подтвердила VALID, выбор точного билда **0.1.1 (10)**, App Review Information,
+  metadata EN/RU, checksum/порядок/COMPLETE существующих скриншотов и
+  **READY_FOR_REVIEW** версии, черновика и соответствующего review item.
+  Прочитан существующий ответ владельца по шифрованию: `non-exempt: false` для
+  обеих платформ; автоматизация его не меняла и не подтверждает юридическую
+  применимость освобождения. На этом запуске не выполнялись сборка, подпись,
+  повторный upload или настройка Xcode: API-only этапы прошли на Linux.
+  **Submit for Review и публикация не выполнялись.**
 - Артефакты подписанных пакетов: `app-store-ios-43488614317` (~12 MB) и
   `app-store-macos-43488614317` (~18 MB), доступны до 2026-11-27 в full run.
-- [Offline release checks для PR](https://github.com/panandafog/Farport/actions/runs/43487733845):
-  92 теста и Fastlane validation прошли на GitHub. Дополнительные local safety/
-  portability tests довели набор до 95; это не замена подтверждению Apple.
+- [Offline release checks для PR, b88c2c9](https://github.com/panandafog/Farport/actions/runs/43493841560):
+  95 тестов и Fastlane validation прошли на GitHub, включая safety/portability tests.
+  [Обычный CI того же коммита](https://github.com/panandafog/Farport/actions/runs/43493841912)
+  также прошёл. Эти проверки не заменяют подтверждение Apple.
 - Подготовлен [PR №7](https://github.com/panandafog/Farport/pull/7) с исправлениями
-  реального запуска. READY_FOR_REVIEW пока не подтверждён ни для одной платформы.
-  Повторы — **review / both / build 10**, без пересборки и повторного upload.
+  реального запуска; main автоматически не меняется. Для повторной проверки —
+  **status / both / build 10**; для повторения подготовки — review с тем же билдом.
+  Перед ручным Submit владелец проверяет актуальность скриншотов, App Privacy,
+  применимость ответов по шифрованию и реальную работу Production CloudKit.
