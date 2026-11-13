@@ -144,7 +144,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         if: steps.selected.outputs.run == 'true' && steps.probe.outputs.ready != 'true' && steps.probe.outputs.existing != 'true' && (inputs.mode == 'full' || inputs.mode == 'upload')
         with:
-          ruby-version: '3.4.7'
+          ruby-version: '3.4'
           bundler-cache: true
       - name: Prepare reproducible production project and terminal tools
         if: steps.selected.outputs.run == 'true' && inputs.mode == 'full' && steps.probe.outputs.ready != 'true' && steps.probe.outputs.existing != 'true'
