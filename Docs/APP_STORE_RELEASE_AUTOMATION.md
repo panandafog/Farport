@@ -87,6 +87,9 @@ Actions → **Prepare App Store Release** → Run workflow.
 - **metadata**: только editable metadata/screenshots; подпись/Transporter не нужны.
 - **review**: дождаться существующей сборки, выбрать её, настроить review detail,
   подготовить draft, проверить результат; тексты и скриншоты должны уже совпадать.
+Режимы metadata/review/status работают на Ubuntu без Xcode/Keychain/Fastlane,
+чтобы не ждать свободный Mac. Full/upload используют macOS для бинарного transport.
+
 - **status**: read-only проверка результата; без подписи/загрузки/изменений Apple.
   Без build_number использует номер project.yml, поэтому для CI override указывать явно.
 
@@ -125,7 +128,8 @@ writable SFTP/ProxyJump/tmux. Новые подключения к ним в э�
 предшествуют новым режимам вкладок/значению по умолчанию: владелец должен проверить
 актуальность перед Submit. Workflow не запускает capture/UI tests и сообщает об этом.
 
-Собственные uploads имеют префикс farport-. Точные совпадения вручную загруженных
+Управляемые uploads определяются полным шаблоном farport-<light|dark>-<scene>-<hash>.png;
+простого префикса farport- недостаточно для права на удаление. Точные совпадения вручную загруженных
 PNG переиспользуются по checksum, без удаления/переименования. Чужие несовпадающие
 изображения останавливают этап с диагностикой. Устаревшие **управляемые** изображения
 удаляются после замены; если заняты все 10 мест, только управляемые устаревшие
@@ -183,10 +187,26 @@ readiness. Настоящие подписи/processing/draft подтвержд
 ## Реальные запуски
 
 - [Первый full / both, dev ac41c3a](https://github.com/panandafog/Farport/actions/runs/43484055247):
-  остановлен ранним аудитом CloudKit allowlist профиля, **до архива/подписи/загрузки**.
-  Проверка исправлена для Apple wildcard/array allowlists; значения реальной подписи
-  по-прежнему должны точно совпадать с production entitlements.
-- [Offline release checks](https://github.com/panandafog/Farport/actions/runs/43483650989):
-  91 тест и Fastlane option validation прошли на GitHub после перехода на Ruby 3.4.
-- Реальная подпись/загрузка/READY_FOR_REVIEW пока не подтверждены. Последующие результаты
-  добавляются только по данным Apple; локальные проверки не заменяют distribution run.
+  остановлен ранним аудитом до сборки. Исправлено чтение wildcard/array allowlists
+  Apple profiles; фактическая подпись по-прежнему требует точных production values.
+- [Full / both, af989f5](https://github.com/panandafog/Farport/actions/runs/43484871300):
+  оба архива собраны; исправлен синтаксис optional prefix команды codesign при
+  извлечении публичного сертификата. Исправленная команда отдельно проверена на
+  настоящей подписи локально, без чтения приватных ключей.
+- [Full / both, 7bbdfab — **0.1.1 (10)**](https://github.com/panandafog/Farport/actions/runs/43488614317):
+  аудит подтвердил три профиля/сертификаты/production capabilities и публичные URL.
+  iOS IPA прошёл проверку архива и экспорта, сохранён до upload, загружен в Apple и
+  обработан до VALID. Metadata EN/RU, полная возрастная анкета с read-back и 32 PNG
+  iPhone/iPad успешно подготовлены. Этап review остановился на незаполненном
+  Export Compliance; владелец затем сообщил о заполнении, read-back будет в review.
+  Mac app и Finder extension подписаны/проверены, включая распакованный installer
+  PKG, sandbox, profiles, сертификаты и release/demo isolation; PKG сохранён и
+  передаётся в Apple. Дальнейший processing/metadata/review ещё ожидаются.
+- Артефакты подписанных пакетов: `app-store-ios-43488614317` (~12 MB) и
+  `app-store-macos-43488614317` (~18 MB), доступны до 2026-11-27 в full run.
+- [Offline release checks для PR](https://github.com/panandafog/Farport/actions/runs/43487733845):
+  92 теста и Fastlane validation прошли на GitHub. Дополнительные local safety/
+  portability tests довели набор до 95; это не замена подтверждению Apple.
+- Подготовлен [PR №7](https://github.com/panandafog/Farport/pull/7) с исправлениями
+  реального запуска. READY_FOR_REVIEW пока не подтверждён ни для одной платформы.
+  Повторы — **review / both / build 10**, без пересборки и повторного upload.

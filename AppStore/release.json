@@ -118,8 +118,7 @@
     }
   ],
   "encryption": {
-    "policy": "existing-owner-declaration",
-    "usesNonExemptEncryption": null
+    "policy": "existing-owner-declaration"
   },
   "icon": {
     "ownerApproved": true,

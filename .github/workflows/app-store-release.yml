@@ -73,7 +73,7 @@ jobs:
   prepare:
     needs: audit
     if: needs.audit.result == 'success'
-    runs-on: ${{ vars.RELEASE_MACOS_RUNNER || 'macos-26' }}
+    runs-on: ${{ (inputs.mode == 'full' || inputs.mode == 'upload') && (vars.RELEASE_MACOS_RUNNER || 'macos-26') || 'ubuntu-latest' }}
     timeout-minutes: 120
     environment: app-store
     strategy:
@@ -110,7 +110,7 @@ jobs:
         if: steps.selected.outputs.run == 'true'
         run: python3 -m pip install -r Scripts/release/requirements.txt
       - name: Configure Xcode
-        if: steps.selected.outputs.run == 'true'
+        if: steps.selected.outputs.run == 'true' && (inputs.mode == 'full' || inputs.mode == 'upload')
         env:
           RELEASE_XCODE_APP: ${{ vars.RELEASE_XCODE_APP }}
         shell: bash
