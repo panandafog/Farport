@@ -27,6 +27,7 @@ struct MobileLibraryView: View {
                             }
                         } icon: { Image(systemName: "server.rack") }
                     }
+                    .reorderableHost(host.id, move: model.moveHost)
                     .contextMenu {
                         Button(L10n.text("Edit Host"), systemImage: "pencil") { model.editor = host }
                         Button(L10n.text("Delete Host"), systemImage: "trash", role: .destructive) { deleting = host }
@@ -36,6 +37,7 @@ struct MobileLibraryView: View {
                         Button(L10n.text("Edit Host"), systemImage: "pencil") { model.editor = host }.tint(.accentColor)
                     }
                 }
+                .onMove(perform: model.moveHosts)
             }
             .overlay {
                 if model.hosts.isEmpty {
@@ -53,6 +55,9 @@ struct MobileLibraryView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button(L10n.text("New Host"), systemImage: "plus") { model.editor = SavedHost() }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    EditButton().disabled(model.hosts.isEmpty)
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Menu(L10n.text("Settings"), systemImage: "gearshape") {

@@ -12,6 +12,7 @@ struct HostEditor: View {
     @State private var errorTitle = ""
     @State private var keyExpanded = false
     @State private var importingKey = false
+    @State private var conflictedHost: SavedHost?
     let hosts: [SavedHost]
     private let editorTitle: String
     let save: (SavedHost) throws -> Void
@@ -26,6 +27,9 @@ struct HostEditor: View {
     var body: some View {
         editor
             .alert(errorTitle, isPresented: errorPresented) {
+                if let conflictedHost {
+                    Button(L10n.text("Save a Copy")) { saveCopy(of: conflictedHost) }
+                }
                 Button(L10n.text("OK")) { error = nil }
             } message: {
                 Text(error ?? "")
@@ -166,10 +170,12 @@ struct HostEditor: View {
                 }
             }
             Section(L10n.text("Terminal")) {
-                Picker(L10n.text("Session"), selection: $draft.host.profile.terminalResumeStrategy) {
+                Picker(L10n.text("Default Session"), selection: $draft.host.profile.terminalResumeStrategy) {
                     Text(L10n.text("Standard SSH")).tag(TerminalResumeStrategy.none)
                     Text(L10n.text("Persistent (tmux)")).tag(TerminalResumeStrategy.tmux)
                 }
+                Text(L10n.text("New terminal tabs start in this mode."))
+                    .font(.caption).foregroundStyle(.secondary)
                 if draft.host.profile.terminalResumeStrategy == .tmux {
                     Text(L10n.text("Requires tmux on the server. Detaching keeps remote programs running."))
                         .font(.caption).foregroundStyle(.secondary)
@@ -222,15 +228,34 @@ struct HostEditor: View {
         do {
             try save(candidate)
             dismiss()
-        } catch { showError(error, title: "Could not save host") }
+        } catch {
+            conflictedHost = error is HostSaveConflict ? candidate : nil
+            showError(error, title: "Could not save host")
+        }
+    }
+
+    private func saveCopy(of host: SavedHost) {
+        do {
+            var copy = host
+            copy.profile = try host.profile.recoveredCopy()
+            try save(copy)
+            dismiss()
+        } catch {
+            conflictedHost = nil
+            showError(error, title: "Could not save host")
+        }
     }
 
     private func showError(_ error: Error, title: String) {
+        if !(error is HostSaveConflict) { conflictedHost = nil }
         errorTitle = L10n.text(title)
         self.error = error.localizedDescription
     }
 
-    private func importKey() {
+}
+
+private extension HostEditor {
+    func importKey() {
         #if os(iOS)
             importingKey = true
         #else
@@ -250,7 +275,7 @@ struct HostEditor: View {
         #endif
     }
 
-    private func readKey(_ url: URL) throws {
+    func readKey(_ url: URL) throws {
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
         guard let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize, size <= 1_048_576 else {

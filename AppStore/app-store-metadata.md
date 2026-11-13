@@ -4,9 +4,9 @@
 | Поле | Значение |
 | --- | --- |
 | Name | Farport |
-| Version | 0.1.0 |
+| Version | 0.1.1 |
 | Bundle ID — обе платформы | `com.panandafog.harbor` — не менять |
-| Build | Выбрать загруженную сборку соответствующей платформы; текущий номер в исходниках — 9 |
+| Build | Выбрать загруженную сборку соответствующей платформы; текущий номер в исходниках — 10 |
 | Primary Language | English (U.S.), если основная локализация ещё не задана |
 | Primary Category | Предлагается [Developer Tools](https://developer.apple.com/app-store/categories/) |
 | Copyright | `2026 <правообладатель>` — заполнить |

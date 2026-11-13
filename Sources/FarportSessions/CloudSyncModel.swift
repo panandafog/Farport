@@ -9,6 +9,7 @@ public final class CloudSyncModel: ObservableObject {
     @Published public private(set) var snapshot = HostSyncSnapshot()
     @Published public private(set) var busy = false
     @Published public private(set) var pendingChanges = false
+    @Published public private(set) var pendingDeletedProfiles: [HostProfile] = []
     @Published public var showingSettings = false
     @Published public var error: String?
     private var service: (any HostSyncService)?
@@ -53,10 +54,23 @@ public final class CloudSyncModel: ObservableObject {
     }
 
     public func reconsiderChanges() {
+        pendingDeletedProfiles = []
         guard snapshot.enabled, snapshot.initialized, let library else { pendingChanges = false; return }
         guard sameProfiles(snapshot.baseline, requestedProfiles) else { pendingChanges = false; return }
         pendingChanges = !sameProfiles(library.hosts.map(\.profile), snapshot.profiles)
-        if pendingChanges, library.canApplySyncedProfiles(snapshot.profiles) { applyChanges() }
+        let remaining = Set(snapshot.profiles.map(\.id))
+        pendingDeletedProfiles = library.hosts.map(\.profile).filter { !remaining.contains($0.id) }
+        // Closing an editor or saving local credentials must never silently accept a remote deletion.
+        if pendingChanges, pendingDeletedProfiles.isEmpty, library.canApplySyncedProfiles(snapshot.profiles) {
+            applyChanges()
+        }
+    }
+
+    public func validateSave(of hostID: UUID) throws {
+        guard snapshot.enabled, snapshot.initialized else { return }
+        let deleted = snapshot.deletedHostIDs.contains(hostID) ||
+            (snapshot.baseline.contains { $0.id == hostID } && !snapshot.profiles.contains { $0.id == hostID })
+        if deleted { throw HostSaveConflict.deletedInCloud }
     }
 
     public func applyChanges() {
@@ -68,6 +82,7 @@ public final class CloudSyncModel: ObservableObject {
         do {
             try library.applySyncedProfiles(snapshot.profiles)
             pendingChanges = false
+            pendingDeletedProfiles = []
             let profiles = library.hosts.map(\.profile)
             requestedProfiles = profiles
             journal { try await service.applied(profiles: profiles) }
@@ -96,11 +111,9 @@ public final class CloudSyncModel: ObservableObject {
     }
 
     public func restore(_ conflict: CloudProfileConflict) {
-        guard let library, var profile = conflict.profile else { return }
+        guard let library, let original = conflict.profile else { return }
         do {
-            profile.id = UUID()
-            profile.terminalTabs = try profile.terminalTabs?.copy(for: profile.id)
-            profile.name = L10n.text("%@ (Recovered)", profile.displayName)
+            let profile = try original.recoveredCopy()
             try library.applySyncedProfiles(library.hosts.map(\.profile) + [profile])
             localChanged()
             dismissConflict(conflict)

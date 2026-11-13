@@ -98,8 +98,10 @@ open class HostLibraryModel<Terminal: TerminalSessionModel>: ObservableObject, S
             throw HarborError.message(L10n.text("Resolve the host library read error before saving changes."))
         }
         var host = host
+        try cloud?.validateSave(of: host.id)
         if let existing = hosts.first(where: { $0.id == host.id }) {
             host.profile.terminalTabs = existing.profile.terminalTabs
+            host.profile.position = existing.profile.position
         }
         try host.profile.validate()
         if host.credentialsConfigured { try host.validate() }
@@ -107,21 +109,54 @@ open class HostLibraryModel<Terminal: TerminalSessionModel>: ObservableObject, S
         if let index = updated.firstIndex(where: { $0.id == host.id }) {
             updated[index] = host
         } else {
+            host.profile.position = nil
             updated.append(host)
         }
-        let affected = Set((hosts + updated).filter {
+        updated = try HostOrdering.record(updated, device: workspaceDeviceID)
+        let defaultOnly = hosts.first { $0.id == host.id }.map {
+            $0.profile.terminalResumeStrategy != host.profile.terminalResumeStrategy &&
+                $0.profile.hasSameSettings(as: host.profile, includingSessionDefault: false) &&
+                $0.credentials == host.credentials && $0.credentialsConfigured == host.credentialsConfigured
+        } ?? false
+        let affected: Set<UUID> = defaultOnly ? [] : Set((hosts + updated).filter {
             $0.id == host.id || ConnectionRoute.depends($0, on: host.id, library: hosts) ||
                 ConnectionRoute.depends($0, on: host.id, library: updated)
         }.map(\.id))
         for candidate in updated where affected.contains(candidate.id) {
             _ = try ConnectionRoute(to: candidate, library: updated)
         }
-        try integration?.revoke(hostIDs: affected)
+        if !affected.isEmpty { try integration?.revoke(hostIDs: affected) }
         try repository.save(updated)
         replaceWorkspaces(with: updated, affected: affected)
         selection = host.id
         cloud?.localChanged()
         editor = nil
+    }
+
+    public func moveHosts(from offsets: IndexSet, to destination: Int) {
+        let visible = filteredHosts
+        let reordered = ItemOrdering.moving(visible, from: offsets, to: destination)
+        let ids = Set(visible.map(\.id))
+        var iterator = reordered.makeIterator()
+        saveHostOrder(hosts.map { ids.contains($0.id) ? (iterator.next() ?? $0) : $0 })
+    }
+
+    public func moveHost(_ id: UUID, to target: UUID) {
+        let visible = filteredHosts
+        guard let source = visible.firstIndex(where: { $0.id == id }),
+              let destination = visible.firstIndex(where: { $0.id == target }) else { return }
+        moveHosts(from: IndexSet(integer: source), to: destination + (source < destination ? 1 : 0))
+    }
+
+    private func saveHostOrder(_ reordered: [SavedHost]) {
+        guard !loadFailed, reordered.map(\.id) != hosts.map(\.id) else { return }
+        do {
+            let updated = try HostOrdering.record(reordered, device: workspaceDeviceID)
+            try repository.save(updated)
+            replaceWorkspaces(with: updated, affected: [])
+            persistWorkspace()
+            cloud?.localChanged()
+        } catch { self.error = error.localizedDescription }
     }
 
     public func delete(_ host: SavedHost) {
@@ -163,7 +198,9 @@ open class HostLibraryModel<Terminal: TerminalSessionModel>: ObservableObject, S
             var updated = hosts
             for index in updated.indices {
                 guard let workspace = workspaces[updated[index].id] else { continue }
-                let defaultTabs = HostWorkspace(hostID: updated[index].id).terminals
+                let defaultTabs = HostWorkspace(hostID: updated[index].id).terminals.map {
+                    $0.fillingMissingResumeStrategy(with: updated[index].profile.terminalResumeStrategy)
+                }
                 if updated[index].profile.terminalTabs == nil, workspace.tabs == defaultTabs { continue }
                 var layout = updated[index].profile.terminalTabs ?? SyncedTerminalTabs()
                 try layout.record(workspace.tabs, device: workspaceDeviceID)

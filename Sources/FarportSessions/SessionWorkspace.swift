@@ -33,7 +33,9 @@ public final class SessionWorkspace<Terminal: TerminalSessionModel>: ObservableO
         self.trust = trust
         files = FilesModel(host: host, provider: provider, trust: trust)
         let saved = snapshot ?? HostWorkspace(hostID: host.id)
-        let restoredTabs = host.profile.terminalTabs?.tabs ?? saved.terminals
+        let restoredTabs = (host.profile.terminalTabs?.tabs ?? saved.terminals).map {
+            $0.fillingMissingResumeStrategy(with: host.profile.terminalResumeStrategy)
+        }
         tabs = restoredTabs
         selectedTerminalID = restoredTabs.contains { $0.id == saved.selectedTerminalID } ?
             saved.selectedTerminalID : restoredTabs.first?.id
@@ -41,9 +43,9 @@ public final class SessionWorkspace<Terminal: TerminalSessionModel>: ObservableO
     }
 
     public var terminal: Terminal? {
-        guard let id = selectedTerminalID, tabs.contains(where: { $0.id == id }) else { return nil }
+        guard let id = selectedTerminalID, let tab = tabs.first(where: { $0.id == id }) else { return nil }
         if let terminal = terminals[id] { return terminal }
-        let terminal = makeTerminal(host, provider, id, trust)
+        let terminal = makeTerminal(configuredHost(for: tab), provider, id, trust)
         terminals[id] = terminal
         return terminal
     }
@@ -57,7 +59,9 @@ public final class SessionWorkspace<Terminal: TerminalSessionModel>: ObservableO
     }
 
     public func reconfigure(host: SavedHost, provider: any ConnectionProvider, routeSummary: String?) {
-        terminals.values.forEach { $0.reconfigure(host: host, provider: provider) }
+        for tab in tabs {
+            terminals[tab.id]?.reconfigure(host: configuredHost(for: tab, host: host), provider: provider)
+        }
         files.reconfigure(host: host, provider: provider)
         self.host = host
         self.provider = provider
@@ -66,9 +70,11 @@ public final class SessionWorkspace<Terminal: TerminalSessionModel>: ObservableO
 
     public func canApplyTerminalTabs(_ layout: SyncedTerminalTabs?) -> Bool {
         guard let layout else { return true }
-        let remaining = Set(layout.tabs.map(\.id))
         return !terminals.contains { id, terminal in
-            !remaining.contains(id) && (terminal.state != .disconnected || terminal.requirement != nil)
+            let incoming = layout.tabs.first { $0.id == id }
+            let changed = incoming == nil ||
+                (incoming?.resumeStrategy ?? resumeStrategy(for: id)) != resumeStrategy(for: id)
+            return changed && (terminal.state != .disconnected || terminal.requirement != nil)
         }
     }
 
@@ -76,12 +82,24 @@ public final class SessionWorkspace<Terminal: TerminalSessionModel>: ObservableO
         let callback = changed
         changed = nil
         defer { changed = callback }
+        let previousHost = self.host
+        let previousTabs = tabs
         self.host = host
         guard let layout = host.profile.terminalTabs else { return }
-        let updated = layout.tabs
+        let updated = layout.tabs.map { tab in
+            tab.fillingMissingResumeStrategy(with: previousTabs.first { $0.id == tab.id }?.resumeStrategy ??
+                                              host.profile.terminalResumeStrategy)
+        }
         let remaining = Set(updated.map(\.id))
         for id in Set(terminals.keys).subtracting(remaining) { terminals.removeValue(forKey: id)?.disconnect() }
         tabs = updated
+        for tab in updated {
+            let previous = previousTabs.first { $0.id == tab.id }
+            if previous?.effectiveResumeStrategy(default: previousHost.profile.terminalResumeStrategy) !=
+                tab.effectiveResumeStrategy(default: host.profile.terminalResumeStrategy) {
+                terminals[tab.id]?.reconfigure(host: configuredHost(for: tab), provider: provider)
+            }
+        }
         if !tabs.contains(where: { $0.id == selectedTerminalID }) { selectedTerminalID = tabs.first?.id }
     }
 
@@ -90,8 +108,9 @@ public final class SessionWorkspace<Terminal: TerminalSessionModel>: ObservableO
         let titles = Set(tabs.map(\.title))
         var number = 1
         while titles.contains(L10n.text("Terminal %lld", number)) { number += 1 }
-        let tab = TerminalTab(title: L10n.text("Terminal %lld", number))
-        terminals[tab.id] = makeTerminal(host, provider, tab.id, trust)
+        let tab = TerminalTab(title: L10n.text("Terminal %lld", number),
+                              resumeStrategy: host.profile.terminalResumeStrategy)
+        terminals[tab.id] = makeTerminal(configuredHost(for: tab), provider, tab.id, trust)
         tabs.append(tab)
         selectedTerminalID = tab.id
         mode = .terminal
@@ -114,6 +133,49 @@ public final class SessionWorkspace<Terminal: TerminalSessionModel>: ObservableO
         guard !name.isEmpty, let index = tabs.firstIndex(where: { $0.id == id }) else { return }
         tabs[index].title = String(name.prefix(80))
         changed?()
+    }
+
+    public func resumeStrategy(for id: UUID) -> TerminalResumeStrategy {
+        tabs.first { $0.id == id }?.effectiveResumeStrategy(default: host.profile.terminalResumeStrategy) ??
+            host.profile.terminalResumeStrategy
+    }
+
+    public func requiresDisconnect(for id: UUID, resumeStrategy strategy: TerminalResumeStrategy) -> Bool {
+        guard resumeStrategy(for: id) != strategy,
+              let terminal = terminals[id] else { return false }
+        return terminal.state != .disconnected || terminal.requirement != nil
+    }
+
+    public func setResumeStrategy(_ strategy: TerminalResumeStrategy, for id: UUID) {
+        guard let index = tabs.firstIndex(where: { $0.id == id }),
+              tabs[index].resumeStrategy != strategy else { return }
+        let previous = resumeStrategy(for: id)
+        tabs[index].resumeStrategy = strategy
+        if previous != resumeStrategy(for: id) {
+            terminals[id]?.reconfigure(host: configuredHost(for: tabs[index]), provider: provider)
+        }
+        changed?()
+    }
+
+    private func configuredHost(for tab: TerminalTab, host: SavedHost? = nil) -> SavedHost {
+        var configured = host ?? self.host
+        configured.profile.terminalResumeStrategy = tab.effectiveResumeStrategy(
+            default: configured.profile.terminalResumeStrategy
+        )
+        return configured
+    }
+
+    public func moveTerminals(from offsets: IndexSet, to destination: Int) {
+        let updated = ItemOrdering.moving(tabs, from: offsets, to: destination)
+        guard updated != tabs else { return }
+        tabs = updated
+        changed?()
+    }
+
+    public func moveTerminal(_ id: UUID, to target: UUID) {
+        guard let index = tabs.firstIndex(where: { $0.id == id }),
+              let destination = tabs.firstIndex(where: { $0.id == target }) else { return }
+        moveTerminals(from: IndexSet(integer: index), to: destination + (index < destination ? 1 : 0))
     }
 
     public func selectNextTerminal(offset: Int) {

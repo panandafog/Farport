@@ -35,5 +35,28 @@
 	<string>public.app-category.developer-tools</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Farport connects to your saved SSH and SFTP servers on the local network, including folders you connect to Finder.</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Farport Host Order</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.panandafog.harbor.host-order</string>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Farport Terminal Tab Order</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.panandafog.harbor.tab-order</string>
+		</dict>
+	</array>
 </dict>
 </plist>

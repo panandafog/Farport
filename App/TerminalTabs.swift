@@ -5,6 +5,7 @@ import SwiftUI
 struct TerminalTabs: View {
     @ObservedObject var model: WorkspaceModel
     @State private var renaming: TerminalTab?
+    @State private var pendingSessionMode: TerminalTab?
 
     var body: some View {
         HStack(spacing: 0) {
@@ -36,6 +37,7 @@ struct TerminalTabs: View {
                 model.renameTerminal(tab.id, title: title)
             }
         }
+        .modifier(TerminalSessionModeConfirmation(workspace: model, candidate: $pendingSessionMode))
     }
 
     private func tabView(_ tab: TerminalTab) -> some View {
@@ -45,7 +47,8 @@ struct TerminalTabs: View {
                 model.selectedTerminalID = tab.id
             } label: {
                 HStack(spacing: 8) {
-                    Image(systemName: "terminal")
+                    Image(systemName: model.resumeStrategy(for: tab.id) == .tmux ?
+                          "arrow.triangle.2.circlepath" : "terminal")
                     Text(tab.title).lineLimit(1).truncationMode(.middle)
                     Spacer(minLength: 0)
                 }
@@ -64,12 +67,21 @@ struct TerminalTabs: View {
             if selected { Rectangle().fill(Color.accentColor).frame(height: 2) }
         }
         .overlay(alignment: .trailing) { Divider() }
+        .reorderableTerminal(tab.id, hostID: model.host.id, move: model.moveTerminal)
         .contextMenu {
+            TerminalSessionModePicker(tab: tab, request: requestSessionMode)
+            Divider()
             Button(L10n.text("Rename"), systemImage: "pencil") { renaming = tab }
             Button(L10n.text("Close Tab"), systemImage: "xmark") { model.closeTerminal(tab.id) }
         }
     }
 
+    private func requestSessionMode(_ tab: TerminalTab) {
+        guard let strategy = tab.resumeStrategy else { return }
+        if model.requiresDisconnect(for: tab.id, resumeStrategy: strategy) {
+            pendingSessionMode = tab
+        } else { model.setResumeStrategy(strategy, for: tab.id) }
+    }
 }
 
 private struct RenameTerminalSheet: View {

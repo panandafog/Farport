@@ -133,10 +133,17 @@ extension CloudHostSync: CKSyncEngineDelegate {
             document.serverFields.removeValue(forKey: id.recordName)
             engine?.state.add(pendingDatabaseChanges: [.saveZone(CKRecordZone(zoneID: CloudHostCodec.zoneID))])
         case .unknownItem:
-            document.serverFields.removeValue(forKey: id.recordName)
-            if let uuid = UUID(uuidString: id.recordName) { try document.ledger.serverDeleted(uuid) }
+            try missingRecord(id)
         default: try pauseForFailure(failure.error)
         }
+    }
+
+    func missingRecord(_ id: CKRecord.ID) throws {
+        // A failed save is not a fetched deletion. Retry without a stale change tag after explicit re-enabling.
+        document.serverFields.removeValue(forKey: id.recordName)
+        try pause(L10n.text(
+            "iCloud could not find a saved record. Local hosts were kept. Enable sync again to retry."
+        ))
     }
 
     private func pauseForFailure(_ error: CKError) throws {

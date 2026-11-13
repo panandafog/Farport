@@ -10,7 +10,7 @@ extension CitadelFileSession: RemoteFileReplacingSession {
         try await withSFTP { sftp in
             guard try await sftp.supportsAtomicRename() else { throw FinderWriteError.unsupportedReplacement }
             let permissions = try await verifyRevision(expected, at: path, sftp: sftp, progress: progress)
-            let staging = path + ".harbor-\(UUID().uuidString).part"
+            let staging = path + ".farport-\(UUID().uuidString).part"
             do {
                 try await writeReplacement(source, to: staging, permissions: permissions,
                                            sftp: sftp, progress: progress)

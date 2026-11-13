@@ -13,16 +13,20 @@ final class ShellPromptTests: XCTestCase {
         let disabled = TerminalDecorationColors.tinted(background: 0, accent: 0xFF8000, dark: true, useAppAccent: false)
         XCTAssertNil(try plain.command(colors: disabled))
         XCTAssertFalse(plain.requiresTmux)
-        let persistent = TerminalLaunchPlan(profile: HostProfile(terminalResumeStrategy: .tmux))
+        let profile = HostProfile(terminalResumeStrategy: .tmux)
+        let persistent = TerminalLaunchPlan(profile: profile)
         XCTAssertTrue(persistent.requiresTmux)
         let command = try XCTUnwrap(persistent.command(colors: colors))
-        XCTAssertTrue(command.contains("new-session -A -s harbor-"))
+        XCTAssertTrue(command.contains("new-session -A -s farport-"))
         XCTAssertTrue(command.contains("farport-shell."))
         XCTAssertTrue(command.contains("status-style"))
+        XCTAssertTrue(command.contains("set-option -t =\(profile.tmuxSessionName): status-style"))
+        XCTAssertTrue(command.contains("set-window-option -t =\(profile.tmuxSessionName): mode-style"))
         let reset = try XCTUnwrap(persistent.command(colors: disabled))
         XCTAssertFalse(reset.contains("farport-shell."))
         XCTAssertTrue(reset.contains("set-option -u -t"))
         XCTAssertTrue(reset.contains("set-window-option -u -t"))
+        XCTAssertTrue(reset.contains("set-option -u -t =\(profile.tmuxSessionName): status-style"))
     }
 
     func testBashLoadsProfileKeepsPromptHookAndCleansTemporaryFiles() throws {

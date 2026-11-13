@@ -39,6 +39,7 @@ struct LibraryView: View {
                             }
                             .padding(.vertical, 6)
                             .tag(host.id)
+                            .reorderableHost(host.id, move: model.moveHost)
                             .contextMenu {
                                 Button(L10n.text("Edit Host"), systemImage: "pencil") { model.editor = host }
                                 Button(L10n.text("Delete Host"), systemImage: "trash", role: .destructive) {
@@ -46,6 +47,7 @@ struct LibraryView: View {
                                 }
                             }
                         }
+                        .onMove(perform: model.moveHosts)
                     }
                 }
                 .listStyle(.sidebar)

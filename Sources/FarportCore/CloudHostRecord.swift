@@ -15,16 +15,28 @@ public struct CloudHostRecord: Codable, Equatable, Sendable {
     public let id: UUID
     public let revision: ProfileRevision
     public let parent: ProfileRevision?
+    public let settingsRevision: ProfileRevision?
     public let profile: HostProfile?
     public var deleted: Bool { profile == nil }
 
-    public init(id: UUID, revision: ProfileRevision, parent: ProfileRevision? = nil, profile: HostProfile?) {
-        schemaVersion = profile?.terminalTabs == nil ? 1 : 2
+    public init(id: UUID, revision: ProfileRevision, parent: ProfileRevision? = nil, profile: HostProfile?,
+                settingsRevision: ProfileRevision? = nil) {
+        if profile?.terminalTabs?.hasSessionModes == true { schemaVersion = 4 } else {
+            schemaVersion = profile?.position != nil || settingsRevision != nil ? 3 :
+                (profile?.terminalTabs == nil ? 1 : 2)
+        }
         self.id = id; self.revision = revision; self.parent = parent; self.profile = profile
+        self.settingsRevision = settingsRevision
     }
 
     public func validate() throws {
-        guard (schemaVersion == 1 && profile?.terminalTabs == nil) || schemaVersion == 2 else {
+        guard schemaVersion == 4 || profile?.terminalTabs?.hasSessionModes != true else {
+            throw HarborError.message(L10n.text("Unsupported iCloud host record."))
+        }
+        guard (schemaVersion == 1 && profile?.terminalTabs == nil && profile?.position == nil &&
+               settingsRevision == nil) ||
+                (schemaVersion == 2 && profile?.position == nil && settingsRevision == nil) ||
+                schemaVersion == 3 || schemaVersion == 4 else {
             throw HarborError.message(L10n.text("Unsupported iCloud host record."))
         }
         guard revision.counter > 0, revision.counter < UInt64.max,
@@ -32,6 +44,11 @@ public struct CloudHostRecord: Codable, Equatable, Sendable {
                   throw HarborError.message(L10n.text("Unsupported iCloud host record."))
               }
         try profile?.validate()
+        if let settingsRevision {
+            guard settingsRevision.counter > 0, settingsRevision <= revision else {
+                throw HarborError.message(L10n.text("Inconsistent iCloud host revision."))
+            }
+        }
         guard try JSONEncoder().encode(self).count <= 256 * 1024 else {
             throw HarborError.message(L10n.text("A host profile exceeds the 256 KB iCloud limit."))
         }

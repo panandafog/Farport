@@ -6,7 +6,7 @@ extension HostLibraryModel {
     public func canApplySyncedProfiles(_ profiles: [HostProfile]) -> Bool {
         let changed = changedHostIDs(profiles)
         return editor == nil && !changed.contains { hasActiveWorkspace($0) } &&
-            integration?.canApplyChanges(to: changed) != false && profiles.allSatisfy {
+            (changed.isEmpty || integration?.canApplyChanges(to: changed) != false) && profiles.allSatisfy {
                 storedWorkspace($0.id)?.canApplyTerminalTabs($0.terminalTabs) != false
             }
     }
@@ -24,7 +24,7 @@ extension HostLibraryModel {
         }
         try WorkspaceSnapshot(hosts: definitions).validate()
         let affected = changedHostIDs(profiles)
-        try integration?.revoke(hostIDs: affected)
+        if !affected.isEmpty { try integration?.revoke(hostIDs: affected) }
         try repository.save(updated)
         removeDeletedWorkspaces(keeping: Set(updated.map(\.id)))
         replaceWorkspaces(with: updated, affected: affected)
@@ -36,7 +36,7 @@ extension HostLibraryModel {
         let changed = Set((hosts.map(\.profile) + profiles).filter { profile in
             guard let local = hosts.first(where: { $0.id == profile.id })?.profile,
                   let remote = profiles.first(where: { $0.id == profile.id }) else { return true }
-            return !local.hasSameSettings(as: remote)
+            return !local.hasSameSettings(as: remote, includingSessionDefault: false)
         }.map(\.id))
         return Set((hosts + updated).filter { host in
             changed.contains(host.id) || changed.contains { id in

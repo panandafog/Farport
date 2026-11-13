@@ -9,7 +9,7 @@ public struct ProfileSyncLedger: Codable, Sendable {
     public private(set) var baseline: [UUID: HostProfile] = [:]
     public private(set) var conflicts: [CloudProfileConflict] = []
     public var profiles: [HostProfile] {
-        records.values.compactMap(\.profile).sorted { $0.id.uuidString < $1.id.uuidString }
+        HostOrdering.sorted(records.values.compactMap(\.profile))
     }
 
     public init(deviceID: UUID = UUID()) { self.deviceID = deviceID }
@@ -48,7 +48,7 @@ public struct ProfileSyncLedger: Codable, Sendable {
                     archive(CloudHostRecord(id: profile.id, revision: try nextRevision(), profile: profile))
                 }
                 if let cloud = remote.profile {
-                    let merged = try cloud.mergingTerminalTabs(from: profile)
+                    let merged = try cloud.mergingSyncedMetadata(from: profile)
                     if merged != cloud { try edit(profile.id, profile: merged) }
                 }
             } else { try edit(profile.id, profile: profile) }
@@ -62,11 +62,17 @@ public struct ProfileSyncLedger: Codable, Sendable {
             if records[profile.id]?.deleted == true {
                 archive(CloudHostRecord(id: profile.id, revision: try nextRevision(), profile: profile))
             } else {
-                if let current = records[profile.id], let baseline = baseline[profile.id],
-                   current.profile?.hasSameSettings(as: baseline) != true { archive(current) }
+                var edited = profile
+                if let current = records[profile.id], let baseline = baseline[profile.id] {
+                    if profile.hasSameSettings(as: baseline), let cloud = current.profile {
+                        // A reorder/tab edit must not publish stale connection settings over an incoming edit.
+                        edited = try cloud.mergingSyncedMetadata(from: profile)
+                    } else if current.profile?.hasSameSettings(as: baseline) != true,
+                              current.profile?.hasSameSettings(as: profile) != true { archive(current) }
+                }
                 let merged = try records[profile.id]?.profile.map {
-                    try profile.mergingTerminalTabs(from: $0)
-                } ?? profile
+                    try edited.mergingSyncedMetadata(from: $0)
+                } ?? edited
                 try edit(profile.id, profile: merged)
             }
         }
@@ -89,15 +95,12 @@ public struct ProfileSyncLedger: Codable, Sendable {
                 "An iCloud host revision contains inconsistent data. Sync was stopped."
             ))
         }
-        let winner: CloudHostRecord
-        if current.deleted != incoming.deleted { winner = current.deleted ? current : incoming } else {
-            winner = current.revision > incoming.revision ? current : incoming
-        }
+        let winner = try preferred(current, incoming)
         if !sameSettings(current.profile, incoming.profile), pending.contains(current.id) {
             archive(winner == current ? incoming : current)
         }
         if let profile = winner.profile, let other = (winner == current ? incoming : current).profile {
-            let merged = try profile.mergingTerminalTabs(from: other)
+            let merged = try profile.mergingSyncedMetadata(from: other)
             if merged != profile {
                 records[incoming.id] = winner
                 try edit(incoming.id, profile: merged)
@@ -121,11 +124,32 @@ public struct ProfileSyncLedger: Codable, Sendable {
 
     private mutating func edit(_ id: UUID, profile: HostProfile?) throws {
         if profile == nil, records[id]?.deleted == true { return }
-        let value = CloudHostRecord(id: id, revision: try nextRevision(), parent: records[id]?.revision,
-                                    profile: profile)
+        let current = records[id]
+        let revision = try nextRevision()
+        var settingsRevision: ProfileRevision?
+        if profile?.position != nil || current?.settingsRevision != nil {
+            if let profile, let previous = current?.profile, previous.hasSameSettings(as: profile) {
+                settingsRevision = current?.settingsRevision ?? current?.revision
+            } else { settingsRevision = revision }
+        }
+        let value = CloudHostRecord(id: id, revision: revision, parent: current?.revision,
+                                    profile: profile, settingsRevision: settingsRevision)
         try value.validate()
         records[id] = value
         pending.insert(id)
+    }
+
+    private func preferred(_ current: CloudHostRecord, _ incoming: CloudHostRecord) throws -> CloudHostRecord {
+        if current.deleted != incoming.deleted { return current.deleted ? current : incoming }
+        let local = current.settingsRevision ?? current.revision
+        let remote = incoming.settingsRevision ?? incoming.revision
+        if local != remote { return local > remote ? current : incoming }
+        guard sameSettings(current.profile, incoming.profile) else {
+            throw HarborError.message(L10n.text(
+                "An iCloud host revision contains inconsistent data. Sync was stopped."
+            ))
+        }
+        return current.revision > incoming.revision ? current : incoming
     }
 
     private mutating func nextRevision() throws -> ProfileRevision {

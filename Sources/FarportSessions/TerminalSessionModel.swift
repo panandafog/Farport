@@ -42,7 +42,9 @@ open class TerminalSessionModel: NSObject, ObservableObject {
     private var isSleeping = false
 
     public var usesTmux: Bool { host.profile.terminalResumeStrategy == .tmux }
-    public var sessionLabel: String { usesTmux ? "harbor-" + sessionID.uuidString.lowercased() : "" }
+    public var sessionLabel: String {
+        usesTmux ? L10n.text("Persistent session: %@", sessionID.uuidString.lowercased()) : ""
+    }
     public var maximumRetries: Int { policy.retryDelays.count }
     public var connectLabel: String {
         if usesTmux { return L10n.text("Attach") }

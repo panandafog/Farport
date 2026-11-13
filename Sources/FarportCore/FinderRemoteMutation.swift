@@ -140,12 +140,20 @@ extension FinderRemoteReader {
     private func keepConflictCopy(_ current: FinderItem, request: FinderModifyRequest, digest: Data,
                                   progress: @escaping TransferProgress) async throws -> FinderWriteResult {
         let suffix = digest.prefix(8).map { String(format: "%02x", $0) }.joined()
+        let token = "conflict-" + current.identifier + "-" + suffix
+        // A retry may refer to a conflict copy created by an earlier version under the old product name.
+        if let identifier = catalog.creationReceipts?[token],
+           let previous = catalog.allItems.first(where: { $0.identifier == identifier }),
+           let existing = try await lookup(previous.relativePath), !existing.isDirectory,
+           try await remoteDigest(previous.relativePath) == digest {
+            return FinderWriteResult(item: try await itemUnlocked(current.identifier), refetchContents: true)
+        }
         let name = current.name as NSString
         let ext = name.pathExtension
         let stem = name.deletingPathExtension
-        let conflictName = String(stem.prefix(120)) + " (Harbor conflict " + suffix + ")" +
+        let conflictName = String(stem.prefix(120)) + " (Farport conflict " + suffix + ")" +
             (ext.isEmpty ? "" : "." + ext)
-        let request = FinderCreateRequest(token: "conflict-" + current.identifier + "-" + suffix,
+        let request = FinderCreateRequest(token: token,
                                            parentIdentifier: current.parentIdentifier, name: conflictName,
                                            isDirectory: false, contents: request.contents)
         _ = try await createUnlocked(request, progress: progress)

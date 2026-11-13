@@ -219,12 +219,15 @@ final class MobileTerminalView: TerminalView, TerminalOutput {
         #if DEBUG
         if ScreenshotSupport.requested { return }
         #endif
-        if window != nil { _ = becomeFirstResponder() }
+        guard window?.isKeyWindow == true, !isHidden,
+              window?.windowScene?.activationState == .foregroundActive else { return }
+        _ = becomeFirstResponder()
     }
 }
 
 final class MobileTerminalController: UIViewController {
     let terminalView: MobileTerminalView
+    private var requestedInitialFocus = false
     private lazy var controlCommands: [UIKeyCommand] = {
         let modifiers: [UIKeyModifierFlags] = [.control, [.control, .shift],
                                               [.control, .alternate], [.control, .alternate, .shift]]
@@ -254,6 +257,14 @@ final class MobileTerminalController: UIViewController {
         terminalView.frame = container.bounds
         terminalView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         container.addSubview(terminalView)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard !requestedInitialFocus else { return }
+        requestedInitialFocus = true
+        guard terminalView.superview === viewIfLoaded, terminalView.remoteInputEnabled else { return }
+        terminalView.focus()
     }
 
     func detachTerminalView() {

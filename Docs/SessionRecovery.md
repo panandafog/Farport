@@ -81,8 +81,30 @@ Requirements and boundaries:
 SSH adapter constructs a POSIX shell command with only a UUID-derived session
 identifier; profile labels and paths never enter that command. Citadel allocates
 a PTY and sends an exec request, rather than typing into an interactive shell.
-`tmux new-session -A -s harbor-<UUID>` creates or attaches without evicting other
+`tmux new-session -A -s farport-<UUID>` creates or attaches without evicting other
 clients. The wrapper uses `/bin/sh` so non-POSIX login shells can launch it too.
+
+Legacy `harbor-<UUID>` server sessions are migrated before attach with
+`rename-session`, targeting the stable server session ID obtained through an exact
+name lookup. This changes no host/tab UUID or local/cloud metadata and does not
+restart the shell, detach other clients, replay history or send interactive input.
+Concurrent migrations accept a rename already completed by another client.
+
+If both names exist, `farport-<UUID>` remains canonical. The legacy session is kept
+as `farport-<UUID>-recovered-<server ID>`, preserving its independent processes and
+history. A 15-second tmux message gives `tmux switch-client -t <recovered name>` to
+open it. No session is killed or overwritten. Exact targets keep decoration updates
+away from recovered sessions whose names share the canonical prefix.
+
+If a known legacy session cannot be migrated/preserved, exit 125 is an actionable
+configuration failure; do not create a replacement shell. Ordinary SSH is unchanged.
+Already attached older app versions keep their live client after rename, but an
+older binary may recreate the legacy name when reconnecting. Update all devices;
+the new client preserves such a second session on its next attachment as above.
+Migration tests cover retained pane/process/history, both names, repeat migration,
+missing legacy sessions and rename failure. These new tests/builds have not been
+run at the user's request; only static checks were performed.
+
 It resolves tmux from the SSH account’s PATH first, then checks the standard
 Homebrew binaries `/opt/homebrew/bin/tmux` and `/usr/local/bin/tmux`. It does not
 source interactive/login shell startup files or modify the account’s PATH.

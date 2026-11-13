@@ -81,8 +81,12 @@ untouched. Never delete the original as a fallback. POSIX mode bits are retained
 ownership, ACLs, hardlinks, and extended attributes are not fully preserved by replacement.
 
 If a materialized file changed remotely, the edit is uploaded as a deterministic
-`name (Harbor conflict <digest>).ext` sibling and the server original is fetched back
+`name (Farport conflict <digest>).ext` sibling and the server original is fetched back
 into the edited item. Repeating the same request does not create extra copies.
+Receipts for copies created under the old product name remain valid: a retry
+verifies and reuses the existing file without renaming it or creating a duplicate.
+New staging files use `.farport-<UUID>.part`; each transfer retains its own
+staging path for cleanup.
 Unknown/legacy baselines also take this conservative conflict-copy path. This is not
 transactional multi-user storage: SFTP offers no atomic compare-and-swap, so a remote
 writer can still race between the final fingerprint check and rename. Use version
@@ -175,11 +179,11 @@ resumption remain future work.
 - A disposable loopback server appeared in Finder through ProxyJump. Opening a
   file in TextEdit downloaded the correct content and showed a locked document.
 - Remote creation and content updates appeared in Finder. Reopening the changed
-  file fetched the updated contents while the main Harbor process was closed.
-- Relaunching Harbor restored the connection actions. Disconnect removed the
+  file fetched the updated contents while the main app process was closed.
+- Relaunching Farport restored the connection actions. Disconnect removed the
   active Finder location and preserved the downloaded file in a local folder.
 - Fixture and test app processes were stopped; the user's separate Xcode-launched
-  Harbor was left running. No corporate server was contacted.
+  Farport was left running. No corporate server was contacted.
 
 Manual verification used macOS 27.0.1. The declared macOS 15 minimum has not been
 separately exercised on a macOS 15 machine. Dependency manifest warnings (for
@@ -199,4 +203,4 @@ example BigInt's old watchOS declaration) are distinct from first-party lint.
   NOT manually verified: the Mac was locked and the user requested continuing
   without interface verification. The read-only observations above are not write QA.
 - The standalone test app/server were stopped. The user's separate Xcode-launched
-  Harbor and real servers/libraries were left untouched; no new test domain was activated.
+  The app and real servers/libraries were left untouched; no new test domain was activated.

@@ -355,3 +355,22 @@
 "SSH channel failed. %@" = "Ошибка канала SSH. %@";
 "The SSH server refused to open a session. Check shell/SFTP permissions and the server's session limit." = "Сервер SSH отказался открыть сессию. Проверьте доступ к оболочке/SFTP и ограничение числа сессий на сервере.";
 "The server refused the connection. Check that SSH is running and the port is correct." = "Сервер отклонил соединение. Проверьте, что SSH запущен и порт указан верно.";
+
+/* Host sync conflicts and ordering */
+"Invalid saved host order." = "Некорректный сохранённый порядок хостов.";
+"This host was deleted in iCloud. Save a copy to keep this host and the credentials entered here." = "Этот хост удалён в iCloud. Сохраните копию, чтобы оставить хост и введённые здесь данные для входа.";
+"iCloud could not find a saved record. Local hosts were kept. Enable sync again to retry." = "iCloud не нашёл сохранённую запись. Локальные хосты сохранены. Включите синхронизацию снова, чтобы повторить попытку.";
+"Save a Copy" = "Сохранить копию";
+"Some hosts were deleted in iCloud. Applying changes removes them locally." = "Некоторые хосты удалены в iCloud. Применение изменений удалит их и на этом устройстве.";
+"To keep a host, edit it and choose Save a Copy when saving." = "Чтобы оставить хост, откройте его редактор и при сохранении выберите «Сохранить копию».";
+"Arrange Tabs" = "Порядок вкладок";
+"Persistent session: %@" = "Постоянная сессия: %@";
+"The saved tmux session could not be renamed safely. Existing sessions were kept. Try connecting again." = "Не удалось безопасно переименовать сохранённую сессию tmux. Существующие сессии сохранены. Попробуйте подключиться снова.";
+"Farport: another saved session was kept. To open it, run:" = "Farport: другая сохранённая сессия оставлена доступной. Чтобы открыть её, выполните:";
+"Session Mode" = "Режим сессии";
+"Change session mode?" = "Изменить режим сессии?";
+"Change Mode" = "Изменить режим";
+"Changing mode disconnects '%@'. Reconnect to use the new mode." = "Смена режима отключит терминал «%@». Подключитесь снова для работы в новом режиме.";
+"A standard SSH shell will end. A tmux session keeps running on the server." = "Обычная SSH-оболочка завершится. Сессия tmux продолжит работать на сервере.";
+"Default Session" = "Режим сессии по умолчанию";
+"New terminal tabs start in this mode." = "Новые вкладки терминала создаются в этом режиме.";

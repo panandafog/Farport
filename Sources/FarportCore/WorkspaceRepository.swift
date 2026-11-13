@@ -9,13 +9,26 @@ public enum WorkspaceMode: String, Codable, CaseIterable, Sendable {
 public struct TerminalTab: Identifiable, Codable, Equatable, Sendable {
     public var id: UUID
     public var title: String
+    /// Nil is legacy data only. A workspace fills it once from the host's initial default.
+    public var resumeStrategy: TerminalResumeStrategy?
 
-    public init(id: UUID = UUID(), title: String) {
+    public init(id: UUID = UUID(), title: String, resumeStrategy: TerminalResumeStrategy? = nil) {
         self.id = id
         self.title = title
+        self.resumeStrategy = resumeStrategy
     }
 
-    public var tmuxSessionName: String { "harbor-" + id.uuidString.lowercased() }
+    public var tmuxSessionName: String { TmuxSessionIdentity(id: id).name }
+
+    public func effectiveResumeStrategy(default strategy: TerminalResumeStrategy) -> TerminalResumeStrategy {
+        resumeStrategy ?? strategy
+    }
+
+    public func fillingMissingResumeStrategy(with strategy: TerminalResumeStrategy) -> Self {
+        var tab = self
+        if tab.resumeStrategy == nil { tab.resumeStrategy = strategy }
+        return tab
+    }
 }
 
 public struct HostWorkspace: Codable, Equatable, Sendable {
@@ -34,7 +47,7 @@ public struct HostWorkspace: Codable, Equatable, Sendable {
 }
 
 public struct WorkspaceSnapshot: Codable, Equatable, Sendable {
-    public var schemaVersion = 1
+    public var schemaVersion = 2
     public var selectedHostID: UUID?
     public var hosts: [HostWorkspace]
     public var deviceID: UUID
@@ -56,7 +69,8 @@ public struct WorkspaceSnapshot: Codable, Equatable, Sendable {
     }
 
     public func validate() throws {
-        guard schemaVersion == 1 else {
+        guard (1...2).contains(schemaVersion), schemaVersion == 2 ||
+                hosts.flatMap(\.terminals).allSatisfy({ $0.resumeStrategy == nil }) else {
             throw HarborError.message(L10n.text("This workspace was saved by a newer version of Farport."))
         }
         let tabs = hosts.flatMap(\.terminals)
@@ -91,6 +105,8 @@ public struct JSONWorkspaceRepository: WorkspaceRepository {
 
     public func save(_ snapshot: WorkspaceSnapshot) throws {
         try snapshot.validate()
+        var snapshot = snapshot
+        snapshot.schemaVersion = 2
         let manager = FileManager.default
         try manager.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true,
                                     attributes: [.posixPermissions: 0o700])

@@ -355,3 +355,22 @@
 "SSH channel failed. %@" = "SSH channel failed. %@";
 "The SSH server refused to open a session. Check shell/SFTP permissions and the server's session limit." = "The SSH server refused to open a session. Check shell/SFTP permissions and the server's session limit.";
 "The server refused the connection. Check that SSH is running and the port is correct." = "The server refused the connection. Check that SSH is running and the port is correct.";
+
+/* Host sync conflicts and ordering */
+"Invalid saved host order." = "Invalid saved host order.";
+"This host was deleted in iCloud. Save a copy to keep this host and the credentials entered here." = "This host was deleted in iCloud. Save a copy to keep this host and the credentials entered here.";
+"iCloud could not find a saved record. Local hosts were kept. Enable sync again to retry." = "iCloud could not find a saved record. Local hosts were kept. Enable sync again to retry.";
+"Save a Copy" = "Save a Copy";
+"Some hosts were deleted in iCloud. Applying changes removes them locally." = "Some hosts were deleted in iCloud. Applying changes removes them locally.";
+"To keep a host, edit it and choose Save a Copy when saving." = "To keep a host, edit it and choose Save a Copy when saving.";
+"Arrange Tabs" = "Arrange Tabs";
+"Persistent session: %@" = "Persistent session: %@";
+"The saved tmux session could not be renamed safely. Existing sessions were kept. Try connecting again." = "The saved tmux session could not be renamed safely. Existing sessions were kept. Try connecting again.";
+"Farport: another saved session was kept. To open it, run:" = "Farport: another saved session was kept. To open it, run:";
+"Session Mode" = "Session Mode";
+"Change session mode?" = "Change session mode?";
+"Change Mode" = "Change Mode";
+"Changing mode disconnects '%@'. Reconnect to use the new mode." = "Changing mode disconnects '%@'. Reconnect to use the new mode.";
+"A standard SSH shell will end. A tmux session keeps running on the server." = "A standard SSH shell will end. A tmux session keeps running on the server.";
+"Default Session" = "Default Session";
+"New terminal tabs start in this mode." = "New terminal tabs start in this mode.";

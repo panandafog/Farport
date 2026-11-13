@@ -51,6 +51,34 @@ final class HostLibraryTests: XCTestCase {
         XCTAssertFalse(try XCTUnwrap(library.hosts.first).credentialsConfigured)
     }
 
+    func testReorderPreservesWorkspacesAndSelectionAndFailedWriteKeepsOrder() throws {
+        let hosts = (0..<3).map { SavedHost(profile: HostProfile(hostname: "host\($0).invalid", username: "test")) }
+        let repository = LibraryTestRepository(hosts)
+        let library = makeLibrary(repository)
+        let workspace = try XCTUnwrap(library.selectedWorkspace)
+        let terminal = try XCTUnwrap(workspace.terminal)
+        library.moveHost(hosts[0].id, to: hosts[2].id)
+        XCTAssertEqual(library.hosts.map(\.id), [hosts[1].id, hosts[2].id, hosts[0].id])
+        XCTAssertEqual(library.selection, hosts[0].id)
+        XCTAssertTrue(library.selectedWorkspace === workspace)
+        XCTAssertTrue(workspace.terminal === terminal)
+        let ordered = library.hosts
+        repository.failWrites = true
+        library.moveHost(hosts[0].id, to: hosts[1].id)
+        XCTAssertEqual(library.hosts, ordered)
+        XCTAssertNotNil(library.error)
+    }
+
+    func testMovingFilteredHostsKeepsHiddenHostsInPlace() {
+        let hosts = ["visible-first", "hidden", "visible-last"].map {
+            SavedHost(profile: HostProfile(hostname: $0, username: "test"))
+        }
+        let library = makeLibrary(LibraryTestRepository(hosts))
+        library.query = "visible"
+        library.moveHosts(from: IndexSet(integer: 0), to: 2)
+        XCTAssertEqual(library.hosts.map(\.id), [hosts[2].id, hosts[1].id, hosts[0].id])
+    }
+
     private func makeLibrary(_ repository: LibraryTestRepository) -> HostLibraryModel<TerminalSessionModel> {
         HostLibraryModel(repository: repository, workspaceRepository: LibraryTestWorkspace(),
                          makeProvider: { _ in LibraryTestProvider() }, makeTerminal: {
