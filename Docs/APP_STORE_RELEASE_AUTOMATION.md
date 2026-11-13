@@ -182,5 +182,11 @@ readiness. Настоящие подписи/processing/draft подтвержд
 
 ## Реальные запуски
 
-Пока не выполнены. После запуска записать ссылки, номер, результаты iOS/macOS,
-READY_FOR_REVIEW только при отдельном GET точной версии/build/review item, и manual gates.
+- [Первый full / both, dev ac41c3a](https://github.com/panandafog/Farport/actions/runs/43484055247):
+  остановлен ранним аудитом CloudKit allowlist профиля, **до архива/подписи/загрузки**.
+  Проверка исправлена для Apple wildcard/array allowlists; значения реальной подписи
+  по-прежнему должны точно совпадать с production entitlements.
+- [Offline release checks](https://github.com/panandafog/Farport/actions/runs/43483650989):
+  91 тест и Fastlane option validation прошли на GitHub после перехода на Ruby 3.4.
+- Реальная подпись/загрузка/READY_FOR_REVIEW пока не подтверждены. Последующие результаты
+  добавляются только по данным Apple; локальные проверки не заменяют distribution run.

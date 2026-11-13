@@ -51,6 +51,18 @@ class FarportReleaseTests(unittest.TestCase):
             with self.assertRaises(NeedsAction):
                 signing.check_capabilities(bad, mac, True, profile=True)
 
+    def test_profile_wildcard_and_array_allowlists_are_not_signed_entitlement_values(self):
+        ident = identity("ios")
+        capabilities = signing.expected_capabilities(ident)
+        profile = capabilities | {"com.apple.developer.icloud-services": "*",
+                                   "com.apple.developer.icloud-container-environment": ["Development", "Production"]}
+        signing.check_capabilities(profile, ident, profile=True)
+        with self.assertRaises(NeedsAction):
+            signing.check_capabilities(profile, ident)
+        for invalid in (None, [], ["CloudDocuments"]):
+            with self.assertRaises(NeedsAction):
+                signing.check_capabilities(profile | {"com.apple.developer.icloud-services": invalid}, ident, profile=True)
+
     def test_production_push_and_cloud_are_required(self):
         for platform in ("ios", "macos"):
             ident = identity(platform);cap = signing.expected_capabilities(ident)

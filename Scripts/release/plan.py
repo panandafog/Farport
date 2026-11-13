@@ -32,8 +32,14 @@ def main():
         raise ReleaseError("Unknown mode.")
     signing.preflight(platforms, mode, os.environ.get("ARTIFACT_RUN_ID", ""))
     if mode == "full":
+        failures = []
         for platform in platforms:
-            signing.validate_materials(platform)
+            try:
+                signing.validate_materials(platform)
+            except (ReleaseError, ValueError) as error:
+                failures.append(platform + ": " + sanitized(error))
+        if failures:
+            raise ReleaseError("Signing audit: " + " | ".join(failures))
     existing = []
     root = pathlib.Path(os.environ.get("RUNNER_TEMP", tempfile.gettempdir()))
     with tempfile.TemporaryDirectory(prefix="farport-preflight-", dir=root) as temp:
