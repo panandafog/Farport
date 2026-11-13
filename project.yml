@@ -37,6 +37,8 @@ targets:
     sources:
       - App
       - SharedUI
+      - path: Resources/PrivacyInfo.xcprivacy
+        buildPhase: resources
       - path: AppIcon.icon
         type: file
         buildPhase: resources
@@ -97,6 +99,9 @@ targets:
         embed: true
     settings:
       configs:
+        Release:
+          CODE_SIGN_ENTITLEMENTS: App/FarportRelease.entitlements
+          PROVISIONING_PROFILE_SPECIFIER: $(FARPORT_APP_PROVISIONING_PROFILE)
         Local:
           CODE_SIGN_ENTITLEMENTS: App/FarportLocal.entitlements
           HARBOR_ICLOUD_CONTAINER: ""
@@ -130,6 +135,8 @@ targets:
     sources:
       - iOS
       - SharedUI
+      - path: Resources/PrivacyInfo.xcprivacy
+        buildPhase: resources
       - path: App/Assets.xcassets
       - path: AppIcon.icon
         type: file
@@ -202,6 +209,9 @@ targets:
         MARKETING_VERSION: "0.1.1"
         CURRENT_PROJECT_VERSION: "10"
       configs:
+        Release:
+          CODE_SIGN_ENTITLEMENTS: iOS/FarportMobileRelease.entitlements
+          PROVISIONING_PROFILE_SPECIFIER: $(FARPORT_APP_PROVISIONING_PROFILE)
         Local:
           CODE_SIGN_ENTITLEMENTS: iOS/FarportMobileLocal.entitlements
           HARBOR_ICLOUD_CONTAINER: ""
@@ -248,7 +258,10 @@ targets:
   FarportFinderExtension:
     type: app-extension
     platform: macOS
-    sources: [FinderExtension]
+    sources:
+      - FinderExtension
+      - path: Resources/Finder/PrivacyInfo.xcprivacy
+        buildPhase: resources
     attributes:
       SystemCapabilities:
         com.apple.ApplicationGroups:
@@ -278,6 +291,9 @@ targets:
           NSExtensionFileProviderUploadPipelineDepth: 1
           NSExtensionFileProviderMetadataOnlyUploadPipelineDepth: 1
     settings:
+      configs:
+        Release:
+          PROVISIONING_PROFILE_SPECIFIER: $(FARPORT_FINDER_PROVISIONING_PROFILE)
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.panandafog.harbor.finder
         PRODUCT_NAME: FarportFinderExtension

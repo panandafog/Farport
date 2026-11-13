@@ -17,6 +17,7 @@ final class TmuxDiscoveryTests: XCTestCase {
             XCTAssertTrue(result.output.contains("\nmouse\non\n"))
             XCTAssertTrue(result.output.contains("\nif-shell\n-F\n-t\n"))
             XCTAssertTrue(result.output.contains("#{==:#{status-left},[##S] }"))
+            XCTAssertTrue(result.output.contains("#{==:#{status-left},#{l:[#{session_name}] }}"))
             XCTAssertTrue(result.output.contains("status-left '[Farport] '"))
         }
     }

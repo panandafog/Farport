@@ -115,3 +115,10 @@ SSH and Security (including Core, Cloud and Localization) against the iOS Simula
 with the committed Xcode lockfile, then building the mobile app for iOS devices in
 Debug and Release. No Simulator runtime is launched by CI. Native macOS and iOS
 hosted tests remain separate local checks.
+
+## Manual distribution
+
+[App Store release automation](APP_STORE_RELEASE_AUTOMATION.md) uses a separate manual-only
+workflow and app-store environment. Ordinary push/PR builds stay unsigned and receive no
+production Secrets. release-checks performs offline API/signing-state/Fastlane validation
+without submitting or contacting Apple.

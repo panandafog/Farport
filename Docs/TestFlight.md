@@ -1,7 +1,8 @@
 # TestFlight Preparation
 
-Repository, unsigned CI builds, and a temporary app icon are initial preparation,
-not a completed distribution pipeline. Do not upload the unsigned CI product.
+Use the manual [release workflow](APP_STORE_RELEASE_AUTOMATION.md) for signed App Store
+packages and draft review preparation. Unsigned ordinary CI products cannot be uploaded.
+Real run results and remaining owner gates are recorded separately in that guide.
 
 ## Remaining Release Gates
 
@@ -15,8 +16,8 @@ not a completed distribution pipeline. Do not upload the unsigned CI product.
   Preserve existing shared App Group/Keychain identifiers to retain data access.
 - Deploy the CloudKit schema to production and verify opt-in profile sync through
   the distribution build. Development CloudKit success is not a production check.
-- Replace `AppIcon.icon` (currently copied unchanged from MediaPlayer/Trackfold)
-  with Farport artwork, then validate the compiled icon in the archive.
+- Validate the compiled Icon Composer icon in the archive. The owner approved keeping
+  the current artwork (originally MediaPlayer/Trackfold) for this upload on 2026-11-13.
 - Review privacy disclosures, required-reason API/privacy manifests (including
   dependencies), support/privacy URLs, beta review information, and encryption
   export compliance. SSH uses encryption; do not assume an exemption without review.
@@ -30,8 +31,8 @@ not a completed distribution pipeline. Do not upload the unsigned CI product.
 
 No App Store Connect credentials, certificates, private keys, provisioning profiles,
 real host libraries, or terminal transcripts may be committed. Automated signing
-and upload can be added separately with restricted CI secrets and an explicit
-release trigger; ordinary pull requests must not have access to them.
+and upload use restricted environment secrets and an explicit manual release trigger;
+ordinary pull requests must not have access to them. See [compliance audit](ReleaseCompliance.md).
 
 ## References
 

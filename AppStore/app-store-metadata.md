@@ -8,20 +8,20 @@
 | Bundle ID — обе платформы | `com.panandafog.harbor` — не менять |
 | Build | Выбрать загруженную сборку соответствующей платформы; текущий номер в исходниках — 10 |
 | Primary Language | English (U.S.), если основная локализация ещё не задана |
-| Primary Category | Предлагается [Developer Tools](https://developer.apple.com/app-store/categories/) |
-| Copyright | `2026 <правообладатель>` — заполнить |
-| Support URL | **Заполнить:** опубликованная страница поддержки с контактами |
-| Privacy Policy URL | **Заполнить после публикации:** публичная ссылка на [политику Farport](privacy-policy.md); RTF-копия — `../privacypolicy.rtf` |
+| Primary Category | Developer Tools |
+| Copyright | 2026 Andrei Pantiukhin |
+| Support URL | https://github.com/panandafog/Farport/blob/main/AppStore/support.md |
+| Privacy Policy URL | https://github.com/panandafog/Farport/blob/main/AppStore/privacy-policy.md |
 | Marketing URL | Необязательно; оставить пустым, пока нет страницы приложения |
 
 ### App Review Information — общие поля
 
 | Поле | Значение |
 | --- | --- |
-| Contact First Name | **Заполнить:** имя контактного лица для App Review |
-| Contact Last Name | **Заполнить:** фамилия |
-| Contact Email | **Заполнить:** действующий адрес для вопросов ревьюера |
-| Contact Phone | **Заполнить:** телефон в международном формате `+…` |
+| Contact First Name | Andrei |
+| Contact Last Name | Pantiukhin |
+| Contact Email | panandafog@icloud.com |
+| Contact Phone | GitHub Secret `ASC_REVIEW_CONTACT_PHONE`; значение не хранится в репозитории |
 | Sign-in required | **Yes:** для проверки SSH требуется вход на сервер; отдельного аккаунта Farport нет |
 | Username | `bandit0` |
 | Password | `bandit0` |
@@ -352,7 +352,7 @@ iCloud необязателен и требует входа в Аккаунт A
 
 ## Перед отправкой
 
-- Заполнить контакты App Review, правообладателя, Support URL и Privacy Policy URL.
+- Контакты, правообладатель и публичные URL заполнены. Телефон берётся из Secret.
   Не вставлять служебные пометки и незаполненные поля в карточку приложения.
 - Опубликовать [privacy-policy.md](privacy-policy.md) по доступному без авторизации
   HTTPS-адресу и указать его в Privacy Policy URL. Добавить доступную ссылку на

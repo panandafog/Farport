@@ -1,0 +1,32 @@
+name: Release automation checks
+on:
+  pull_request:
+  push:
+    paths:
+      - '.github/workflows/**'
+      - 'Scripts/release/**'
+      - 'Tests/ReleaseAutomation/**'
+      - 'AppStore/**'
+      - 'Gemfile*'
+      - 'fastlane/**'
+      - 'project.yml'
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install -r Scripts/release/requirements.txt
+      - run: python3 -m unittest discover -s Tests/ReleaseAutomation -v
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4.7'
+          bundler-cache: true
+      - run: ruby -c fastlane/Fastfile
+      - run: bundle exec ruby Scripts/release/check-fastlane.rb

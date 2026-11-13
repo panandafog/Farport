@@ -40,7 +40,7 @@ func migration(_ url: URL) throws {
                 "Migration must preserve the complete Harbor support folder without broad filesystem access")
 }
 
-let entitlementPaths = ["App/Farport.entitlements", "App/FarportLocal.entitlements",
+let entitlementPaths = ["App/Farport.entitlements", "App/FarportRelease.entitlements", "App/FarportLocal.entitlements",
                         "FinderExtension/FarportFinder.entitlements"]
 do {
     for path in entitlementPaths {
