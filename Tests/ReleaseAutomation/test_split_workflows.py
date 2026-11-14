@@ -117,6 +117,12 @@ class UploadBoundaryTests(unittest.TestCase):
 
 
 class ReportingTests(unittest.TestCase):
+    def setUp(self):
+        # Handwritten legacy reports also run inside CI, with a real GITHUB_RUN_ID.
+        environment = patch.dict(os.environ, {"GITHUB_RUN_ID": "", "GITHUB_RUN_ATTEMPT": ""})
+        environment.start()
+        self.addCleanup(environment.stop)
+
     def test_upload_success_and_pending_owner_action_are_visible_without_false_readiness(self):
         report = dict(identity=identity("ios"), outcome="SUCCEEDED", uploadComplete=True,
                       encryption="ACTION_REQUIRED", verification="UPLOADED (VALID; review not prepared)")
@@ -198,6 +204,88 @@ class ReportingTests(unittest.TestCase):
         self.assertNotIn("test-secret", text)
 
 
+class ReportingRetryTests(unittest.TestCase):
+    def setUp(self):
+        environment = patch.dict(os.environ, {"GITHUB_RUN_ID": "123", "GITHUB_RUN_ATTEMPT": "10"})
+        environment.start()
+        self.addCleanup(environment.stop)
+
+    def report(self, platform, attempt, outcome="SUCCEEDED", run_id="123"):
+        return dict(identity=dict(platform=platform, version="0.1.1", build="13"), outcome=outcome,
+                    workflowRun=dict(id=run_id, attempt=attempt))
+
+    def aggregate(self, reports, **statuses):
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()) as output:
+            for index, report in enumerate(reports):
+                reporting.save(report, pathlib.Path(temp) / str(index) / "report.json")
+            result = reporting.aggregate(temp, "both", statuses.get("audit", "success"),
+                                         statuses.get("platform", "success"))
+        return result, output.getvalue()
+
+    def test_platform_report_stamps_the_actual_run_and_attempt(self):
+        with tempfile.TemporaryDirectory() as temp, patch.object(reporting, "ROOT", pathlib.Path(temp)), \
+                contextlib.redirect_stdout(io.StringIO()):
+            report = reporting.platform_report("macos", "13", "failure", {})
+            saved = json.loads((pathlib.Path(temp) / "Build/Release/macos/report.json").read_text())
+        self.assertEqual(report["workflowRun"], dict(id="123", attempt=10))
+        self.assertEqual(saved["workflowRun"], report["workflowRun"])
+
+    def test_partial_retry_replaces_stale_compliance_error_but_keeps_successful_ios(self):
+        ios = self.report("IOS", 1)
+        ios["verification"] = "READY_FOR_REVIEW"
+        old_mac = self.report("MAC_OS", 1, "USER_ACTION_REQUIRED")
+        old_mac.update(errorCode="EXPORT_COMPLIANCE_REQUIRED", error="Old compliance failure")
+        new_mac = self.report("MAC_OS", 2)
+        new_mac["verification"] = "READY_FOR_REVIEW"
+        old_audit = self.report("PREFLIGHT", 1, "ERROR")
+        old_audit["error"] = "Old preflight failure"
+        result, text = self.aggregate([old_mac, self.report("PREFLIGHT", 2), new_mac, ios, old_audit])
+        self.assertEqual(result, 0)
+        self.assertIn("| IOS | 0.1.1 | 13 | READY_FOR_REVIEW |", text)
+        self.assertIn("| MAC_OS | 0.1.1 | 13 | READY_FOR_REVIEW |", text)
+        self.assertNotIn("Old compliance failure", text)
+        self.assertNotIn("Old preflight failure", text)
+        self.assertIn("Workflow attempt: 1", text)
+        self.assertIn("Workflow attempt: 2", text)
+
+    def test_newer_failure_is_not_hidden_by_old_success_and_attempts_are_numeric(self):
+        reports = [self.report("IOS", 2), self.report("MAC_OS", 2), self.report("MAC_OS", 10, "ERROR")]
+        reports[-1]["error"] = "Latest attempt failed"
+        result, text = self.aggregate(reports)
+        self.assertEqual(result, 1)
+        self.assertIn("Latest attempt failed", text)
+        self.assertIn("| MAC_OS | 0.1.1 | 13 | ERROR |", text)
+
+    def test_rerunning_only_summary_reuses_latest_available_platform_reports(self):
+        result, _ = self.aggregate([self.report("IOS", 1), self.report("MAC_OS", 2),
+                                    self.report("PREFLIGHT", 1)])
+        self.assertEqual(result, 0)
+
+    def test_ambiguous_or_foreign_or_invalid_reports_cannot_produce_green_result(self):
+        cases = [
+            [self.report("MAC_OS", 2), self.report("MAC_OS", 2)],
+            [self.report("MAC_OS", 1, run_id="another-run")],
+            [self.report("MAC_OS", 11)],
+            [self.report("MAC_OS", "2")],
+            [dict(identity=dict(platform="MAC_OS"), outcome="SUCCEEDED")],
+            [dict(identity=dict(platform="MAC_OS"), outcome="SUCCEEDED", workflowRun=dict(id="123"))],
+            [],
+        ]
+        for mac_reports in cases:
+            with self.subTest(reports=mac_reports):
+                result, text = self.aggregate([self.report("IOS", 1), *mac_reports])
+                self.assertEqual(result, 1)
+                self.assertIn("REPORT_UNAVAILABLE", text)
+
+    def test_latest_audit_failure_and_job_failure_still_fail_the_result(self):
+        platforms = [self.report("IOS", 1), self.report("MAC_OS", 1)]
+        result, _ = self.aggregate([*platforms, self.report("PREFLIGHT", 1),
+                                    self.report("PREFLIGHT", 2, "ERROR")])
+        self.assertEqual(result, 1)
+        result, _ = self.aggregate(platforms, platform="failure")
+        self.assertEqual(result, 1)
+
+
 class WorkflowBoundaryTests(unittest.TestCase):
     def test_both_manual_workflows_share_serialization_and_always_publish_a_result(self):
         workflows = []
@@ -208,6 +296,15 @@ class WorkflowBoundaryTests(unittest.TestCase):
             self.assertIn("always()", workflow["jobs"]["result"]["if"])
             self.assertEqual(workflow["jobs"]["prepare"]["strategy"]["max-parallel"], "1")
             self.assertIn("inputs.build_number", workflow["run-name"])
+            for job in ("audit", "prepare"):
+                reports = [s for s in workflow["jobs"][job]["steps"]
+                           if s.get("with", {}).get("name", "").startswith("app-store-report-")]
+                self.assertEqual(len(reports), 1)
+                self.assertIn("${{ github.run_id }}-attempt-${{ github.run_attempt }}", reports[0]["with"]["name"])
+            download = next(s for s in workflow["jobs"]["result"]["steps"]
+                            if s.get("uses", "").startswith("actions/download-artifact@"))
+            self.assertEqual(download["with"]["pattern"], "app-store-report-*-${{ github.run_id }}-attempt-*")
+            self.assertNotEqual(download["with"].get("merge-multiple"), "true")
         self.assertEqual(workflows[0]["concurrency"], workflows[1]["concurrency"])
         upload = workflows[0]["jobs"]["prepare"]["steps"]
         upload_commands = "\n".join(s.get("run", "") for s in upload)
