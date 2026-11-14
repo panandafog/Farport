@@ -51,6 +51,8 @@ def render(report):
              "⚠️ Action required" if outcome == "USER_ACTION_REQUIRED" else "❌ Release step failed")
     lines = [f"## {title} — {ident.get('platform', 'Unknown')}", "",
              f"**Version {ident.get('version', '—')} · Build {ident.get('build', '—')}**", ""]
+    if report.get("workflowRun"):
+        lines += [f"Workflow attempt: {report['workflowRun']['attempt']}", ""]
     details = ""
     if report.get("error"):
         stage = LABELS.get(report.get("failedStage"), report.get("failedStage", "startup"))
@@ -99,6 +101,8 @@ def platform_report(platform, build, job_status, steps):
             report.update(outcome="ERROR", errorCode="WORKFLOW_STEP_FAILED",
                           error=f"{LABELS.get(failed, failed or 'Job cleanup')} failed outside the Apple API stages.")
             report.pop("nextAction", None)
+    report["workflowRun"] = dict(id=os.environ.get("GITHUB_RUN_ID", ""),
+                                 attempt=int(os.environ.get("GITHUB_RUN_ATTEMPT") or "1"))
     save(report, path)
     content = render(report)
     (path.parent / "summary.md").write_text(content)
@@ -109,6 +113,34 @@ def platform_report(platform, build, job_status, steps):
     return report
 
 
+def latest_report(reports, platform):
+    """Partial reruns retain earlier jobs; choose the latest attempt for each role."""
+    matches = [r for r in reports if r.get("identity", {}).get("platform") == platform]
+    if not matches:
+        raise ValueError("Platform report is missing. Check checkout, dependency setup and report artifact delivery.")
+    attempts = []
+    run_id = os.environ.get("GITHUB_RUN_ID")
+    current_attempt = int(os.environ.get("GITHUB_RUN_ATTEMPT") or "1")
+    for report in matches:
+        source = report.get("workflowRun", {})
+        attempt = source.get("attempt", None if run_id else 1)
+        if run_id and source.get("id") != run_id:
+            raise ValueError("Report belongs to another workflow run or has no run identity.")
+        if type(attempt) is not int or attempt < 1 or (run_id and attempt > current_attempt):
+            raise ValueError("Report has an invalid workflow attempt.")
+        attempts.append(attempt)
+    latest = max(attempts)
+    newest = [r for r, attempt in zip(matches, attempts) if attempt == latest]
+    if len(newest) != 1:
+        raise ValueError(f"Multiple reports exist for workflow attempt {latest}; the result is ambiguous.")
+    return newest[0]
+
+
+def unavailable_report(platform, reason):
+    return {"identity": dict(platform=platform, version="—", build="—"), "outcome": "ERROR",
+            "errorCode": "REPORT_UNAVAILABLE", "error": reason}
+
+
 def aggregate(directory, selected, audit_status, platform_status):
     reports = [json.loads(path.read_text()) for path in pathlib.Path(directory).rglob("report.json")]
     requested = ["IOS", "MAC_OS"] if selected == "both" else ["IOS" if selected == "ios" else "MAC_OS"]
@@ -116,15 +148,13 @@ def aggregate(directory, selected, audit_status, platform_status):
     failed = audit_status != "success" or platform_status != "success"
     ordered = []
     for platform in requested:
-        matches = [r for r in reports if r.get("identity", {}).get("platform") == platform]
-        if len(matches) != 1:
+        try:
+            report = latest_report(reports, platform)
+        except ValueError as error:
             failed = True
             reason = "Preflight failed; no platform work was started." if audit_status != "success" else \
-                     "Platform report is missing or ambiguous. Check checkout, dependency setup and report artifact delivery."
-            report = {"identity": dict(platform=platform, version="—", build="—"), "outcome": "ERROR",
-                      "errorCode": "REPORT_UNAVAILABLE", "error": reason}
-        else:
-            report = matches[0]
+                     str(error)
+            report = unavailable_report(platform, reason)
         failed |= report.get("outcome") != "SUCCEEDED"
         ordered.append(report)
         ident = report["identity"]
@@ -134,11 +164,17 @@ def aggregate(directory, selected, audit_status, platform_status):
         if report.get("outcome") != "SUCCEEDED":
             result = report.get("outcome", "ERROR")
         lines.append(f"| {platform} | {ident.get('version', '—')} | {ident.get('build', '—')} | {result} |")
+    audits = []
+    if any(r.get("identity", {}).get("platform") == "PREFLIGHT" for r in reports):
+        try:
+            audits = [latest_report(reports, "PREFLIGHT")]
+        except ValueError as error:
+            audits = [unavailable_report("PREFLIGHT", str(error))]
+        failed |= audits[0].get("outcome") != "SUCCEEDED"
     if failed:
         lines += ["", "**Preparation did not finish. See the reason and next action below.**"]
         if all(r.get("outcome") == "SUCCEEDED" for r in ordered):
             lines += ["A workflow/artifact/post-job step failed after the recorded stages. Check the failed job on this page."]
-    audits = [r for r in reports if r.get("identity", {}).get("platform") == "PREFLIGHT"]
     content = "\n".join(lines) + "\n\n" + "\n".join(render(r) for r in [*audits, *ordered])
     emit(sanitized(content))
     if failed:

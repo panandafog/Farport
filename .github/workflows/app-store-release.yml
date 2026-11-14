@@ -85,7 +85,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always() && steps.checkout.outcome == 'success'
         with:
-          name: app-store-report-audit-${{ github.run_id }}
+          name: app-store-report-audit-${{ github.run_id }}-attempt-${{ github.run_attempt }}
           path: Build/Release/audit/
           if-no-files-found: error
   prepare:
@@ -253,7 +253,7 @@ jobs:
         if: always() && steps.selected.outputs.run == 'true' && steps.checkout.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
-          name: app-store-report-${{ matrix.platform }}-${{ github.run_id }}
+          name: app-store-report-${{ matrix.platform }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
           path: |
             Build/Release/${{ matrix.platform }}/report.json
             Build/Release/${{ matrix.platform }}/summary.md
@@ -275,7 +275,7 @@ jobs:
         uses: actions/download-artifact@v7
         continue-on-error: true
         with:
-          pattern: app-store-report-*-${{ github.run_id }}
+          pattern: app-store-report-*-${{ github.run_id }}-attempt-*
           path: Build/ReleaseReports
       - name: Show outcome, reason and exact next action
         env:
