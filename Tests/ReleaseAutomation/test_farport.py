@@ -88,8 +88,10 @@ class FarportReleaseTests(unittest.TestCase):
     def test_early_preflight_reports_all_missing_inputs(self):
         with patch.dict(os.environ, {}, clear=True), self.assertRaises(NeedsAction) as caught:
             signing.preflight(["ios", "macos"], "full")
-        for name in ["IOS_PROVISION_PROFILE_BASE64", "MAC_PROVISION_PROFILE_BASE64", "MAC_FINDER_PROVISION_PROFILE_BASE64", "MAC_INSTALLER_P12_PASSWORD", "ASC_REVIEW_CONTACT_PHONE"]:
+        for name in ["IOS_PROVISION_PROFILE_BASE64", "MAC_PROVISION_PROFILE_BASE64", "MAC_FINDER_PROVISION_PROFILE_BASE64", "MAC_INSTALLER_P12_PASSWORD"]:
             self.assertIn(name, str(caught.exception))
+        self.assertNotIn("ASC_REVIEW_CONTACT_PHONE", signing.required_secrets("ios", "full"))
+        self.assertIn("ASC_REVIEW_CONTACT_PHONE", signing.required_secrets("ios", "review"))
 
     def test_status_does_not_require_signing_material(self):
         env = {name: "dGVzdA==" for name in signing.required_secrets("ios", "status")}

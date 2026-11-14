@@ -11,6 +11,7 @@ import urllib.parse
 import urllib.request
 
 from .metadata import NeedsAction, ReleaseError, Waiting, asc_locale, complete_age_answers, release_notes
+from .diagnostics import sanitized
 
 ORIGIN = "https://api.appstoreconnect.apple.com"
 EDITABLE = {"PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_REJECTED", "INVALID_BINARY"}
@@ -44,16 +45,6 @@ def payload(kind, attrs=None, rels=None, id=None):
     if rels:
         data["relationships"] = {key: {"data": {"type": typ, "id": value}} for key, (typ, value) in rels.items()}
     return {"data": data}
-
-
-def sanitized(value):
-    text = str(value)
-    for key, secret in os.environ.items():
-        if any(word in key for word in ("PASSWORD", "PRIVATE_KEY", "P12", "TOKEN", "CONTACT_PHONE", "DEMO_ACCOUNT", "BASE64")) and len(secret) > 3:
-            text = text.replace(secret, "[REDACTED]")
-    text = re.sub(r"-----BEGIN .*?PRIVATE KEY-----.*?-----END .*?PRIVATE KEY-----", "[REDACTED KEY]", text, flags=re.S)
-    text = re.sub(r"eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+", "[REDACTED JWT]", text)
-    return text
 
 
 class ApiError(ReleaseError):
@@ -225,12 +216,17 @@ class Store:
     def guard(self, allow_ready=False):
         for submission in self.submissions():
             if state(submission) in ACTIVE:
-                raise NeedsAction("An active review submission exists for this platform. Resolve it in ASC; this workflow never cancels or removes it.")
+                raise NeedsAction("An active review submission exists for this platform. Resolve it in ASC; this workflow never cancels or removes it.",
+                                  code="ACTIVE_REVIEW",
+                                  next_action="Open App Review in App Store Connect and decide how to proceed with the active submission. Upload can run independently.")
         matches = [v for v in self.versions() if v["attributes"]["versionString"] == self.identity["version"]]
         if len(matches) > 1:
             raise ReleaseError("Ambiguous App Store version.")
         if matches and state(matches[0]) not in EDITABLE | ({"READY_FOR_REVIEW"} if allow_ready else set()):
-            raise NeedsAction(f"Version is {state(matches[0])}; use status mode. Draft items are not removed for editing.")
+            raise NeedsAction(f"Version is {state(matches[0])}; draft items are not removed for editing.",
+                              code="VERSION_NOT_EDITABLE",
+                              next_action="For Ready for Review, remove the version from its unsubmitted draft in App Store Connect before replacing its build or metadata. "
+                                          "For an already submitted/live version, resolve its state or prepare a new app version. Use Check status to verify an unchanged draft.")
         return matches[0] if matches else None
 
     def ensure_version(self):
@@ -265,7 +261,6 @@ class Store:
         Existing versions, including initial placeholders, are left alone here;
         their preparation still happens after the build has been processed.
         """
-        self.guard()
         if not self.versions():
             self.ensure_version()
 
@@ -371,11 +366,17 @@ class Store:
         if type(value) is not bool:
             raise NeedsAction("SSH encryption compliance is unanswered for this exact build. Open its Export Compliance in ASC. "
                               "Farport includes standard SSH crypto via Swift Crypto/BoringSSL; do not copy the game's exemption. "
-                              "The owner must determine applicable documentation (including France) and save Apple's answers, then rerun review with this build.")
+                              "The owner must determine applicable documentation (including France) and save Apple's answers, then rerun review with this build.",
+                              code="EXPORT_COMPLIANCE_REQUIRED",
+                              next_action="In App Store Connect → TestFlight, open this platform's exact build → Missing Compliance / Manage. "
+                                          "Save the owner's answers, then run Prepare App Store Review with the SAME build number.")
         if value:
             declaration = self.api.get(f"/v1/builds/{build['id']}/appEncryptionDeclaration")
             if not declaration or declaration["attributes"].get("appEncryptionDeclarationState") != "APPROVED":
-                raise NeedsAction("Non-exempt SSH encryption needs an APPROVED declaration associated with this exact build in ASC. No declaration was created or changed.")
+                raise NeedsAction("Non-exempt SSH encryption needs an APPROVED declaration associated with this exact build in ASC. No declaration was created or changed.",
+                                  code="ENCRYPTION_DECLARATION_REQUIRED",
+                                  next_action="Associate the owner's approved encryption declaration with this exact build in App Store Connect, "
+                                              "then run Prepare App Store Review with the SAME build number.")
             app = self.api.get(f"/v1/appEncryptionDeclarations/{declaration['id']}/app")
             if app["id"] != self.app["id"]:
                 raise ReleaseError("Encryption declaration belongs to another app.")

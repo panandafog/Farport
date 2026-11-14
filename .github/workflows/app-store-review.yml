@@ -1,0 +1,185 @@
+name: Prepare App Store Review
+run-name: Review · build ${{ inputs.build_number }} · ${{ inputs.platform }} · ${{ inputs.action }}
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to prepare
+        type: choice
+        options: [both, ios, macos]
+        default: both
+      action:
+        description: Prepare metadata and review draft, or only check existing readiness
+        type: choice
+        options: [prepare, status]
+        default: prepare
+      build_number:
+        description: Exact build number from Upload App Store Build Summary
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: farport-app-store-release
+  cancel-in-progress: false
+env:
+  RELEASE_PIPELINE: review
+  RELEASE_MODE: ${{ inputs.action == 'status' && 'status' || 'review' }}
+  RELEASE_BUILD_NUMBER: ${{ inputs.build_number }}
+jobs:
+  audit:
+    if: github.repository == 'panandafog/Farport' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: app-store
+    env:
+      REQUESTED_PLATFORM: ${{ inputs.platform }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_PRIVATE_KEY_P8_BASE64: ${{ secrets.ASC_PRIVATE_KEY_P8_BASE64 }}
+      ASC_REVIEW_CONTACT_PHONE: ${{ secrets.ASC_REVIEW_CONTACT_PHONE }}
+    steps:
+      - uses: actions/checkout@v7
+        id: checkout
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        id: python
+        with:
+          python-version: '3.12'
+      - name: Install API dependencies
+        id: install_api
+        run: python3 -m pip install -r Scripts/release/requirements.txt
+      - name: Validate review inputs and exact build number
+        id: audit
+        run: python3 -m Scripts.release.plan
+      - name: Explain preflight result
+        if: always() && steps.checkout.outcome == 'success'
+        env:
+          RELEASE_JOB_STATUS: ${{ job.status }}
+          RELEASE_STEPS_JSON: ${{ toJSON(steps) }}
+        run: python3 -m Scripts.release.reporting platform --platform audit --build-number "$RELEASE_BUILD_NUMBER"
+      - uses: actions/upload-artifact@v7
+        if: always() && steps.checkout.outcome == 'success'
+        with:
+          name: app-store-report-audit-${{ github.run_id }}
+          path: Build/Release/audit/
+          if-no-files-found: error
+  prepare:
+    needs: audit
+    if: needs.audit.result == 'success'
+    name: Prepare review (${{ matrix.platform }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: app-store
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        platform: [ios, macos]
+    env:
+      REQUESTED_PLATFORM: ${{ inputs.platform }}
+      RELEASE_PLATFORM: ${{ matrix.platform }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+    steps:
+      - name: Select requested platform
+        id: selected
+        shell: bash
+        run: |
+          if [[ "$REQUESTED_PLATFORM" == both || "$REQUESTED_PLATFORM" == "$RELEASE_PLATFORM" ]]; then
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v7
+        id: checkout
+        if: steps.selected.outputs.run == 'true'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        id: python
+        if: steps.selected.outputs.run == 'true'
+        with:
+          python-version: '3.12'
+      - name: Install API dependencies
+        id: install_api
+        if: steps.selected.outputs.run == 'true'
+        run: python3 -m pip install -r Scripts/release/requirements.txt
+      - name: Initialize review
+        id: init
+        if: steps.selected.outputs.run == 'true'
+        env:
+          ASC_PRIVATE_KEY_P8_BASE64: ${{ secrets.ASC_PRIVATE_KEY_P8_BASE64 }}
+          ASC_REVIEW_CONTACT_PHONE: ${{ secrets.ASC_REVIEW_CONTACT_PHONE }}
+        run: python3 -m Scripts.release.cli init --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
+      - name: Check version and existing exact draft
+        id: probe
+        if: steps.selected.outputs.run == 'true' && inputs.action == 'prepare'
+        run: python3 -m Scripts.release.cli probe --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
+      - name: Check owner Export Compliance before changing metadata
+        id: compliance
+        if: steps.selected.outputs.run == 'true' && inputs.action == 'prepare' && steps.probe.outputs.ready != 'true'
+        run: python3 -m Scripts.release.cli compliance --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
+      - name: Update metadata and screenshots
+        id: metadata
+        if: steps.selected.outputs.run == 'true' && inputs.action == 'prepare' && steps.probe.outputs.ready != 'true'
+        run: python3 -m Scripts.release.cli metadata --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
+      - name: Select exact build and configure review contact
+        id: review
+        if: steps.selected.outputs.run == 'true' && inputs.action == 'prepare' && steps.probe.outputs.ready != 'true'
+        env:
+          ASC_REVIEW_CONTACT_PHONE: ${{ secrets.ASC_REVIEW_CONTACT_PHONE }}
+        run: python3 -m Scripts.release.cli review --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
+      - name: Prepare draft (never submits)
+        id: draft
+        if: steps.selected.outputs.run == 'true' && inputs.action == 'prepare' && steps.probe.outputs.ready != 'true'
+        run: python3 -m Scripts.release.cli draft --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
+      - name: Confirm READY_FOR_REVIEW from Apple
+        id: status
+        if: steps.selected.outputs.run == 'true'
+        run: python3 -m Scripts.release.cli status --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
+      - name: Remove temporary API key
+        id: cleanup
+        if: always() && steps.selected.outputs.run == 'true' && (steps.init.outcome == 'success' || steps.init.outcome == 'failure')
+        shell: bash
+        run: rm -f -- "$RUNNER_TEMP/farport-$RELEASE_PLATFORM-AuthKey.p8"
+      - name: Explain platform result
+        if: always() && steps.selected.outputs.run == 'true' && steps.checkout.outcome == 'success'
+        env:
+          RELEASE_JOB_STATUS: ${{ job.status }}
+          RELEASE_STEPS_JSON: ${{ toJSON(steps) }}
+        run: python3 -m Scripts.release.reporting platform --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
+      - name: Preserve release report
+        if: always() && steps.selected.outputs.run == 'true' && steps.checkout.outcome == 'success'
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-store-report-${{ matrix.platform }}-${{ github.run_id }}
+          path: |
+            Build/Release/${{ matrix.platform }}/report.json
+            Build/Release/${{ matrix.platform }}/summary.md
+          if-no-files-found: error
+  result:
+    name: Release result and next steps
+    needs: [audit, prepare]
+    if: always() && github.repository == 'panandafog/Farport' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Collect platform and preflight reports
+        uses: actions/download-artifact@v7
+        continue-on-error: true
+        with:
+          pattern: app-store-report-*-${{ github.run_id }}
+          path: Build/ReleaseReports
+      - name: Show outcome, reason and exact next action
+        env:
+          REQUESTED_PLATFORM: ${{ inputs.platform }}
+          AUDIT_STATUS: ${{ needs.audit.result }}
+          PLATFORM_STATUS: ${{ needs.prepare.result }}
+        run: python3 -m Scripts.release.reporting aggregate

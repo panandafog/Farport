@@ -122,7 +122,11 @@ hosted tests remain separate local checks.
 
 ## Manual distribution
 
-[App Store release automation](APP_STORE_RELEASE_AUTOMATION.md) uses a separate manual-only
-workflow and app-store environment. Ordinary push/PR builds stay unsigned and receive no
+[App Store release automation](APP_STORE_RELEASE_AUTOMATION.md) uses two manual-only
+workflows: Upload App Store Build (ends at VALID) and Prepare App Store Review (ends at
+READY_FOR_REVIEW). Pending owner compliance is an expected next action after upload;
+review checks it before changing metadata. Both always publish an aggregate Summary
+with platform outcomes, failure reasons and retry instructions, including bootstrap failures.
+They use the app-store environment. Ordinary push/PR builds stay unsigned and receive no
 production Secrets. release-checks performs offline API/signing-state/Fastlane validation
 without submitting or contacting Apple.

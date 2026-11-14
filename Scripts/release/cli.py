@@ -12,8 +12,10 @@ import urllib.request
 from . import signing
 from .asc import ApiError, Client, Store, EDITABLE, payload, relationship, sanitized, screenshots, state
 from .metadata import NeedsAction, ReleaseError, Waiting, ROOT, asc_locale, identity, metadata, screenshot_files
+from .diagnostics import annotation
+from .reporting import render, emit
 
-STAGES = ("init", "probe", "build", "upload", "wait", "metadata", "review", "draft", "status", "summary", "cleanup")
+STAGES = ("init", "probe", "build", "upload", "wait", "uploaded", "compliance", "metadata", "review", "draft", "status", "summary", "cleanup")
 
 
 def save(path, report):
@@ -41,8 +43,10 @@ def verify_remote(store, version, build, localizations):
     """Read back required information; readiness is confirmed from Apple, not local flags."""
     store.verify_encryption(build)
     selected = store.api.get(f"/v1/appStoreVersions/{version['id']}/build")
-    if selected["id"] != build["id"] or selected["attributes"].get("processingState") != "VALID":
-        raise NeedsAction("Requested processed build is not selected on this version.")
+    if not selected or selected["id"] != build["id"] or selected["attributes"].get("processingState") != "VALID":
+        raise NeedsAction("Requested processed build is not selected on this version.", code="EXACT_BUILD_NOT_SELECTED",
+                          next_action="If the version is Ready for Review with an older build, remove it from the unsubmitted draft in App Store Connect. "
+                                      "Then run Prepare App Store Review → prepare with this exact build number.")
     try:
         review = store.api.get(f"/v1/appStoreVersions/{version['id']}/appStoreReviewDetail")
     except ApiError as error:
@@ -111,32 +115,26 @@ def status(store, localizations):
                         verification="READY_FOR_REVIEW (confirmed by Apple; not submitted)")
 
 
+def uploaded(store):
+    """Upload success is independent of the owner's later encryption declaration."""
+    build = store.find_build()
+    if not build or build["attributes"].get("processingState") != "VALID":
+        raise Waiting("This exact build is not yet VALID in Apple. Retry Upload App Store Build with the SAME build number.")
+    try:
+        store.verify_encryption(build)
+    except NeedsAction as error:
+        if error.code not in {"EXPORT_COMPLIANCE_REQUIRED", "ENCRYPTION_DECLARATION_REQUIRED"}:
+            raise
+        store.report["encryption"] = "ACTION_REQUIRED"
+        store.report["nextAction"] = error.next_action
+        annotation(str(error) + " " + error.next_action, error.code, warning=True)
+    store.report.update(uploadComplete=True, verification="UPLOADED (VALID; review not prepared)")
+
+
 def summary(report, path):
-    ident = report["identity"]
-    url = "https://appstoreconnect.apple.com/apps/" + report["appId"] if report.get("appId") else "https://appstoreconnect.apple.com/apps"
-    review_url = url + "/appreview" if report.get("appId") else url
-    text = [f"## {ident['name']} — {ident['platform']}", "", "| Field | Status |", "| --- | --- |"]
-    for name, value in [("Bundle ID", ident["bundleId"]), ("Version", ident["version"]), ("Build", ident["build"]),
-                        *[(k, report.get(k, "NOT_RUN")) for k in ("archive", "upload", "processing", "availableVersions", "versionPreparation", "ageRating", "encryption", "metadata", "screenshots", "review", "draft", "versionState", "draftState", "verification", "outcome")]]:
-        text.append(f"| {name} | {str(value).replace('|', '/').replace(chr(10), ' ')} |")
-    text += ["", f"[Open App Store Connect]({url}) · [App Review]({review_url})", "", "### Remaining actions", ""]
-    if report.get("outcome") == "SUCCEEDED" and report.get("verification", "").startswith("READY_FOR_REVIEW"):
-        text.append("- Check the prepared draft in ASC and manually click **Submit for Review**. Nothing was submitted or published by this workflow.")
-    else:
-        text += ["- Resolve the reported missing data/state, then rerun the affected stage with the same platform/build.",
-                 "- One-time owner checks: app record, App Privacy, complete age questionnaire, content rights, price/territories, DSA/trader status and agreements. Apple validates these when adding the review item."]
-    text.extend("- " + str(message).replace("\n", " ") for message in report.get("actions", []))
-    if ident["platform"] == "IOS":
-        text += ["", "Optional limitation: Duo screenshots are prepared locally, but the checked Apple OpenAPI 4.6 has no Duo display types. They were not uploaded under invented slots. See the release automation guide."]
-    text.extend("- " + str(message) for message in report.get("warnings", []))
-    if report.get("error"):
-        text += ["", "### Diagnostic", "", str(report["error"]).replace("\n", " ")]
-    content = sanitized("\n".join(text) + "\n")
+    content = render(report)
     (path / "summary.md").write_text(content)
-    if os.environ.get("GITHUB_STEP_SUMMARY"):
-        with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as file:
-            file.write(content)
-    print(content)
+    emit(content)
 
 
 def main(argv=None):
@@ -164,13 +162,20 @@ def main(argv=None):
         return 0
     phase = "archive" if args.stage == "build" else args.stage
     try:
-        config, localizations, review, copyright = metadata(args.platform)
+        upload_pipeline = os.environ.get("RELEASE_PIPELINE") == "upload"
+        if upload_pipeline and args.stage not in {"init", "probe", "build", "upload", "wait", "uploaded"}:
+            raise ReleaseError("Upload pipeline cannot modify metadata, select a review build or prepare a draft.")
+        if upload_pipeline:
+            config = json.loads((ROOT / "AppStore/release.json").read_text())
+            localizations, review, copyright = {}, {}, ""
+        else:
+            config, localizations, review, copyright = metadata(args.platform)
         if args.stage == "init":
             signing.preflight([args.platform], os.environ.get("RELEASE_MODE", "status"), os.environ.get("ARTIFACT_RUN_ID", ""))
-            report["warnings"] = ["Existing November 1–2 screenshots are reused; no UI tests/captures were run. Host-default/tab-mode controls have since changed; owner should review screenshot freshness."]
-            if args.platform == "ios":
+            report["warnings"] = [] if upload_pipeline else ["Existing November 1–2 screenshots are reused; no UI tests/captures were run. Host-default/tab-mode controls have since changed; owner should review screenshot freshness."]
+            if args.platform == "ios" and not upload_pipeline:
                 report["warnings"].append("Duo PNGs validated but excluded: official OpenAPI 4.6 has no Duo screenshot display types.")
-            for group in config["screenshotGroups"]:
+            for group in ([] if upload_pipeline else config["screenshotGroups"]):
                 if group["platform"] == ident["platform"]:
                     for locale in localizations:
                         screenshot_files(group, locale)
@@ -190,7 +195,7 @@ def main(argv=None):
         else:
             store = Store(Client(), ident, config, report)
             if args.stage == "probe":
-                version = store.guard(allow_ready=True)
+                version = None if upload_pipeline else store.guard(allow_ready=True)
                 already_ready = bool(version and state(version) == "READY_FOR_REVIEW")
                 existing = store.find_build()
                 receipt = None if existing else store.find_upload()
@@ -201,7 +206,6 @@ def main(argv=None):
                 if already_ready:
                     status(store, localizations)
             elif args.stage == "upload":
-                store.guard()
                 if store.find_build():
                     report["upload"] = "ALREADY_PRESENT (not uploaded again)"
                 elif store.find_upload():
@@ -218,6 +222,10 @@ def main(argv=None):
                     report["upload"] = "SUCCEEDED (transport only; processing checked separately)"
             elif args.stage == "wait":
                 store.wait_build()
+            elif args.stage == "uploaded":
+                uploaded(store)
+            elif args.stage == "compliance":
+                store.verify_encryption(store.wait_build())
             elif args.stage == "metadata":
                 public_urls(localizations)
                 version = store.ensure_version()
@@ -247,6 +255,10 @@ def main(argv=None):
                 status(store, localizations)
         report["outcome"] = "SUCCEEDED"
         report.pop("error", None)
+        report.pop("errorCode", None)
+        report.pop("failedStage", None)
+        if args.stage != "uploaded":
+            report.pop("nextAction", None)
         report["actions"] = []
         save(report_path, report)
         print(f"{args.stage}: SUCCEEDED ({ident['platform']} {ident['version']} build {ident['build']})")
@@ -255,11 +267,17 @@ def main(argv=None):
         action_required = isinstance(error, NeedsAction) or isinstance(error, ApiError) and error.status in {401, 403, 409, 422}
         report["outcome"] = "WAITING_FOR_APPLE" if isinstance(error, Waiting) else "USER_ACTION_REQUIRED" if action_required else "ERROR"
         report["error"] = sanitized(str(error))
+        report["failedStage"] = phase
+        report["errorCode"] = getattr(error, "code", "APPLE_PROCESSING_PENDING" if isinstance(error, Waiting) else
+                                       "APPLE_API_" + str(error.status) if isinstance(error, ApiError) else report["outcome"])
+        if getattr(error, "next_action", ""):
+            report["nextAction"] = error.next_action
         report[phase] = report["outcome"]
         if action_required and report["error"] not in report["actions"]:
             report["actions"].append(report["error"])
         save(report_path, report)
         print(report["outcome"] + ": " + report["error"], file=sys.stderr)
+        annotation(report["error"] + " " + report.get("nextAction", ""), phase + ": " + report["errorCode"])
         return 3 if isinstance(error, Waiting) else 2 if action_required else 1
 
 

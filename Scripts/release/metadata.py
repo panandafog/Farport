@@ -27,7 +27,10 @@ class ReleaseError(Exception):
 
 
 class NeedsAction(ReleaseError):
-    pass
+    def __init__(self, message, code="ACTION_REQUIRED", next_action=""):
+        super().__init__(message)
+        self.code = code
+        self.next_action = next_action
 
 
 class Waiting(ReleaseError):
