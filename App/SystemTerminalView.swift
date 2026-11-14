@@ -44,24 +44,6 @@ final class SystemTerminalView: TerminalView {
     private var scrollInput = TerminalScrollInput()
     private var inputMonitor: Any?
     private var primaryMouseReportsRemote = false
-    private var automaticFocusRequest: UUID?
-
-    func requestAutomaticFocus() {
-        let request = UUID()
-        automaticFocusRequest = request
-        // Let the sidebar/tab click and SwiftUI attachment finish before changing the responder.
-        DispatchQueue.main.async { [weak self] in
-            guard let self, self.automaticFocusRequest == request else { return }
-            guard let window = self.window else { return }
-            self.automaticFocusRequest = nil
-            guard window.isKeyWindow, window.attachedSheet == nil, !self.isHiddenOrHasHiddenAncestor,
-                  !(window.firstResponder is NSTextView), !(window.firstResponder is NSTextField) else { return }
-            #if DEBUG
-            if ScreenshotSupport.requested { return }
-            #endif
-            window.makeFirstResponder(self)
-        }
-    }
 
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         if window?.firstResponder === self, sendControlKey(event) { return true }
@@ -211,13 +193,11 @@ final class SystemTerminalView: TerminalView {
         inputMonitor = nil
         primaryMouseReportsRemote = false
         if window == nil {
-            automaticFocusRequest = nil
             pasteReview.cancel()
             resetSmoothScroll()
         }
         allowMouseReporting = false
         guard window != nil else { return }
-        requestAutomaticFocus()
         colorObserver = NotificationCenter.default.addObserver(
             forName: NSColor.systemColorsDidChangeNotification, object: nil, queue: .main
         ) { [weak self] _ in
