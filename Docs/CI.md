@@ -9,6 +9,10 @@ unsigned macOS build approach, with additional Farport-specific checks.
   environment with the pinned AsyncSSH dependency, and runs the full Swift package
   suite through `Scripts/ssh_fixture.py --tmux --run-tests`. The fixture binds only
   loopback and generates temporary keys/files; it stops its own servers afterward.
+  Fixture teardown first cancels and joins its PTY handlers, then stops only its
+  private tmux socket. Cleanup briefly retries ENOTEMPTY while shells finish writing
+  history; other errors and persistent failures still fail CI. Isolated Python
+  regression tests cover shutdown ordering and error handling before the Swift suite.
   `Scripts/verify-sandbox.swift` also checks Boolean sandbox/network/selected-file
   entitlements and the narrow legacy-data migration manifest without signing credentials.
 - **Build macOS (Debug/Release)** regenerates the checked-in project and requires

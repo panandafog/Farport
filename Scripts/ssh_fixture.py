@@ -198,7 +198,7 @@ async def main(port, run_tests, with_tmux):
             await jump.close()
             await proxy.close()
             if tmux:
-                tmux.close()
+                await tmux.close()
 
 
 if __name__ == "__main__":
