@@ -107,6 +107,34 @@ Actions → **Prepare App Store Release** → Run workflow.
 Ключи/p12/profiles и DerivedData не включаются в артефакты; временный keychain
 и только установленные этим запуском профили очищаются в always-этапе.
 
+## Следующий полный проход: 0.1.1 (11)
+
+Номер 11 задан для macOS, Finder extension и iOS в project.yml. Release notes EN/RU
+дополнены исправлением превью перетаскиваемого хоста на macOS. Этот раздел — план
+нового запуска, не подтверждение его успешного выполнения.
+
+1. Смержить PR из dev в main, дождаться зелёных Build and Test и Release automation checks.
+2. В App Store Connect → Farport → App Review открыть прежние Draft Submissions
+   для iOS и macOS и убрать из них **версию 0.1.1**, подготовленную с билдом 10.
+   Версия должна снова стать редактируемой (Prepare for Submission).
+   Не удалять приложение, версию или загруженный билд 10. Это требуется только
+   пока версия находится в Ready for Review; если её уже отправили в Apple,
+   сначала отдельно решить судьбу активного ревью. Workflow не отменяет ревью.
+   [Apple: Ready for Review и черновик отправки](https://developer.apple.com/help/app-store-connect/manage-submissions-to-app-review/submit-an-app).
+3. GitHub → Actions → Prepare App Store Release → Run workflow:
+   branch **main**, platform **both**, mode **full**, build_number **11**,
+   artifact_run_id оставить пустым. Нажать Run workflow один раз.
+4. Дождаться signed IPA/PKG и их upload/VALID. При запросе Export Compliance
+   заполнить ответы владельца для **нового билда 11 отдельно на каждой платформе**
+   в TestFlight. Ответы билда 10 автоматически не декларируются за владельца.
+5. Если полный запуск остановился только на этом gate, снова Run workflow:
+   main / both / **review** / **11**, artifact_run_id пусто. Это использует уже
+   загруженные билды без пересборки. Ошибки metadata исправлять через metadata,
+   затем review с тем же номером; не запускать новый full с пустым номером.
+6. Проверить зелёный итог и READY_FOR_REVIEW для обеих платформ с выбранным билдом
+   **0.1.1 (11)**. Перед ручным Submit for Review проверить тексты/скриншоты,
+   compliance и Production CloudKit. Submit и публикацию workflow не выполняет.
+
 ## Метаданные, PNG и ограничения
 
 Источник: `AppStore/app-store-metadata.md`. Copyright/контакты взяты из политики.
