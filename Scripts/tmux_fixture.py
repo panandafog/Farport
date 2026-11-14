@@ -2,6 +2,7 @@
 import asyncio
 import codecs
 import contextlib
+import errno
 import fcntl
 import os
 import pathlib
@@ -13,8 +14,6 @@ import struct
 import subprocess
 import tempfile
 import termios
-
-import asyncssh
 
 
 class TmuxFixture:
@@ -39,13 +38,44 @@ class TmuxFixture:
             PATH=str(bindir) + ":/usr/bin:/bin", LC_ALL="en_US.UTF-8",
         )
         self.environment.pop("TMUX", None)
+        self.closing = False
+        self.process_tasks = set()
 
-    def close(self):
+    async def close(self):
+        self.closing = True
+        # SSH listener shutdown does not wait for every PTY handler to finish.
+        tasks = tuple(self.process_tasks)
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
         # This socket belongs only to this fixture; never target the user's default server.
-        subprocess.run([self.binary, "-S", str(self.socket), "kill-server"], capture_output=True, check=False)
-        self.temporary.cleanup()
+        subprocess.run([self.binary, "-S", str(self.socket), "kill-server"],
+                       capture_output=True, check=False, timeout=5)
+        # kill-server can return before shells finish writing history in their private HOME.
+        # Retry only this race; permission errors and persistent failures must still fail CI.
+        for attempt in range(20):
+            try:
+                self.temporary.cleanup()
+                return
+            except OSError as error:
+                if error.errno != errno.ENOTEMPTY or attempt == 19:
+                    raise
+                await asyncio.sleep(0.1)
 
     async def run(self, process):
+        if self.closing:
+            process.exit(1)
+            return
+        task = asyncio.current_task()
+        self.process_tasks.add(task)
+        try:
+            await self._run(process)
+        finally:
+            self.process_tasks.discard(task)
+
+    async def _run(self, process):
+        import asyncssh
+
         # tmux owns line editing and echo through its real PTY, including Ctrl-B/Ctrl-C.
         if process.get_terminal_type():
             process.channel.set_line_mode(False)

@@ -51,6 +51,9 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/harbor-test-env"
           "$RUNNER_TEMP/harbor-test-env/bin/pip" install -r Scripts/requirements-test.txt
 
+      - name: Check isolated fixture shutdown
+        run: '"$RUNNER_TEMP/harbor-test-env/bin/python" -m unittest discover -s Tests/Fixtures -v'
+
       - name: Test SSH, SFTP, ProxyJump, and tmux
         run: |
           swift package --force-resolved-versions resolve
