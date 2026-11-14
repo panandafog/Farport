@@ -39,7 +39,7 @@ def require(name):
 
 def required_secrets(platform, mode):
     names = ["ASC_KEY_ID", "ASC_ISSUER_ID", "ASC_PRIVATE_KEY_P8_BASE64"]
-    if mode in {"full", "upload", "review"}:
+    if mode == "review":
         names += ["ASC_REVIEW_CONTACT_PHONE"]
     if mode == "full":
         prefix = "IOS" if platform == "ios" else "MAC_APP"

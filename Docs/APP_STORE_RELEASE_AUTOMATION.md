@@ -1,18 +1,32 @@
 # Подготовка Farport к App Store
 
 Автоматизация подготовлена 2026-11-13 на основе проверенного workflow Glintwake.
-Окончание процесса — **черновик READY_FOR_REVIEW**, с проверкой версии, точной
-сборки и review item. Submit for Review и публикация остаются ручными.
+Теперь используются два отдельных ручных workflow: **Upload App Store Build**
+заканчивается на **VALID**, а **Prepare App Store Review** — на **READY_FOR_REVIEW**
+с проверкой версии, точного билда и review item. Между ними владелец заполняет
+Export Compliance, если Apple его запросила. Submit for Review и публикация ручные.
 Результаты реальных запусков записываются ниже отдельно от локальных проверок.
 
 ## Состав
 
-- `.github/workflows/app-store-release.yml`: только workflow_dispatch, environment
-  `app-store`, доверенные ветки main/dev, последовательная обработка платформ.
+- `.github/workflows/app-store-release.yml` — **Upload App Store Build**:
+  audit → archive/export → сохранить пакет → upload → VALID → read-only compliance check.
+  Исходный путь сохранён для совместимости provenance уже подписанных артефактов.
+- `.github/workflows/app-store-review.yml` — **Prepare App Store Review**:
+  preflight → compliance → metadata/screenshots → выбрать точный билд → review draft → status.
+  Без сертификатов, профилей, Xcode и Fastlane; работает на Ubuntu.
+- Оба workflow: только workflow_dispatch, environment `app-store`, доверенные main/dev,
+  общий concurrency group без отмены запуска и последовательная обработка платформ.
   Обычный Build and Test не получает signing secrets и не загружает ничего в Apple.
+- `reporting.py` / `diagnostics.py`: общий итог на странице Summary, причина и следующий
+  шаг, таблица iOS/macOS, безопасные error/warning annotations. Финальный job
+  **Release result and next steps** выполняется через always(), включая провал audit.
+  Отчёт использует только stdlib и доступен при неудачной установке API dependencies.
 - `Scripts/release/plan.py`: ранняя общая проверка всех необходимых Secrets,
-  сертификатов, трёх профилей, capabilities, PNG/текстов/URL, состояния Apple.
-  При `full` без номера выбирает свободный целочисленный build по обеим платформам
+  сертификатов, трёх профилей и capabilities для Upload; PNG/текстов/URL и состояния
+  ревью — для Review. Upload не зависит от заполнения metadata, наличия review contact
+  или состояния уже существующего черновика/активного ревью.
+  При Upload source=build без номера выбирает свободный целочисленный build по обеим платформам
   и Apple upload receipts. Выбранный номер показывается в Summary.
 - `metadata.py`: читает основной Markdown, не дублирует описания в JSON.
   Выбирает отдельные Description/Promotional Text/Keywords/Review Notes платформы;
@@ -72,68 +86,96 @@ Workflow сам дополнительно проверяет ветку и repo
 
 ## Запуск и повторы
 
-Actions → **Prepare App Store Release** → Run workflow.
+### 1. Upload App Store Build
+
+GitHub → Actions → **Upload App Store Build** → Run workflow, branch main (или dev
+для осознанной проверки до merge).
 
 | Input | Значения |
 | --- | --- |
 | platform | both / ios / macos |
-| mode | full / upload / metadata / review / status |
-| build_number | пустой только для нового full; для повтора **тот же выбранный номер** |
-| artifact_run_id | нужен для upload: run ID сохранённого подписанного пакета |
+| source | build — собрать; artifact — восстановить уже подписанный пакет |
+| build_number | пустой для нового source=build; точный прежний номер для любого повтора |
+| artifact_run_id | только для source=artifact; номер первоначального upload/full run |
 
-- **full**: audit → archive/export → сохранить Artifact → upload → дождаться VALID
-  → metadata/screenshots → exact build/review detail → draft → status.
-- **upload**: без пересборки восстановить подписанный пакет, далее полный путь.
-- **metadata**: только editable metadata/screenshots; подпись/Transporter не нужны.
-- **review**: дождаться существующей сборки, выбрать её, настроить review detail,
-  подготовить draft, проверить результат; тексты и скриншоты должны уже совпадать.
-Режимы metadata/review/status работают на Ubuntu без Xcode/Keychain/Fastlane,
-чтобы не ждать свободный Mac. Full/upload используют macOS для бинарного transport.
+`build` проверяет подписи архива и экспортированного IPA/PKG, сохраняет пакет перед
+Apple upload и дожидается VALID. `artifact` проверяет источник/identity/checksum и
+восстанавливает подписанный пакет без пересборки. Exact build и upload receipts
+проверяются перед загрузкой; принятый пакет не отправляется повторно.
 
-- **status**: read-only проверка результата; без подписи/загрузки/изменений Apple.
-  Без build_number использует номер project.yml, поэтому для CI override указывать явно.
+После VALID запуск **успешен**, даже если требуется Export Compliance. Summary и
+warning annotation укажут точный билд, платформу, ссылку на TestFlight и следующий
+шаг. Ошибки API/подписи/обработки Apple остаются настоящими ошибками. Состояние
+существующей версии/черновика не меняется, выбранный билд не заменяется, metadata
+не обновляются. Для самого первого upload отсутствующая платформа регистрируется
+до Transporter; существующая карточка не переписывается.
 
-Не менять build для повтора после таймаута Apple. Exact build и buildUploads receipts
-проверяются до новой загрузки. Провал/expired/invalid требует осознанно нового номера.
-Платформа, которой ещё нет, создаётся **до Transporter**, иначе Mac Apple ID не находится.
+Номер, выбранный автоматически, записан в Summary для обеих платформ. Имя запуска
+показывает Upload / переданный номер (или auto) / платформы. При таймауте обработки
+или другом повторе **указать тот же номер явно**, не выбирать новый.
+
+### 2. Ответ владельца в Apple
+
+App Store Connect → Farport → TestFlight → нужная платформа → **точная версия/build**
+→ Missing Compliance / Manage. Заполнить ответы отдельно для iOS и macOS. Существующие
+ответы другого билда не переносятся автоматически. При non-exempt нужна APPROVED
+declaration этого приложения, связанная с этим билдом. Workflow не меняет ответы.
+
+### 3. Prepare App Store Review
+
+GitHub → Actions → **Prepare App Store Review** → Run workflow:
+
+| Input | Значения |
+| --- | --- |
+| platform | both / ios / macos |
+| action | prepare — заполнить metadata и подготовить draft; status — только проверить |
+| build_number | **обязательный точный номер из Upload Summary** |
+
+`prepare` сначала проверяет compliance, затем обновляет EN/RU metadata и существующие
+PNG, выбирает exact VALID build, заполняет review information и создаёт/переиспользует
+draft. Успех — подтверждённые Apple READY_FOR_REVIEW версии, draft и review item.
+`status` проверяет эти же условия read-only. Подписанный пакет и artifact_run_id
+для Review не нужны. Режим не получает signing secrets и не запускает Mac runner.
+
+Если предыдущая версия ещё Ready for Review со старым билдом, владелец убирает
+**версию из неподанного draft** в App Store Connect → App Review, возвращая её в
+Prepare for Submission. Не удалять приложение, версию или бинарный upload.
+Upload можно выполнять до этого; редактирование требуется только для Review.
+Активные отправленные ревью не отменяются автоматически. Уже подготовленный exact
+билд с совпадающими metadata переиспользуется без изменений.
+
 Пустой первоначальный 1.0/1.0.0 можно перенумеровать только без контента, selected build
 и review history, с уже VALID целевой сборкой. Другие черновики/live не переписываются.
-Общий App Information, уже находящийся на ревью/live, только сверяется; изменения
-требуют разрешённого editable состояния. Активные ревью не отменяются.
+Общий App Information, находящийся на ревью/live, только сверяется; изменения требуют
+editable состояния. После ошибки prepare повторять его с **тем же build_number**.
+Перед ручным Submit проверить свежесть скриншотов, compliance и Production CloudKit.
+
+### Как читать результат
+
+На странице Summary откройте **Release result and next steps**: сверху таблица
+обеих выбранных платформ, далее причина остановки и конкретное следующее действие.
+Примеры: «Build uploaded · Export Compliance needs the owner's answer»,
+«Action required · EXPORT_COMPLIANCE_REQUIRED», «Release step failed · Archive and sign»,
+«Ready for review». Для Upload ожидаемый ручной compliance gate не красит запуск
+красным. Review без compliance завершается ошибкой на отдельном явно названном шаге,
+не создаёт ложный READY и не меняет metadata. Отсутствующие/неоднозначные отчёты и
+сбои artifact/post-job тоже делают итог неуспешным, даже если Apple API этап прошёл.
 
 Подписанный IPA/PKG сохраняется **перед upload** как
-`app-store-<ios|macos>-<run ID>` на 14 дней; рядом artifact.json с происхождением
-и checksum. Нечувствительный report.json/summary.md сохраняются и при ошибке.
-Ключи/p12/profiles и DerivedData не включаются в артефакты; временный keychain
-и только установленные этим запуском профили очищаются в always-этапе.
+`app-store-<ios|macos>-<run ID>` на 14 дней; artifact.json содержит происхождение и
+checksum. Можно восстанавливать и прежние артефакты исторических full runs по тому же
+защищённому пути workflow. Отчёты audit/platform сохраняются и при ошибке. Ключи,
+p12, profiles и DerivedData в артефакты не включаются; временное состояние очищается.
 
-## Следующий полный проход: 0.1.1 (11)
+### Пример следующего билда
 
-Номер 11 задан для macOS, Finder extension и iOS в project.yml. Release notes EN/RU
-дополнены исправлением превью перетаскиваемого хоста на macOS. Этот раздел — план
-нового запуска, не подтверждение его успешного выполнения.
-
-1. Смержить PR из dev в main, дождаться зелёных Build and Test и Release automation checks.
-2. В App Store Connect → Farport → App Review открыть прежние Draft Submissions
-   для iOS и macOS и убрать из них **версию 0.1.1**, подготовленную с билдом 10.
-   Версия должна снова стать редактируемой (Prepare for Submission).
-   Не удалять приложение, версию или загруженный билд 10. Это требуется только
-   пока версия находится в Ready for Review; если её уже отправили в Apple,
-   сначала отдельно решить судьбу активного ревью. Workflow не отменяет ревью.
-   [Apple: Ready for Review и черновик отправки](https://developer.apple.com/help/app-store-connect/manage-submissions-to-app-review/submit-an-app).
-3. GitHub → Actions → Prepare App Store Release → Run workflow:
-   branch **main**, platform **both**, mode **full**, build_number **11**,
-   artifact_run_id оставить пустым. Нажать Run workflow один раз.
-4. Дождаться signed IPA/PKG и их upload/VALID. При запросе Export Compliance
-   заполнить ответы владельца для **нового билда 11 отдельно на каждой платформе**
-   в TestFlight. Ответы билда 10 автоматически не декларируются за владельца.
-5. Если полный запуск остановился только на этом gate, снова Run workflow:
-   main / both / **review** / **11**, artifact_run_id пусто. Это использует уже
-   загруженные билды без пересборки. Ошибки metadata исправлять через metadata,
-   затем review с тем же номером; не запускать новый full с пустым номером.
-6. Проверить зелёный итог и READY_FOR_REVIEW для обеих платформ с выбранным билдом
-   **0.1.1 (11)**. Перед ручным Submit for Review проверить тексты/скриншоты,
-   compliance и Production CloudKit. Submit и публикацию workflow не выполняет.
+Смержить изменения и дождаться обычного CI. Для нового билда, например 12:
+Upload App Store Build → main / both / source=build / build_number=12 /
+artifact_run_id пусто. После VALID заполнить требуемые ответы Apple, затем
+Prepare App Store Review → main / both / action=prepare / build_number=12.
+Для проверки результата — тот же workflow с action=status. Submit остаётся ручным.
+Номер 12 задан в project.yml для обеих платформ и Finder extension;
+его сборка и загрузка пока не выполнялись.
 
 ## Метаданные, PNG и ограничения
 
@@ -146,7 +188,7 @@ writable SFTP/ProxyJump/tmux. Новые подключения к ним в э�
 - [Support](https://github.com/panandafog/Farport/blob/main/AppStore/support.md)
 - [Privacy](https://github.com/panandafog/Farport/blob/main/AppStore/privacy-policy.md)
 
-Перед `full`/`metadata` URL проверяются без авторизации; сначала страницы должны
+Перед Review prepare URL проверяются без авторизации; сначала страницы должны
 быть опубликованы на main. Для обновления нужны `AppStore/release-notes/<version>`.
 Тексты 0.1.1 описывают порядок, режим вкладок, исправления iCloud и терминала.
 
@@ -185,8 +227,9 @@ remote content (`unrestrictedWebAccess`, `userGeneratedContent`, `messagingAndCh
 
 Шифрование: не задаём ITSAppUsesNonExemptEncryption=false и не PATCH-им этот ответ.
 Exact build должен иметь ответ владельца в Apple; для non-exempt нужна связанная
-APPROVED declaration того же приложения. Пока ответа/документа нет, архив и загрузка
-возможны, но review gate остановится. После оформления — `review`, прежний build.
+APPROVED declaration того же приложения. Пока ответа/документа нет, Upload успешно заканчивается на VALID,
+а Review prepare останавливается до изменений metadata. После оформления повторить
+Prepare App Store Review → prepare с прежним build_number.
 Французская декларация может понадобиться при доступности во Франции; территории
 не отключаются автоматически. 2026-11-13 владелец сообщил, что декларацию ещё не оформлял.
 
@@ -248,7 +291,17 @@ readiness. Настоящие подписи/processing/draft подтвержд
   [Обычный CI того же коммита](https://github.com/panandafog/Farport/actions/runs/43493841912)
   также прошёл. Эти проверки не заменяют подтверждение Apple.
 - Подготовлен [PR №7](https://github.com/panandafog/Farport/pull/7) с исправлениями
-  реального запуска; main автоматически не меняется. Для повторной проверки —
-  **status / both / build 10**; для повторения подготовки — review с тем же билдом.
+  реального запуска; main автоматически не меняется. Для повторной проверки старого билда —
+  **Prepare App Store Review / status / both / build 10**; для подготовки — prepare.
   Перед ручным Submit владелец проверяет актуальность скриншотов, App Privacy,
   применимость ответов по шифрованию и реальную работу Production CloudKit.
+
+- [Исторический full run №5 — 0.1.1 (11)](https://github.com/panandafog/Farport/actions/runs/43574924458):
+  подписанные iOS/macOS пакеты загружены, VALID и metadata/screenshots подтверждены;
+  остановка на ответах владельца Export Compliance.
+- [Review resume №6 — 0.1.1 (11)](https://github.com/panandafog/Farport/actions/runs/43577642798):
+  успешен для обеих платформ, exact build 11 выбран, READY_FOR_REVIEW подтверждён Apple.
+  Этот повтор ещё использовал прежние inputs mode=review; новый интерфейс описан выше.
+- Разделение workflow и новый формат отчётов проверяются offline-тестами и actionlint.
+  После изменения новые Upload/Review **не запускались против Apple**; результаты
+  старых runs не являются проверкой новой оркестрации в production.

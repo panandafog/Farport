@@ -577,8 +577,15 @@ separately rather than equating callback tests with an end-to-end system check.
 
 ## App Store Release Automation
 
-Use the manual app-store-release workflow only on trusted main/dev with the app-store
-GitHub environment. Preserve ordinary CI's lack of signing secrets. Never submit,
+Use the two manual workflows only on trusted main/dev with the app-store GitHub
+environment and their shared non-cancelling concurrency group. Upload App Store Build
+(app-store-release.yml, original path retained for artifact provenance) finishes at VALID,
+reports pending owner compliance as a warning and never changes existing metadata/review drafts.
+Prepare App Store Review (app-store-review.yml) requires an exact build, checks compliance
+before metadata mutations, then verifies READY_FOR_REVIEW. It runs on Linux without
+signing secrets or native tools. Always publish the aggregate result, including audit/
+bootstrap failures; redact and escape annotations. Never label an incomplete review ready.
+Preserve ordinary CI's lack of signing secrets. Never submit,
 publish, cancel reviews, set pricing/territories or invent owner compliance answers.
 Canonical texts are AppStore/app-store-metadata.md (platform-specific EN/RU blocks),
 with API locale ru and asset folder ru-RU. Use existing PNGs, never capture/UI tests

@@ -1,4 +1,7 @@
-name: Prepare App Store Release
+name: Upload App Store Build
+run-name: Upload · build ${{ inputs.build_number || 'auto' }} · ${{ inputs.platform }}
+env:
+  RELEASE_PIPELINE: upload
 
 on:
   workflow_dispatch:
@@ -8,17 +11,17 @@ on:
         type: choice
         options: [both, ios, macos]
         default: both
-      mode:
-        description: Full release or resume an independent stage (never submits)
+      source:
+        description: Build a new package or restore a previously signed artifact
         type: choice
-        options: [full, upload, metadata, review, status]
-        default: full
+        options: [build, artifact]
+        default: build
       build_number:
-        description: Optional exact build for retries; full without it chooses an unused number after Apple inventory
+        description: Exact build for retries; blank for a NEW build with an automatically chosen number
         type: string
         default: ''
       artifact_run_id:
-        description: Required for upload mode; run ID containing the signed artifact
+        description: Required only for source=artifact; original run ID containing the signed package
         type: string
         default: ''
 
@@ -43,13 +46,12 @@ jobs:
       build: ${{ steps.plan.outputs.build }}
     env:
       REQUESTED_PLATFORM: ${{ inputs.platform }}
-      RELEASE_MODE: ${{ inputs.mode }}
+      RELEASE_MODE: ${{ inputs.source == 'artifact' && 'upload' || 'full' }}
       RELEASE_BUILD_NUMBER: ${{ inputs.build_number }}
       ARTIFACT_RUN_ID: ${{ inputs.artifact_run_id }}
       ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
       ASC_PRIVATE_KEY_P8_BASE64: ${{ secrets.ASC_PRIVATE_KEY_P8_BASE64 }}
-      ASC_REVIEW_CONTACT_PHONE: ${{ secrets.ASC_REVIEW_CONTACT_PHONE }}
       IOS_DISTRIBUTION_P12_BASE64: ${{ secrets.IOS_DISTRIBUTION_P12_BASE64 }}
       IOS_DISTRIBUTION_P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}
       IOS_PROVISION_PROFILE_BASE64: ${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}
@@ -61,19 +63,36 @@ jobs:
       MAC_FINDER_PROVISION_PROFILE_BASE64: ${{ secrets.MAC_FINDER_PROVISION_PROFILE_BASE64 }}
     steps:
       - uses: actions/checkout@v7
+        id: checkout
         with:
           persist-credentials: false
       - uses: actions/setup-python@v6
+        id: python
         with:
           python-version: '3.12'
-      - run: python3 -m pip install -r Scripts/release/requirements.txt
-      - name: Validate ALL required secrets, screenshots, URLs and Apple build inventory
+      - name: Install API dependencies
+        id: install_api
+        run: python3 -m pip install -r Scripts/release/requirements.txt
+      - name: Validate signing inputs and Apple build inventory
         id: plan
         run: python3 -m Scripts.release.plan
+      - name: Explain preflight result
+        if: always() && steps.checkout.outcome == 'success'
+        env:
+          RELEASE_JOB_STATUS: ${{ job.status }}
+          RELEASE_STEPS_JSON: ${{ toJSON(steps) }}
+        run: python3 -m Scripts.release.reporting platform --platform audit --build-number "${{ steps.plan.outputs.build }}"
+      - uses: actions/upload-artifact@v7
+        if: always() && steps.checkout.outcome == 'success'
+        with:
+          name: app-store-report-audit-${{ github.run_id }}
+          path: Build/Release/audit/
+          if-no-files-found: error
   prepare:
+    name: Upload build (${{ matrix.platform }})
     needs: audit
     if: needs.audit.result == 'success'
-    runs-on: ${{ (inputs.mode == 'full' || inputs.mode == 'upload') && (vars.RELEASE_MACOS_RUNNER || 'macos-26') || 'ubuntu-latest' }}
+    runs-on: ${{ vars.RELEASE_MACOS_RUNNER || 'macos-26' }}
     timeout-minutes: 120
     environment: app-store
     strategy:
@@ -82,7 +101,7 @@ jobs:
       matrix:
         platform: [ios, macos]
     env:
-      RELEASE_MODE: ${{ inputs.mode }}
+      RELEASE_MODE: ${{ inputs.source == 'artifact' && 'upload' || 'full' }}
       RELEASE_PLATFORM: ${{ matrix.platform }}
       REQUESTED_PLATFORM: ${{ inputs.platform }}
       RELEASE_BUILD_NUMBER: ${{ needs.audit.outputs.build }}
@@ -99,18 +118,22 @@ jobs:
             echo 'run=true' >> "$GITHUB_OUTPUT"
           fi
       - uses: actions/checkout@v7
+        id: checkout
         if: steps.selected.outputs.run == 'true'
         with:
           persist-credentials: false
       - uses: actions/setup-python@v6
+        id: python
         if: steps.selected.outputs.run == 'true'
         with:
           python-version: '3.12'
       - name: Install API dependencies
+        id: install_api
         if: steps.selected.outputs.run == 'true'
         run: python3 -m pip install -r Scripts/release/requirements.txt
       - name: Configure Xcode
-        if: steps.selected.outputs.run == 'true' && (inputs.mode == 'full' || inputs.mode == 'upload')
+        id: configure_xcode
+        if: steps.selected.outputs.run == 'true'
         env:
           RELEASE_XCODE_APP: ${{ vars.RELEASE_XCODE_APP }}
         shell: bash
@@ -120,11 +143,11 @@ jobs:
           fi
           xcodebuild -version
       - name: Initialize release identity and validate signing inputs
+        id: init
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_PRIVATE_KEY_P8_BASE64: ${{ secrets.ASC_PRIVATE_KEY_P8_BASE64 }}
-          ASC_REVIEW_CONTACT_PHONE: ${{ secrets.ASC_REVIEW_CONTACT_PHONE }}
           IOS_DISTRIBUTION_P12_BASE64: ${{ secrets.IOS_DISTRIBUTION_P12_BASE64 }}
           IOS_DISTRIBUTION_P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}
           IOS_PROVISION_PROFILE_BASE64: ${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}
@@ -137,17 +160,18 @@ jobs:
 
         if: steps.selected.outputs.run == 'true'
         run: python3 -m Scripts.release.cli init --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
-      - name: Check existing version, active reviews and exact build
-        if: steps.selected.outputs.run == 'true' && inputs.mode != 'status'
+      - name: Check exact build (leave existing review drafts unchanged)
+        if: steps.selected.outputs.run == 'true'
         id: probe
         run: python3 -m Scripts.release.cli probe --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
       - uses: ruby/setup-ruby@v1
-        if: steps.selected.outputs.run == 'true' && steps.probe.outputs.ready != 'true' && steps.probe.outputs.existing != 'true' && (inputs.mode == 'full' || inputs.mode == 'upload')
+        if: steps.selected.outputs.run == 'true' && steps.probe.outputs.existing != 'true'
         with:
           ruby-version: '3.4'
           bundler-cache: true
       - name: Prepare reproducible production project and terminal tools
-        if: steps.selected.outputs.run == 'true' && inputs.mode == 'full' && steps.probe.outputs.ready != 'true' && steps.probe.outputs.existing != 'true'
+        id: prepare_tools
+        if: steps.selected.outputs.run == 'true' && inputs.source == 'build' && steps.probe.outputs.existing != 'true'
         run: |
           brew install swiftlint
           sh Scripts/lint.sh
@@ -158,6 +182,7 @@ jobs:
           xcrun swift Scripts/verify-sandbox.swift
           sh Scripts/prepare-terminal-build.sh
       - name: Archive and export signed App Store package
+        id: archive
         env:
           IOS_DISTRIBUTION_P12_BASE64: ${{ secrets.IOS_DISTRIBUTION_P12_BASE64 }}
           IOS_DISTRIBUTION_P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}
@@ -168,10 +193,11 @@ jobs:
           MAC_INSTALLER_P12_PASSWORD: ${{ secrets.MAC_INSTALLER_P12_PASSWORD }}
           MAC_PROVISION_PROFILE_BASE64: ${{ secrets.MAC_PROVISION_PROFILE_BASE64 }}
           MAC_FINDER_PROVISION_PROFILE_BASE64: ${{ secrets.MAC_FINDER_PROVISION_PROFILE_BASE64 }}
-        if: steps.selected.outputs.run == 'true' && inputs.mode == 'full' && steps.probe.outputs.ready != 'true' && steps.probe.outputs.existing != 'true'
+        if: steps.selected.outputs.run == 'true' && inputs.source == 'build' && steps.probe.outputs.existing != 'true'
         run: python3 -m Scripts.release.cli build --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
       - name: Preserve signed package before any Apple upload
-        if: steps.selected.outputs.run == 'true' && inputs.mode == 'full' && steps.probe.outputs.ready != 'true' && steps.probe.outputs.existing != 'true'
+        id: save_package
+        if: steps.selected.outputs.run == 'true' && inputs.source == 'build' && steps.probe.outputs.existing != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: app-store-${{ matrix.platform }}-${{ github.run_id }}
@@ -179,13 +205,15 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Validate signed artifact source
-        if: steps.selected.outputs.run == 'true' && inputs.mode == 'upload' && steps.probe.outputs.ready != 'true' && steps.probe.outputs.existing != 'true'
+        id: source
+        if: steps.selected.outputs.run == 'true' && inputs.source == 'artifact' && steps.probe.outputs.existing != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: python3 -m Scripts.release.artifact_source
       - name: Restore signed package without rebuilding
-        if: steps.selected.outputs.run == 'true' && inputs.mode == 'upload' && steps.probe.outputs.ready != 'true' && steps.probe.outputs.existing != 'true'
+        id: restore
+        if: steps.selected.outputs.run == 'true' && inputs.source == 'artifact' && steps.probe.outputs.existing != 'true'
         uses: actions/download-artifact@v7
         with:
           name: app-store-${{ matrix.platform }}-${{ inputs.artifact_run_id }}
@@ -193,53 +221,65 @@ jobs:
           run-id: ${{ inputs.artifact_run_id }}
           github-token: ${{ github.token }}
       - name: Upload binary (skip when exact build already exists)
-        if: steps.selected.outputs.run == 'true' && steps.probe.outputs.ready != 'true' && (inputs.mode == 'full' || inputs.mode == 'upload')
+        id: upload
+        if: steps.selected.outputs.run == 'true'
         env:
           ASC_ALLOW_UPLOAD: '1'
         run: python3 -m Scripts.release.cli upload --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
       - name: Wait for Apple build processing
-        if: steps.selected.outputs.run == 'true' && steps.probe.outputs.ready != 'true' && (inputs.mode == 'full' || inputs.mode == 'upload' || inputs.mode == 'review')
+        id: wait
+        if: steps.selected.outputs.run == 'true'
         run: python3 -m Scripts.release.cli wait --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
-      - name: Upload existing metadata and screenshots
-        if: steps.selected.outputs.run == 'true' && steps.probe.outputs.ready != 'true' && (inputs.mode == 'full' || inputs.mode == 'upload' || inputs.mode == 'metadata')
-        run: python3 -m Scripts.release.cli metadata --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
-      - name: Select build and configure App Review Information
-        env:
-          ASC_REVIEW_CONTACT_PHONE: ${{ secrets.ASC_REVIEW_CONTACT_PHONE }}
-        if: steps.selected.outputs.run == 'true' && steps.probe.outputs.ready != 'true' && (inputs.mode == 'full' || inputs.mode == 'upload' || inputs.mode == 'review')
-        run: python3 -m Scripts.release.cli review --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
-      - name: Prepare Draft Review Submission (does not submit)
-        if: steps.selected.outputs.run == 'true' && steps.probe.outputs.ready != 'true' && (inputs.mode == 'full' || inputs.mode == 'upload' || inputs.mode == 'review')
-        run: python3 -m Scripts.release.cli draft --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
-      - name: Verify actual Apple state, selected build and draft
-        if: steps.selected.outputs.run == 'true' && (inputs.mode == 'status' || inputs.mode == 'full' || inputs.mode == 'upload' || inputs.mode == 'review' || steps.probe.outputs.ready == 'true')
-        run: python3 -m Scripts.release.cli status --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
+      - name: Confirm successful upload and show next action
+        id: uploaded
+        if: steps.selected.outputs.run == 'true'
+        run: python3 -m Scripts.release.cli uploaded --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
       - name: Remove temporary credentials and signing state
-        if: always() && steps.selected.outputs.run == 'true'
+        id: cleanup
+        if: always() && steps.selected.outputs.run == 'true' && (steps.init.outcome == 'success' || steps.init.outcome == 'failure')
         shell: bash
         run: |
           cleanup_status=0
           python3 -m Scripts.release.cli cleanup --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER" || cleanup_status=$?
           rm -f -- "$RUNNER_TEMP/farport-$RELEASE_PLATFORM-AuthKey.p8"
           exit "$cleanup_status"
-      - name: Job Summary
+      - name: Explain platform result
+        if: always() && steps.selected.outputs.run == 'true' && steps.checkout.outcome == 'success'
         env:
           RELEASE_JOB_STATUS: ${{ job.status }}
-        if: always() && steps.selected.outputs.run == 'true'
-        shell: bash
-        run: |
-          if [[ -f "Build/Release/$RELEASE_PLATFORM/report.json" ]]; then
-            python3 -m Scripts.release.cli summary --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
-          else
-            echo "## Farport — $RELEASE_PLATFORM" >> "$GITHUB_STEP_SUMMARY"
-            echo 'ERROR: bootstrap failed before a release report could be created. Check dependency/Xcode setup. No ready-for-review claim is made.' >> "$GITHUB_STEP_SUMMARY"
-          fi
-      - name: Preserve non-sensitive release report
-        if: always() && steps.selected.outputs.run == 'true'
+          RELEASE_STEPS_JSON: ${{ toJSON(steps) }}
+        run: python3 -m Scripts.release.reporting platform --platform "$RELEASE_PLATFORM" --build-number "$RELEASE_BUILD_NUMBER"
+      - name: Preserve release report
+        if: always() && steps.selected.outputs.run == 'true' && steps.checkout.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: app-store-report-${{ matrix.platform }}-${{ github.run_id }}
           path: |
             Build/Release/${{ matrix.platform }}/report.json
             Build/Release/${{ matrix.platform }}/summary.md
-          if-no-files-found: ignore
+          if-no-files-found: error
+  result:
+    name: Release result and next steps
+    needs: [audit, prepare]
+    if: always() && github.repository == 'panandafog/Farport' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Collect platform and preflight reports
+        uses: actions/download-artifact@v7
+        continue-on-error: true
+        with:
+          pattern: app-store-report-*-${{ github.run_id }}
+          path: Build/ReleaseReports
+      - name: Show outcome, reason and exact next action
+        env:
+          REQUESTED_PLATFORM: ${{ inputs.platform }}
+          AUDIT_STATUS: ${{ needs.audit.result }}
+          PLATFORM_STATUS: ${{ needs.prepare.result }}
+        run: python3 -m Scripts.release.reporting aggregate

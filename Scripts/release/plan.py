@@ -9,7 +9,9 @@ import tempfile
 from . import signing
 from .asc import Client, Store, sanitized
 from .cli import output, public_urls
-from .metadata import ReleaseError, identity, metadata, screenshot_files
+from .metadata import ROOT, NeedsAction, ReleaseError, identity, metadata, screenshot_files
+from .diagnostics import annotation
+from .reporting import save
 
 
 def choose_build(project_build, existing, requested, mode):
@@ -30,6 +32,9 @@ def main():
     mode = os.environ.get("RELEASE_MODE", "status")
     if mode not in {"full", "upload", "metadata", "review", "status"}:
         raise ReleaseError("Unknown mode.")
+    if mode in {"upload", "review", "status"} and not os.environ.get("RELEASE_BUILD_NUMBER"):
+        raise NeedsAction("An exact build_number is required for artifact upload, review and status. Use the number from the successful upload Summary.",
+                          code="BUILD_NUMBER_REQUIRED")
     signing.preflight(platforms, mode, os.environ.get("ARTIFACT_RUN_ID", ""))
     if mode == "full":
         failures = []
@@ -48,17 +53,22 @@ def main():
         api = Client()
         for platform in platforms:
             ident = identity(platform)
-            config, locales, _, _ = metadata(platform)
-            for group in config["screenshotGroups"]:
+            upload_pipeline = mode in {"full", "upload"}
+            if upload_pipeline:
+                config = json.loads((ROOT / "AppStore/release.json").read_text())
+                locales = {}
+            else:
+                config, locales, _, _ = metadata(platform)
+            for group in ([] if upload_pipeline else config["screenshotGroups"]):
                 if group["platform"] == ident["platform"]:
                     for locale in locales:
                         screenshot_files(group, locale)
-            if mode in {"full", "metadata", "upload"}:
+            if mode in {"metadata", "review"}:
                 public_urls(locales)
             report = {}
             store = Store(api, ident, config, report)
             versions = store.versions()
-            if mode != "status":
+            if mode not in {"full", "upload", "status"}:
                 store.guard(allow_ready=True)
             builds = api.list("/v1/builds", {"filter[app]": store.app["id"],
                 "filter[preReleaseVersion.platform]": ident["platform"], "limit": 200})
@@ -70,6 +80,8 @@ def main():
     chosen = choose_build(identity(platforms[0])["build"], existing, os.environ.get("RELEASE_BUILD_NUMBER", ""), mode)
     print("Selected build " + chosen + ". Use this SAME value for every retry.", flush=True)
     output("build", chosen)
+    save({"identity": dict(name="Farport", platform="PREFLIGHT", version=identity(platforms[0])["version"], build=chosen),
+          "outcome": "SUCCEEDED", "verification": "INPUTS_VALIDATED"}, ROOT / "Build/Release/audit/report.json")
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as file:
             file.write(f"## Farport release preflight\n\nPlatforms: {selected}; mode: {mode}; exact build: **{chosen}**. Reuse this build on retries.\n")
@@ -79,5 +91,13 @@ if __name__ == "__main__":
     try:
         main()
     except (ReleaseError, OSError, ValueError, KeyError) as error:
-        print("Release preflight failed: " + sanitized(error), file=sys.stderr)
+        message = sanitized(error)
+        code = getattr(error, "code", "PREFLIGHT_FAILED")
+        save({"identity": dict(name="Farport", platform="PREFLIGHT", version="—",
+                               build=os.environ.get("RELEASE_BUILD_NUMBER") or "not selected"),
+              "outcome": "USER_ACTION_REQUIRED" if isinstance(error, NeedsAction) else "ERROR",
+              "failedStage": "audit", "errorCode": code, "error": message,
+              "nextAction": getattr(error, "next_action", "")}, ROOT / "Build/Release/audit/report.json")
+        annotation(message, "Preflight: " + code)
+        print("Release preflight failed: " + message, file=sys.stderr)
         sys.exit(1)
