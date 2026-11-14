@@ -204,11 +204,10 @@ Each mobile controller must own a separate root container, never use the retaine
 terminal as its root view: SwiftUI replacements may overlap in lifetime. Detach only
 when that controller still owns the terminal's superview; stale teardown must not
 remove a newer attachment or dismiss its keyboard.
-Request macOS terminal focus once on attachment, deferred past the selection event;
-cancel stale requests on detachment and preserve key-window, sheet and text-editor
-ownership. Never refocus on ordinary representable updates. Mobile initial appearance
-may focus connected terminals only in the active scene; do not reopen a deliberately
-hidden keyboard on sheet dismissal or open it for a disconnected session.
+Do not automatically focus terminals on host/tab switching, view attachment or initial
+mobile appearance; the owner rolled back that behavior. Preserve explicit pointer/
+keyboard actions and the existing focus request after a successful connection.
+Never refocus on ordinary representable updates or sheet dismissal.
 TerminalKeyboardInput owns control-byte encoding and Russian-layout fallback;
 apply these legacy overrides only while keyboardEnhancementFlags is empty. Once a
 remote program negotiates Kitty keyboard input, let SwiftTerm encode its events.

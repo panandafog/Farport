@@ -169,12 +169,12 @@ p12, profiles и DerivedData в артефакты не включаются; в
 
 ### Пример следующего билда
 
-Смержить изменения и дождаться обычного CI. Для нового билда, например 12:
-Upload App Store Build → main / both / source=build / build_number=12 /
+Смержить изменения и дождаться обычного CI. Для нового билда 13:
+Upload App Store Build → main / both / source=build / build_number=13 /
 artifact_run_id пусто. После VALID заполнить требуемые ответы Apple, затем
-Prepare App Store Review → main / both / action=prepare / build_number=12.
+Prepare App Store Review → main / both / action=prepare / build_number=13.
 Для проверки результата — тот же workflow с action=status. Submit остаётся ручным.
-Номер 12 задан в project.yml для обеих платформ и Finder extension;
+Номер 13 задан в project.yml для обеих платформ и Finder extension;
 его сборка и загрузка пока не выполнялись.
 
 ## Метаданные, PNG и ограничения
@@ -302,6 +302,7 @@ readiness. Настоящие подписи/processing/draft подтвержд
 - [Review resume №6 — 0.1.1 (11)](https://github.com/panandafog/Farport/actions/runs/43577642798):
   успешен для обеих платформ, exact build 11 выбран, READY_FOR_REVIEW подтверждён Apple.
   Этот повтор ещё использовал прежние inputs mode=review; новый интерфейс описан выше.
-- Разделение workflow и новый формат отчётов проверяются offline-тестами и actionlint.
-  После изменения новые Upload/Review **не запускались против Apple**; результаты
-  старых runs не являются проверкой новой оркестрации в production.
+- Новая оркестрация проверена реальными запусками: [Upload build 12](https://github.com/panandafog/Farport/actions/runs/43582582313)
+  успешно завершился на VALID, [Review build 12](https://github.com/panandafog/Farport/actions/runs/43585743457)
+  подтвердил READY_FOR_REVIEW для обеих платформ после освобождения прежнего draft.
+  Билд 13 подготовлен в исходниках, но его сборка/загрузка ещё не выполнялись.

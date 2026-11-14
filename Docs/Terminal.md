@@ -62,15 +62,9 @@ for these changes have not been run at the user's request.
 
 ## Keyboard, Selection And Paste
 
-Selecting another host/tab on macOS requests terminal focus once after the native
-view attaches and the selection event finishes. Pending requests are invalidated on
-detachment; background windows, sheets and active text fields/editors retain focus.
-Ordinary representable updates (output, theme, layout) never request focus. On iOS,
-the controller's first appearance focuses an already connected terminal after the
-navigation transition, in the active scene only. Disconnected sessions do not open
-the keyboard. Dismissing a sheet does not force a deliberately hidden keyboard back.
-These 2026-11-12 focus changes were linted; builds/tests/UI verification were not run
-at the user's request.
+Switching hosts/tabs or attaching a terminal view does not automatically request
+terminal focus on macOS or iOS. Click the terminal to focus it; the existing focus
+request after a successful connection and the mobile keyboard action remain.
 
 The Terminal menu on macOS and Terminal Actions on iOS expose the per-device
 "Use Option as Meta" preference. Hardware special keys and IME remain handled by

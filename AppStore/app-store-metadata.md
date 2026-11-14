@@ -6,7 +6,7 @@
 | Name | Farport |
 | Version | 0.1.1 |
 | Bundle ID — обе платформы | `com.panandafog.harbor` — не менять |
-| Build | Выбрать загруженную сборку соответствующей платформы; текущий номер в исходниках — 10 |
+| Build | Выбрать загруженную сборку соответствующей платформы; актуальный номер — `CURRENT_PROJECT_VERSION` в `project.yml` |
 | Primary Language | English (U.S.), если основная локализация ещё не задана |
 | Primary Category | Developer Tools |
 | Copyright | 2026 Andrei Pantiukhin |
