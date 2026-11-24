@@ -18,6 +18,9 @@ Local changes:
   the final status instead of leaking it until the subsystem is closed.
 - PTY cleanup tolerates an already closed channel and preserves the original
   stream error instead of masking it with an AlreadyClosed error.
+- Non-PTY `withExec` cleanup likewise tolerates a channel already closed by the
+  server and preserves the original capture/size/cancellation error. Real tmux
+  history-export tests cover successful EOF and continued interactive input.
 - The command handler finishes output on channel inactivity and remote EOF, not
   only on handler removal. Integration tests cover shell exit, TCP abort, and an
   EOF-only peer which waits for the client to close its channel.

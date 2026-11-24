@@ -7,6 +7,14 @@ import FarportSessions
 import SwiftTerm
 
 extension TerminalView {
+    /// SwiftTerm resolves Unicode and soft wraps without changing selection, cursor or viewport.
+    /// In an alternate screen this exports that screen, not an invented local transcript.
+    func plainHistoryText() -> String {
+        let terminal = getTerminal()
+        return terminal.getText(start: Position(col: 0, row: 0),
+                                end: Position(col: terminal.cols, row: Int.max))
+    }
+
     var isReadingLocalHistory: Bool { canScroll && scrollPosition < 1 }
 
     func updateHistory(_ history: TerminalHistoryState, receivedOutput: Bool = false) {

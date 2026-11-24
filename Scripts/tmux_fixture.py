@@ -76,6 +76,10 @@ class TmuxFixture:
     async def _run(self, process):
         import asyncssh
 
+        if not process.get_terminal_type():
+            await self._exec(process)
+            return
+
         # tmux owns line editing and echo through its real PTY, including Ctrl-B/Ctrl-C.
         if process.get_terminal_type():
             process.channel.set_line_mode(False)
@@ -173,3 +177,32 @@ class TmuxFixture:
                 result = await asyncio.to_thread(child.wait)
             if not process.is_closing():
                 process.exit(max(0, result))
+
+    async def _exec(self, process):
+        # Control/history channels must remain non-PTY: preserve stdout, stderr and UTF-8 bytes.
+        if "capture-pane" in process.command:
+            delay = self.root / ".history-delay"
+            if delay.exists():
+                await asyncio.sleep(float(delay.read_text()))
+            if process.is_closing():
+                return
+            if (self.root / ".history-oversize").exists():
+                for _ in range(17 * 16):
+                    process.stdout.write("x" * (64 * 1024))
+                    await process.stdout.drain()
+                process.exit(0)
+                return
+        child = await asyncio.create_subprocess_exec(
+            "/bin/sh", "-c", process.command, cwd=self.root, env=self.environment,
+            stdin=asyncio.subprocess.DEVNULL, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            stdout, stderr = await child.communicate()
+            if not process.is_closing():
+                process.stdout.write(stdout.decode("utf-8", errors="replace"))
+                process.stderr.write(stderr.decode("utf-8", errors="replace"))
+                process.exit(max(0, child.returncode))
+        finally:
+            if child.returncode is None:
+                child.terminate()
+                await child.wait()

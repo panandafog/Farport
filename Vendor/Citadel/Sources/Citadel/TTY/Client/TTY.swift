@@ -482,7 +482,8 @@ extension SSHClient {
         )
 
         func close() async throws {
-            try await channel.close()
+            guard channel.isActive else { return }
+            do { try await channel.close() } catch ChannelError.alreadyClosed { return }
         }
 
         do {
@@ -490,7 +491,7 @@ extension SSHClient {
             try await perform(inbound, TTYStdinWriter(channel: channel))
             try await close()
         } catch {
-            try await close()
+            try? await close()
             throw error
         }
     }

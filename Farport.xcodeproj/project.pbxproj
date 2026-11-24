@@ -117,10 +117,12 @@
 		D16FD4EAF7C415FF6A6DDBA9 /* FarportSSH in Frameworks */ = {isa = PBXBuildFile; productRef = EC47AA53AC832EAAEAA937A7 /* FarportSSH */; };
 		D1AB6A5A16A88C1CB8E62B88 /* TerminalHistoryControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */; };
 		D4424DFA435E91C5935A883A /* FinderExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7DAF8DEA638B840F37776A /* FinderExtensionTests.swift */; };
+		D73600566BC5EBFF185BDCCD /* TerminalHistoryExportMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A96622F7118D39AD1850B77 /* TerminalHistoryExportMenu.swift */; };
 		DB7050DE86A3CA831056BBB9 /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */; };
 		DBE0C4D310EA5844BAC1EA82 /* ServerTrustViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2A5E24C2F1EC25A784BEE7 /* ServerTrustViews.swift */; };
 		DDC08949A89485E56535C695 /* CloudSyncModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA0A3B7977544B614CCF0B4 /* CloudSyncModelTests.swift */; };
 		E1644EDAD02EA89A72FAD708 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = D1E0BBB3191BFC628CC7666C /* AppIcon.icon */; };
+		E29915070E703D93A0876DC1 /* TerminalHistoryExportMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A96622F7118D39AD1850B77 /* TerminalHistoryExportMenu.swift */; };
 		E2E009AA384A04823B5F62E9 /* TerminalAppearanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4EE3F72D53B82891C41DA8 /* TerminalAppearanceSettings.swift */; };
 		E2F20ADAA5E06A546967EF55 /* FarportFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 423A63DD5D61CFB78800F657 /* FarportFinder */; };
 		E4E8870932D8D5BCFCB361E3 /* FarportCloud in Frameworks */ = {isa = PBXBuildFile; productRef = 80F85E9C3EF90F56B245F2D2 /* FarportCloud */; };
@@ -137,6 +139,7 @@
 		FA23DE3A640D44315DBDDF76 /* TerminalResolvedPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D8445ED5C0DA48445759B9 /* TerminalResolvedPalette.swift */; };
 		FA37891854B2BED91E341CE2 /* HostAndTabReordering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180BDDABBF9972E61886410A /* HostAndTabReordering.swift */; };
 		FBF7237A069297A5C1782B52 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = BF9E1B9BF9A81579AEDC9B13 /* SwiftTerm */; };
+		FDD86EB856DBD25F0BF1CF0C /* TerminalHistoryExportMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A96622F7118D39AD1850B77 /* TerminalHistoryExportMenu.swift */; };
 		FE8F781BCEE2676C06FB67AF /* MobileAppRoot.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A14DD3634091334A402459 /* MobileAppRoot.swift */; };
 /* End PBXBuildFile section */
 
@@ -200,6 +203,7 @@
 		180BDDABBF9972E61886410A /* HostAndTabReordering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostAndTabReordering.swift; sourceTree = "<group>"; };
 		1E5766153F66A71C11E5857F /* FarportMobileRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FarportMobileRelease.entitlements; sourceTree = "<group>"; };
 		2A5973CF2D6DACD7EC28B117 /* MobileLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileLibraryTests.swift; sourceTree = "<group>"; };
+		2A96622F7118D39AD1850B77 /* TerminalHistoryExportMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalHistoryExportMenu.swift; sourceTree = "<group>"; };
 		2CA913B91BC4AFDC2062694E /* ScreenshotWindowSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotWindowSetup.swift; sourceTree = "<group>"; };
 		2FA6C1B441041FF4B2B38ABD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		302C18F0CEC7B2F86E342330 /* FinderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderModel.swift; sourceTree = "<group>"; };
@@ -443,6 +447,7 @@
 				91450FAB138F3A7F5D1A8424 /* SheetFrame.swift */,
 				6F4EE3F72D53B82891C41DA8 /* TerminalAppearanceSettings.swift */,
 				7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */,
+				2A96622F7118D39AD1850B77 /* TerminalHistoryExportMenu.swift */,
 				15BEE6B2471FD6122155E0C1 /* TerminalPalette.swift */,
 				FD5901B2B8504FC4AFE0E1AF /* TerminalPastePresentation.swift */,
 				E4D8445ED5C0DA48445759B9 /* TerminalResolvedPalette.swift */,
@@ -886,6 +891,7 @@
 				24A48AF2A6A007E663D7EB3E /* SheetFrame.swift in Sources */,
 				82575CA8C3136F323ABB8280 /* TerminalAppearanceSettings.swift in Sources */,
 				C0038E7E60C9DF25E3140A33 /* TerminalHistoryControls.swift in Sources */,
+				E29915070E703D93A0876DC1 /* TerminalHistoryExportMenu.swift in Sources */,
 				F331467E91CB8F2418B56F9D /* TerminalPalette.swift in Sources */,
 				075A7DA2478EE516406B0C86 /* TerminalPastePresentation.swift in Sources */,
 				5C21538FA87ACC94B88EB254 /* TerminalResolvedPalette.swift in Sources */,
@@ -919,6 +925,7 @@
 				2241672700E92B651A5FD90C /* SystemTerminalView.swift in Sources */,
 				E2E009AA384A04823B5F62E9 /* TerminalAppearanceSettings.swift in Sources */,
 				D1AB6A5A16A88C1CB8E62B88 /* TerminalHistoryControls.swift in Sources */,
+				D73600566BC5EBFF185BDCCD /* TerminalHistoryExportMenu.swift in Sources */,
 				946B54DD013E24F16D41F0B0 /* TerminalModel.swift in Sources */,
 				B401A90F645A9631CC2F8398 /* TerminalPalette.swift in Sources */,
 				0B445C47070BE2F4F686802F /* TerminalPastePresentation.swift in Sources */,
@@ -991,6 +998,7 @@
 				3C91B2DAE489DE8FCEA02AA6 /* SheetFrame.swift in Sources */,
 				C9EE76A303141D7EF09B28F3 /* TerminalAppearanceSettings.swift in Sources */,
 				6232B74F068876BB3A57AA75 /* TerminalHistoryControls.swift in Sources */,
+				FDD86EB856DBD25F0BF1CF0C /* TerminalHistoryExportMenu.swift in Sources */,
 				616741FA52DA68A62DF26409 /* TerminalPalette.swift in Sources */,
 				C484A54DEAA35199B3838EB1 /* TerminalPastePresentation.swift in Sources */,
 				B44A044EF04C1791EC8503DE /* TerminalResolvedPalette.swift in Sources */,

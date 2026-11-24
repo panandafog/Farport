@@ -374,3 +374,20 @@
 "A standard SSH shell will end. A tmux session keeps running on the server." = "A standard SSH shell will end. A tmux session keeps running on the server.";
 "Default Session" = "Default Session";
 "New terminal tabs start in this mode." = "New terminal tabs start in this mode.";
+
+/* Terminal history export */
+"tmux history is not valid UTF-8 text." = "tmux history is not valid UTF-8 text.";
+"Farport History" = "Farport History";
+"tmux History" = "tmux History";
+"Export History" = "Export History";
+"Copy History" = "Copy History";
+"Save History…" = "Save History…";
+"Reading History…" = "Reading History…";
+"Cancel History Export" = "Cancel History Export";
+"Could Not Export History" = "Could Not Export History";
+"No terminal history is available." = "No terminal history is available.";
+"Connect to tmux before reading its server history." = "Connect to tmux before reading its server history.";
+"tmux history is not ready. Wait for the terminal to connect." = "tmux history is not ready. Wait for the terminal to connect.";
+"Reading tmux history timed out. Try again or export Farport History." = "Reading tmux history timed out. Try again or export Farport History.";
+"Could not read tmux history (exit status %lld). Check that the session and its active pane still exist." = "Could not read tmux history (exit status %lld). Check that the session and its active pane still exist.";
+"tmux history exceeds the 16 MB export limit." = "tmux history exceeds the 16 MB export limit.";

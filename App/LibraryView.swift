@@ -164,6 +164,7 @@ struct WorkspaceView: View {
 
 struct TerminalPane: View {
     @ObservedObject var model: TerminalModel
+    @StateObject private var historyExporter = TerminalHistoryExporter()
     let editHost: (UUID) -> Void
 
     var body: some View {
@@ -193,6 +194,8 @@ struct TerminalPane: View {
                 }
                 Spacer()
                 TerminalHistoryMenu(history: model.view.history, navigate: model.view.navigateHistory)
+                TerminalHistoryExportMenu(model: model, exporter: historyExporter)
+                    .labelStyle(.iconOnly).help(L10n.text("Export History"))
                 if model.requirement != nil {
                     Button(L10n.text("Cancel"), systemImage: "xmark", action: model.disconnect)
                 } else if model.state == .disconnected {
@@ -233,6 +236,7 @@ struct TerminalPane: View {
                 .id(ObjectIdentifier(model))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .modifier(TerminalHistoryExportPresentation(exporter: historyExporter, terminalID: model.sessionID))
     }
 
     private var statusColor: Color {

@@ -232,6 +232,7 @@ targets:
       - SharedUI/TerminalScrolling.swift
       - SharedUI/TerminalPastePresentation.swift
       - SharedUI/TerminalHistoryControls.swift
+      - SharedUI/TerminalHistoryExportMenu.swift
       - SharedUI/TerminalSessionModePicker.swift
       - SharedUI/HostEditor.swift
       - SharedUI/HostAndTabReordering.swift

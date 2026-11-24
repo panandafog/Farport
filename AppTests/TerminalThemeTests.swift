@@ -6,6 +6,23 @@ import XCTest
 
 @MainActor
 final class TerminalThemeTests: XCTestCase {
+    func testHistorySnapshotJoinsSoftWrapsAndPreservesSelectionViewportAndUnicode() {
+        let view = SystemTerminalView(frame: NSRect(x: 0, y: 0, width: 800, height: 500))
+        let terminal = view.getTerminal()
+        terminal.resize(cols: 12, rows: 3)
+        view.feed(text: "\u{1b}[31mabcdefghijklmnopqrstuv\u{1b}[0m\r\nПривет 界\r\nlast")
+        view.selectAll()
+        let selection = view.getSelection()
+        let viewport = view.scrollPosition
+        let bytes = terminal.getBufferAsData()
+        let text = view.plainHistoryText()
+        XCTAssertTrue(text.contains("abcdefghijklmnopqrstuv\nПривет 界\nlast"), text)
+        XCTAssertFalse(text.contains("\u{1b}"))
+        XCTAssertEqual(view.getSelection(), selection)
+        XCTAssertEqual(view.scrollPosition, viewport)
+        XCTAssertEqual(terminal.getBufferAsData(), bytes)
+    }
+
     func testNewDisconnectedTerminalHidesCursorAfterFontAndThemeSetup() {
         let model = TerminalModel(host: SavedHost(), provider: ThemeTestProvider())
         let recorder = ThemeOutputRecorder()

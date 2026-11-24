@@ -4,7 +4,32 @@ The terminal improvements update the native SwiftTerm adapters, without changing
 tmux session identities, workspace persistence, or iCloud payloads. The functional
 roadmap is: dependency/adapters, keyboard input, selection/paste, history navigation,
 search, then tab actions and recovery. Stages 1–4 (through history navigation) are
-implemented. Search and on-disk transcripts remain future work.
+implemented. Search and automatic on-disk transcripts remain future work.
+
+## Copy And Export History
+
+On macOS the export icon beside Local History opens **Export History**. On iPhone/iPad,
+use Terminal Actions → Export History. Select **Farport History** or, for a connected
+tmux tab, **tmux History**, then **Copy History** or **Save History…**. Saving uses the
+native file exporter and writes plain UTF-8 `.txt`, without ANSI styling.
+
+Farport History snapshots the active SwiftTerm buffer, including retained scrollback
+(up to 10,000 lines), without changing selection, cursor or scroll position. Soft wraps
+are joined. It works after disconnect, but is not an automatic log or a recording of
+earlier TUI frames. In an alternate screen it contains that screen; it cannot reconstruct
+tmux's server scrollback or output from before this application process.
+
+tmux History requires an existing connected tmux tab. A separate non-PTY SSH exec channel
+resolves the exact UUID session's current window and active pane, then captures its
+retained history and visible screen with `capture-pane -p -J -S - -E -`. It does not
+type into the shell, change copy mode, create sessions, install helpers or write server
+files. Existing ProxyJump and host-key verification are reused through the live transport.
+Only the history still retained by tmux can be exported; other panes/windows are excluded.
+Exports are bounded to 16 MB and have a 15-second deadline. Cancellation/expiry closes
+the export channel, never intentionally detaches the terminal. Errors are presented
+separately from the connection state. Switching/closing tabs cancels pending exports;
+late results cannot overwrite the clipboard. No fallback silently substitutes local
+history when server capture fails. Snapshots are never added to iCloud or app storage.
 
 ## SwiftTerm Upgrade
 

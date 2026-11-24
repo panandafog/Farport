@@ -112,6 +112,7 @@ private struct LibraryTestProvider: ConnectionProvider {
 
 @MainActor
 private final class LibraryTestOutput: TerminalOutput {
+    func historyText() -> String { "" }
     func write(_ data: Data) {}
     func setCursorVisible(_ visible: Bool) {}
     func focus() {}

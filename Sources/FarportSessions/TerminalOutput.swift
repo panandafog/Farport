@@ -6,4 +6,5 @@ public protocol TerminalOutput: AnyObject {
     func write(_ data: Data)
     func setCursorVisible(_ visible: Bool)
     func focus()
+    func historyText() -> String
 }

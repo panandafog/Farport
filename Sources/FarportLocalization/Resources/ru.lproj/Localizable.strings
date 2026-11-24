@@ -374,3 +374,20 @@
 "A standard SSH shell will end. A tmux session keeps running on the server." = "Обычная SSH-оболочка завершится. Сессия tmux продолжит работать на сервере.";
 "Default Session" = "Режим сессии по умолчанию";
 "New terminal tabs start in this mode." = "Новые вкладки терминала создаются в этом режиме.";
+
+/* Terminal history export */
+"tmux history is not valid UTF-8 text." = "История tmux содержит текст в неподдерживаемой кодировке. Требуется UTF-8.";
+"Farport History" = "История Farport";
+"tmux History" = "История tmux";
+"Export History" = "Экспорт истории";
+"Copy History" = "Скопировать историю";
+"Save History…" = "Сохранить историю…";
+"Reading History…" = "Чтение истории…";
+"Cancel History Export" = "Отменить экспорт истории";
+"Could Not Export History" = "Не удалось экспортировать историю";
+"No terminal history is available." = "История терминала пуста.";
+"Connect to tmux before reading its server history." = "Подключитесь к tmux, чтобы прочитать историю на сервере.";
+"tmux history is not ready. Wait for the terminal to connect." = "История tmux ещё недоступна. Дождитесь подключения терминала.";
+"Reading tmux history timed out. Try again or export Farport History." = "Время ожидания истории tmux истекло. Повторите попытку или экспортируйте историю Farport.";
+"Could not read tmux history (exit status %lld). Check that the session and its active pane still exist." = "Не удалось прочитать историю tmux (код завершения %lld). Проверьте, что сессия и её активная панель ещё существуют.";
+"tmux history exceeds the 16 MB export limit." = "История tmux превышает ограничение экспорта в 16 МБ.";

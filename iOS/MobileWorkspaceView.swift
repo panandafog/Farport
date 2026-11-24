@@ -13,6 +13,7 @@ struct MobileWorkspaceView: View {
     @State private var showingAppearance = false
     @State private var showingTabs = false
     @State private var pendingSessionMode: TerminalTab?
+    @StateObject private var historyExporter = TerminalHistoryExporter()
     @AppStorage("terminal.optionAsMeta") private var optionAsMeta = true
 
     var body: some View {
@@ -52,6 +53,7 @@ struct MobileWorkspaceView: View {
                     Button(L10n.text("Terminal Appearance"), systemImage: "paintpalette") { showingAppearance = true }
                     if let terminal = workspace.terminal {
                         TerminalHistoryMenu(history: terminal.view.history, navigate: terminal.view.browseHistory)
+                        TerminalHistoryExportMenu(model: terminal, exporter: historyExporter)
                     }
                     Menu(L10n.text("Special Keys")) {
                         ForEach(TerminalFunctionKey.allCases) { key in
@@ -80,6 +82,8 @@ struct MobileWorkspaceView: View {
         .sheet(isPresented: $showingAppearance) { TerminalAppearanceSheet() }
         .sheet(isPresented: $showingTabs) { MobileTerminalOrderSheet(workspace: workspace) }
         .modifier(TerminalSessionModeConfirmation(workspace: workspace, candidate: $pendingSessionMode))
+        .modifier(TerminalHistoryExportPresentation(exporter: historyExporter,
+                                                    terminalID: workspace.selectedTerminalID))
         .confirmationDialog(L10n.text("Close Tab"), isPresented: $closing, titleVisibility: .visible) {
             Button(L10n.text("Close Tab"), role: .destructive) {
                 if let id = workspace.selectedTerminalID { workspace.closeTerminal(id) }

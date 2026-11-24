@@ -9,6 +9,7 @@ final class RecordingOutput: TerminalOutput {
     func write(_ data: Data) { self.data.append(data) }
     func setCursorVisible(_ visible: Bool) { cursorVisible = visible }
     func focus() {}
+    func historyText() -> String { String(data: data, encoding: .utf8) ?? "" }
 }
 
 @MainActor

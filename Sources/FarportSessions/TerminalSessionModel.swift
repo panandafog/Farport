@@ -348,3 +348,26 @@ extension TerminalSessionModel {
     }
 
 }
+
+extension TerminalSessionModel {
+    public var canReadTmuxHistory: Bool {
+        usesTmux && state == .connected && session is any TerminalHistorySession
+    }
+
+    public func historySnapshot(from source: TerminalHistorySource) async throws -> String {
+        if source == .local { return TerminalHistoryText.prepare(output.historyText()) }
+        guard canReadTmuxHistory, let reader = session as? any TerminalHistorySession else {
+            throw HarborError.message(L10n.text("Connect to tmux before reading its server history."))
+        }
+        let token = generation
+        let text: String
+        do { text = try await reader.captureHistory() } catch {
+            guard token == generation, !Task.isCancelled else { throw CancellationError() }
+            throw error
+        }
+        try Task.checkCancellation()
+        // A detached, edited or replaced connection must not finish an old clipboard/file request.
+        guard token == generation, state == .connected else { throw CancellationError() }
+        return TerminalHistoryText.prepare(text)
+    }
+}

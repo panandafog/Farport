@@ -38,6 +38,7 @@ extension MobileTerminalModel: @preconcurrency TerminalViewDelegate {
 }
 
 final class MobileTerminalView: TerminalView, TerminalOutput {
+    func historyText() -> String { plainHistoryText() }
     let pasteReview = TerminalPasteReview()
     let history = TerminalHistoryState()
 

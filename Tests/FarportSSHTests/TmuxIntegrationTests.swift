@@ -144,6 +144,107 @@ final class TmuxIntegrationTests: XCTestCase {
         XCTAssertTrue(error?.localizedDescription.contains("tmux is not installed") == true)
     }
 
+    func testServerHistoryIncludesScrollbackAndDoesNotTypeCommandsIntoTheTerminal() async throws {
+        let host = try fixtureHost()
+        let terminal = try await RunningTerminal.open(host)
+        let token = UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        do {
+            try await terminal.waitFor("\u{1b}[?1049h")
+            try await terminal.session.send(Data((
+                "i=1; while [ \"$i\" -le 100 ]; do printf 'HISTORY_%s_%03d_Привет\\n' '\(token)' \"$i\"; " +
+                "i=$((i+1)); done; printf 'HISTORY_READY_%s\\n' '\(token)'\n"
+            ).utf8))
+            try await terminal.waitFor("HISTORY_READY_\(token)")
+            let reader = try XCTUnwrap(terminal.session as? any TerminalHistorySession)
+            let captured = try await reader.captureHistory()
+            XCTAssertTrue(captured.contains("HISTORY_\(token)_001_Привет"))
+            XCTAssertTrue(captured.contains("HISTORY_\(token)_100_Привет"))
+            XCTAssertFalse(captured.contains("\u{1b}"))
+            let local = await terminal.output.text
+            XCTAssertFalse(local.contains("capture-pane"))
+            try await terminal.session.send(Data("printf 'AFTER_CAPTURE_%s\\n' '\(token)'\n".utf8))
+            try await terminal.waitFor("AFTER_CAPTURE_\(token)")
+            await terminal.close()
+        } catch { await terminal.close(); throw error }
+    }
+
+    func testHistoryFollowsTheExactSessionsActivePaneAndDoesNotUseAnotherSession() async throws {
+        let first = try await RunningTerminal.open(fixtureHost())
+        let second = try await RunningTerminal.open(fixtureHost())
+        let token = UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        do {
+            try await first.waitFor("\u{1b}[?1049h")
+            try await second.waitFor("\u{1b}[?1049h")
+            try await second.session.send(Data("printf 'OTHER_SESSION_%s\\n' '\(token)'\n".utf8))
+            try await second.waitFor("OTHER_SESSION_\(token)")
+            try await first.session.send(Data((
+                "tmux split-window -h \"printf 'ACTIVE_PANE_%s\\\\n' '\(token)'; exec /bin/sleep 60\"\n"
+            ).utf8))
+            try await first.waitFor("ACTIVE_PANE_\(token)")
+            let reader = try XCTUnwrap(first.session as? any TerminalHistorySession)
+            let captured = try await reader.captureHistory()
+            XCTAssertTrue(captured.contains("ACTIVE_PANE_\(token)"))
+            XCTAssertFalse(captured.contains("OTHER_SESSION_\(token)"))
+            XCTAssertFalse(captured.contains("split-window"))
+            await first.close()
+            await second.close()
+        } catch { await first.close(); await second.close(); throw error }
+    }
+
+    func testHistoryCommandNeverCreatesOrMigratesSessionsAndOnlyUsesGeneratedIdentity() {
+        let profile = HostProfile(name: "'; touch /tmp/unwanted; #", terminalResumeStrategy: .tmux)
+        let command = TerminalLaunchPlan(profile: profile).historyCommand() ?? ""
+        XCTAssertTrue(command.contains("=\(profile.tmuxSessionName):"))
+        XCTAssertTrue(command.contains("capture-pane -p -J -S - -E -"))
+        for forbidden in [profile.name, "new-session", "rename-session", "send-keys", "capture-pane -a"] {
+            XCTAssertFalse(command.contains(forbidden))
+        }
+        XCTAssertNil(TerminalLaunchPlan(profile: HostProfile()).historyCommand())
+    }
+
+    func testCancellingServerCaptureDoesNotCloseTheInteractiveTerminal() async throws {
+        let terminal = try await RunningTerminal.open(fixtureHost())
+        let root = try XCTUnwrap(ProcessInfo.processInfo.environment["HARBOR_TEST_ROOT"])
+        let delay = URL(fileURLWithPath: root).appendingPathComponent(".history-delay")
+        defer { try? FileManager.default.removeItem(at: delay) }
+        do {
+            try await terminal.waitFor("\u{1b}[?1049h")
+            try "2".write(to: delay, atomically: true, encoding: .utf8)
+            let reader = try XCTUnwrap(terminal.session as? any TerminalHistorySession)
+            let capture = Task { try await reader.captureHistory() }
+            try await Task.sleep(for: .milliseconds(200))
+            capture.cancel()
+            do {
+                _ = try await capture.value
+                XCTFail("Cancelled export must not succeed")
+            } catch is CancellationError {} catch { XCTFail("Unexpected error: \(error)") }
+            let token = UUID().uuidString
+            try await terminal.session.send(Data("printf 'AFTER_CANCEL_%s\\n' '\(token)'\n".utf8))
+            try await terminal.waitFor("AFTER_CANCEL_\(token)")
+            await terminal.close()
+        } catch { await terminal.close(); throw error }
+    }
+
+    func testOversizedCaptureFailsWithoutTruncatingOrClosingTheTerminal() async throws {
+        let terminal = try await RunningTerminal.open(fixtureHost())
+        let root = try XCTUnwrap(ProcessInfo.processInfo.environment["HARBOR_TEST_ROOT"])
+        let flag = URL(fileURLWithPath: root).appendingPathComponent(".history-oversize")
+        defer { try? FileManager.default.removeItem(at: flag) }
+        do {
+            try await terminal.waitFor("\u{1b}[?1049h")
+            try Data().write(to: flag)
+            let reader = try XCTUnwrap(terminal.session as? any TerminalHistorySession)
+            do {
+                _ = try await reader.captureHistory()
+                XCTFail("Oversized history must not be truncated")
+            } catch { XCTAssertTrue(error.localizedDescription.contains("16 MB"), "\(error)") }
+            let token = UUID().uuidString
+            try await terminal.session.send(Data("printf 'AFTER_LIMIT_%s\\n' '\(token)'\n".utf8))
+            try await terminal.waitFor("AFTER_LIMIT_\(token)")
+            await terminal.close()
+        } catch { await terminal.close(); throw error }
+    }
+
     private func fixtureHost() throws -> SavedHost {
         let environment = ProcessInfo.processInfo.environment
         guard environment["HARBOR_TEST_TMUX"] == "1",

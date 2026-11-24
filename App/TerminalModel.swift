@@ -21,6 +21,7 @@ final class TerminalModel: TerminalSessionModel {
 }
 
 extension SystemTerminalView: TerminalOutput {
+    func historyText() -> String { plainHistoryText() }
     func write(_ data: Data) {
         feed(byteArray: Array(data)[...])
         updateHistory(history, receivedOutput: !data.isEmpty)

@@ -45,6 +45,18 @@ struct TerminalLaunchPlan {
         return "exec /bin/sh -c " + Self.quote(discovery + "exec \"$tmux_binary\" " + styleCommands(colors))
     }
 
+    func historyCommand() -> String? {
+        guard let sessionName else { return nil }
+        // Resolve the exact session's current window/active pane once, then capture that pane ID.
+        // Never use the server's most recently used session, capture mode UI, or a new-session fallback.
+        let target = Self.quote("=\(sessionName):")
+        let script = discovery +
+            "pane=$(\"$tmux_binary\" display-message -p -t \(target) '#{pane_id}') || exit 1; " +
+            "case \"$pane\" in %*) ;; *) exit 1 ;; esac; " +
+            "exec \"$tmux_binary\" capture-pane -p -J -S - -E - -t \"$pane\""
+        return Self.shellCommand(script)
+    }
+
     private func styleCommands(_ colors: TerminalDecorationColors) -> String {
         guard let sessionName else { return "" }
         // set-option resolves a target pane, so the exact session component needs its trailing colon.

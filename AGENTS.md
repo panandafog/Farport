@@ -229,6 +229,14 @@ layout callbacks. Local page commands must never use SwiftTerm.pageUp/pageDown,
 which send remote keys in alternate-screen mode. Native user Copy is allowed;
 remote OSC 52 clipboard writes are ignored on both platforms. See Docs/Terminal.md.
 
+Snapshot export uses TerminalOutput.historyText and the optional TerminalHistorySession
+transport capability. Keep UTF-8 export separate from live input and connection errors;
+never change selection/viewport, silently replace failed server history with local text,
+or send capture commands to the PTY. tmux export targets the exact UUID session's active
+pane through a bounded separate exec channel. Cancel stale results on tab/connection
+changes. Present file export on a stable view, not transient iOS Menu contents. Nothing
+is logged automatically or synced; see Docs/Terminal.md.
+
 Native ProxyJump uses Citadel `jump(to:)` and direct-tcpip, shared by SSH and SFTP.
 SSHTransportAlgorithms keeps NIOSSH's default AES-GCM preference and appends Citadel
 AES-128-CTR through a SHA-2-only MAC adapter for Dropbear compatibility. Apply it to
