@@ -80,6 +80,7 @@ struct MobileLibraryView: View {
             }
         }
         .sheet(item: $model.editor) { host in HostEditor(host: host, hosts: model.hosts, save: model.save) }
+        .modifier(ShortcutHostNavigationPresentation(model: model))
         #if DEBUG
         .modifier(ScreenshotRootModifier(model: model))
         .onAppear {

@@ -116,8 +116,8 @@ targets:
         INFOPLIST_KEY_CFBundleDisplayName: Farport
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
         INFOPLIST_KEY_NSHumanReadableCopyright: "Farport"
-        MARKETING_VERSION: "0.1.1"
-        CURRENT_PROJECT_VERSION: "13"
+        MARKETING_VERSION: "0.1.2"
+        CURRENT_PROJECT_VERSION: "14"
         ENABLE_APP_SANDBOX: YES
         ENABLE_OUTGOING_NETWORK_CONNECTIONS: YES
         ENABLE_USER_SELECTED_FILES: readwrite
@@ -206,8 +206,8 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         CODE_SIGN_ENTITLEMENTS: iOS/FarportMobile.entitlements
-        MARKETING_VERSION: "0.1.1"
-        CURRENT_PROJECT_VERSION: "13"
+        MARKETING_VERSION: "0.1.2"
+        CURRENT_PROJECT_VERSION: "14"
       configs:
         Release:
           CODE_SIGN_ENTITLEMENTS: iOS/FarportMobileRelease.entitlements
@@ -240,6 +240,7 @@ targets:
       - SharedUI/EmptyHostLibraryView.swift
       - SharedUI/ServerTrustViews.swift
       - SharedUI/SheetFrame.swift
+      - SharedUI/Automation/ShortcutHostNavigation.swift
     dependencies:
       - target: FarportMobile
       - package: FarportKit
@@ -302,8 +303,8 @@ targets:
         ENABLE_APP_SANDBOX: YES
         ENABLE_HARDENED_RUNTIME: YES
         SKIP_INSTALL: YES
-        MARKETING_VERSION: "0.1.1"
-        CURRENT_PROJECT_VERSION: "13"
+        MARKETING_VERSION: "0.1.2"
+        CURRENT_PROJECT_VERSION: "14"
         LD_RUNPATH_SEARCH_PATHS: $(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks
   FarportAppTests:
     type: bundle.unit-test

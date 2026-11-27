@@ -30,6 +30,33 @@ final class LocalizationTests: XCTestCase {
                        "Терминал 2")
     }
 
+    func testShortcutTablesHaveBothLanguagesAndPreserveParameterReferences() throws {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("SharedUI/Resources")
+        let parameters = try NSRegularExpression(pattern: "\\$\\{[^}]+\\}")
+        for table in ["AppIntents", "AppShortcuts"] {
+            func read(_ language: String) throws -> [String: String] {
+                let data = try Data(contentsOf: root.appendingPathComponent("\(language).lproj/\(table).strings"))
+                return try XCTUnwrap(PropertyListSerialization.propertyList(from: data, format: nil)
+                                     as? [String: String])
+            }
+            let english = try read("en")
+            let russian = try read("ru")
+            XCTAssertEqual(Set(english.keys), Set(russian.keys))
+            for (key, value) in english {
+                let translation = try XCTUnwrap(russian[key], key)
+                XCTAssertFalse(translation.isEmpty, key)
+                func references(_ text: String) -> [String] {
+                    parameters.matches(in: text, range: NSRange(text.startIndex..., in: text)).map {
+                        (text as NSString).substring(with: $0.range)
+                    }.sorted()
+                }
+                XCTAssertEqual(references(value), references(translation), key)
+            }
+        }
+    }
+
     private func strings(_ language: String) throws -> [String: String] {
         let directory = try XCTUnwrap(L10n.resourceBundle.url(forResource: language, withExtension: "lproj"))
         let data = try Data(contentsOf: directory.appendingPathComponent("Localizable.strings"))

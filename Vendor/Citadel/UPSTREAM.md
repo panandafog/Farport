@@ -4,6 +4,11 @@ Vendored from https://github.com/orlandos-nl/Citadel at
 `ae8562f895de06ccb86fdb1cbb65fd99c8976e12`, under the included MIT license.
 
 Local changes:
+- `executeCommandResult` collects separate stdout/stderr under one size limit,
+  sends stdin EOF and requires a real exit status. Nonzero status is a result;
+  missing status is an unknown outcome, never success. Cancellation closes its
+  child channel; Farport's one-shot runner owns a separate transport and deadline.
+  Independent AsyncSSH tests cover stdin, errors, output bounds and cancellation.
 - Add the negotiated OpenSSH `posix-rename@openssh.com` SFTP request for atomic
   replacement. Ordinary SFTP v3 rename remains no-overwrite. Independent AsyncSSH
   tests cover existing-file replacement and failed preconditions; no delete/rename fallback.

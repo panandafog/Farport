@@ -8,6 +8,7 @@ ProxyJump and optional persistent tmux sessions. macOS also includes SFTP and Fi
 - Interactive terminals with system light/dark appearance and retained output after disconnect.
 - Copy retained terminal history or export UTF-8 text; tmux tabs can also read server-side pane history.
 - Named terminal tabs with optional iCloud sync, local workspace restoration and tmux reconnect.
+- Apple Shortcuts actions for SSH commands, host lookup and TXT/JSON results, including ProxyJump.
 - macOS SFTP browsing, uploads/downloads, progress, cancellation, and basic file operations.
 - Optional macOS read-only or read/write Finder locations using File Provider.
 - Native multi-hop ProxyJump for SSH, SFTP, and Finder.
@@ -127,6 +128,7 @@ for archive paths, display/runtime identifiers, verification and earlier diagnos
 - [Security and storage](Docs/Security.md)
 - [Finder access and limits](Docs/Finder.md)
 - [ProxyJump](Docs/ProxyJump.md)
+- [SSH commands in Apple Shortcuts](Docs/Shortcuts.md)
 - [Session recovery](Docs/SessionRecovery.md)
 - [iCloud](Docs/iCloud.md)
 - [Contributor guide](AGENTS.md)

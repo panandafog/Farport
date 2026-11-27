@@ -15,6 +15,8 @@ import subprocess
 import tempfile
 import termios
 
+from command_fixture import run_command
+
 
 class TmuxFixture:
     def __init__(self, root):
@@ -192,17 +194,4 @@ class TmuxFixture:
                     await process.stdout.drain()
                 process.exit(0)
                 return
-        child = await asyncio.create_subprocess_exec(
-            "/bin/sh", "-c", process.command, cwd=self.root, env=self.environment,
-            stdin=asyncio.subprocess.DEVNULL, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
-        )
-        try:
-            stdout, stderr = await child.communicate()
-            if not process.is_closing():
-                process.stdout.write(stdout.decode("utf-8", errors="replace"))
-                process.stderr.write(stderr.decode("utf-8", errors="replace"))
-                process.exit(max(0, child.returncode))
-        finally:
-            if child.returncode is None:
-                child.terminate()
-                await child.wait()
+        await run_command(process, self.root, self.environment)

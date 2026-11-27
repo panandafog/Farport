@@ -1,0 +1,3 @@
+"Run a server command with ${applicationName}" = "Выполни команду на сервере через ${applicationName}";
+"Find servers in ${applicationName}" = "Найди серверы в ${applicationName}";
+"Open server settings in ${applicationName}" = "Открой настройки сервера в ${applicationName}";

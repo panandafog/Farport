@@ -40,9 +40,13 @@
 		2D50FFF2BF42EFEBF057C763 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3C80BC311C2CCE60E152469E /* InfoPlist.strings */; };
 		2F6DA869F8A60D1BB82F9E75 /* TerminalTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80E500ACAB636356D455EA3 /* TerminalTabs.swift */; };
 		2FB0B5690353D5E4D1C93BA5 /* MobileTerminalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3384574DD7D31F73DC2EB71 /* MobileTerminalTests.swift */; };
+		311C936A1DC5A228C848EA3C /* SSHCommandResultEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32BFEBC34188B52BB0CD4632 /* SSHCommandResultEntity.swift */; };
+		3207634D76832EAADF4635CA /* AppShortcuts.strings in Resources */ = {isa = PBXBuildFile; fileRef = 81B6C59FDB5373C9E0C8B0A7 /* AppShortcuts.strings */; };
 		336017193AAD4A8D2E70577F /* EmptyHostLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B62BABA8763B4E76448433 /* EmptyHostLibraryView.swift */; };
+		34823DCE25FB6FB62D6D182C /* CommandResultFileIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A2952CE06F6058276721FA9 /* CommandResultFileIntent.swift */; };
 		34AB9193DDF7470E6593DE2A /* HostAndTabReordering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180BDDABBF9972E61886410A /* HostAndTabReordering.swift */; };
 		3576F274BE323CE26E781977 /* MobileAppRoot.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A14DD3634091334A402459 /* MobileAppRoot.swift */; };
+		3BF96147DFF8CB6F75A6E98B /* OpenSSHHostSettingsIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDBBAC2CA6EAFF5C36B5F6F /* OpenSSHHostSettingsIntent.swift */; };
 		3C91B2DAE489DE8FCEA02AA6 /* SheetFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91450FAB138F3A7F5D1A8424 /* SheetFrame.swift */; };
 		3DFEFE2D6813F59E454DB8F2 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = C0C23B8FBAF68C1F25E0D56A /* SwiftTerm */; };
 		41E051BE2A05BFA1AD79F49D /* MobileLibraryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6D35EEE0D1EE947FD40318F /* MobileLibraryModel.swift */; };
@@ -51,14 +55,17 @@
 		43FB662A7460503E91F6099D /* CloudSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0215E23F9AE5552252A0F428 /* CloudSyncView.swift */; };
 		4592FD0B134AC6794953A02C /* LibraryEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9DFFF8D38649FE0085D100 /* LibraryEnvironment.swift */; };
 		47F7790D5F40482E9A54CBE1 /* ConnectionRequirement.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF50FD53F435051F2A847A24 /* ConnectionRequirement.swift */; };
+		4922E046833E737B0314710F /* AppIntents.strings in Resources */ = {isa = PBXBuildFile; fileRef = 76E0C6D77397F02C84ABA8BC /* AppIntents.strings */; };
 		4BC11C1CE68B5BF271981E33 /* FinderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302C18F0CEC7B2F86E342330 /* FinderModel.swift */; };
 		4C2D6CDF3177B303C0FA8640 /* FinderControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCAFB7DE0B755F5303EF959C /* FinderControls.swift */; };
 		4F42C2374FA16E0B2DE4AF34 /* FarportFinderExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 783F52CB198258C012C39CA3 /* FarportFinderExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4FC61727DC0513F3B5ADA894 /* SheetFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91450FAB138F3A7F5D1A8424 /* SheetFrame.swift */; };
+		4FDFF532FCD6764D15E9CB86 /* FarportAppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903326DB54DC43829943FCDA /* FarportAppShortcuts.swift */; };
 		50BCE95B0B7B1924AF91F998 /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 556A06B413EE1CAA4156E42A /* FarportCore */; };
 		527E14D8C2895438E740F3B8 /* StoreScreenshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EDD6E4CC589389885AB8C2 /* StoreScreenshots.swift */; };
 		5332B78D25AD08BE607D8B20 /* MobileWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65939C2D6FAA23D880D4A849 /* MobileWorkspaceView.swift */; };
 		54C60B457A8E8D2AEFBCAF0C /* FinderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C12B5B869AC8247908B362 /* FinderEnumerator.swift */; };
+		56AA457C1651019D7BF31A72 /* OpenSSHHostSettingsIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDBBAC2CA6EAFF5C36B5F6F /* OpenSSHHostSettingsIntent.swift */; };
 		5944B2A9E1F9EBFDB7C2D8D0 /* FarportSSH in Frameworks */ = {isa = PBXBuildFile; productRef = 0BA674342ED988E1D8DF9692 /* FarportSSH */; };
 		5A48129D0C4EF8A68ABE6F7D /* TerminalModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EBB0F7C62F8A3DA40F58878 /* TerminalModelTests.swift */; };
 		5B6764AC5DA7E3A3DA7EABF0 /* ServerTrustModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43A17C9E2E1FD4C069F9178 /* ServerTrustModelTests.swift */; };
@@ -68,16 +75,20 @@
 		616741FA52DA68A62DF26409 /* TerminalPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BEE6B2471FD6122155E0C1 /* TerminalPalette.swift */; };
 		6232B74F068876BB3A57AA75 /* TerminalHistoryControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */; };
 		64009EABA53C0623DBBCD4B8 /* AccentColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B41D6E65605D27DDFC7E53E7 /* AccentColorTests.swift */; };
+		67E154C6DA6ACB3F95D4DD38 /* ShortcutHostNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002BBA2F6E3EA55FC7103A55 /* ShortcutHostNavigation.swift */; };
 		698DA130E099CF3B3F67B909 /* FarportSessions in Frameworks */ = {isa = PBXBuildFile; productRef = 0DE5908AF76C84CD5858F05B /* FarportSessions */; };
+		6D02695E2CDFC8139AFB4613 /* ShortcutHostNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002BBA2F6E3EA55FC7103A55 /* ShortcutHostNavigation.swift */; };
 		6D47F09E72CAEAD2DC2DECC1 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D4649E46AFD582D9E721B316 /* PrivacyInfo.xcprivacy */; };
 		6DAEDFC5C9E9E7400E6D4477 /* FarportLocalization in Frameworks */ = {isa = PBXBuildFile; productRef = 799CC95017CD5E78B3620103 /* FarportLocalization */; };
 		6FC3D2073BBAF9071A8F6E44 /* KeychainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F95A9C427995CEA839BA4B /* KeychainTests.swift */; };
 		718628684844029F0D1ACF67 /* FarportSessions in Frameworks */ = {isa = PBXBuildFile; productRef = 7BBE18AE7D7BD416732280ED /* FarportSessions */; };
+		719F7D7B53F60335EC7DEDA3 /* AppShortcuts.strings in Resources */ = {isa = PBXBuildFile; fileRef = 81B6C59FDB5373C9E0C8B0A7 /* AppShortcuts.strings */; };
 		7241BD372395F27972CB4253 /* ScreenshotSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 090F7D64205AE441465D0F6D /* ScreenshotSupport.swift */; };
 		72756E67F3DB51E65473D24C /* ScreenshotWindowSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA913B91BC4AFDC2062694E /* ScreenshotWindowSetup.swift */; };
 		72B8ECA1F005F6DDA8D825B3 /* TerminalSessionModePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E119DCD6FABE013A31B17B0A /* TerminalSessionModePicker.swift */; };
 		762A63876DA9C351EBA70D86 /* AppSecretStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E8DCC44D168626703DE8E2 /* AppSecretStore.swift */; };
 		764F3143CD6905322EDA07FC /* SessionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D3DC3938EDB35366EC3E1A /* SessionModels.swift */; };
+		766C7B2932472A91C7C46BE4 /* ShortcutHostNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002BBA2F6E3EA55FC7103A55 /* ShortcutHostNavigation.swift */; };
 		796282E1847C4DC9173D0A61 /* CloudSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0215E23F9AE5552252A0F428 /* CloudSyncView.swift */; };
 		7A616C6DC45735DF38AAAB11 /* FarportSecurity in Frameworks */ = {isa = PBXBuildFile; productRef = C581A12AA03318734C3ABC69 /* FarportSecurity */; };
 		7B6CFB7EE556FD1027D3A469 /* FarportMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98828CE23807E44A2082B39 /* FarportMobileApp.swift */; };
@@ -88,6 +99,7 @@
 		83B4A2B19CF84CF5B00D8990 /* TestSecretStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D0E9F5D401E1277006689 /* TestSecretStore.swift */; };
 		86FC7C04D4EBD26C85D0384F /* LibraryWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA7391F5C0F7DFB0258BE1D /* LibraryWindowTests.swift */; };
 		8793D93BDDEE287F86FA2592 /* FilesPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE2726307EB806A91F33FC1 /* FilesPane.swift */; };
+		88CB2AAC9A6750917F918291 /* RunSSHCommandIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3602AB6FB2CB88788CCD9687 /* RunSSHCommandIntent.swift */; };
 		8B0D34B9AC201610CB4A6653 /* MobileLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89DA4CCF64732D128CB5C9F2 /* MobileLibraryView.swift */; };
 		8D0764952ECA94488BA17AEE /* BrandingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73BE6B45D1E289F15B665A5 /* BrandingTests.swift */; };
 		908010DCCBD144F3B9F8A505 /* FarportLocalization in Frameworks */ = {isa = PBXBuildFile; productRef = 7A9D282A73C8162443F32BA1 /* FarportLocalization */; };
@@ -96,7 +108,9 @@
 		9AA635655DA8FFBEE8608B69 /* ConnectionOnboardingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D83B1917D9142525DA82D9A /* ConnectionOnboardingTests.swift */; };
 		9F1D4AE67AC91DFA72B698D3 /* LiveConnectionRecoveryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4993D4658EB4EAE21780A1A7 /* LiveConnectionRecoveryTests.swift */; };
 		9F7F30675B8EDFCCF23FA373 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = D1E0BBB3191BFC628CC7666C /* AppIcon.icon */; };
+		A20A6724D7D7895517E3D563 /* ShortcutHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9D4EB7A0D6DEDF0C53869A /* ShortcutHost.swift */; };
 		A51258A9D5D77700E20912BD /* FarportCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7DD6A761512CBC0FA57A360D /* FarportCore */; };
+		A7C0050D63DBEAA7A0EF79A9 /* ShortcutServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3316A66CAE996C1CE82F030 /* ShortcutServices.swift */; };
 		AA9D9B34EE7F4ADA076FC646 /* LibraryRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14541ECB73BEEBE0A6941355 /* LibraryRoutingTests.swift */; };
 		AE3CA87FBDADD3D5CDAC00F6 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4348599A9A0976C9529D95AE /* LibraryView.swift */; };
 		B2DDBE357D3BA5378DB4F330 /* FarportLocalization in Frameworks */ = {isa = PBXBuildFile; productRef = 84CC4AE236E6A2C670C7085B /* FarportLocalization */; };
@@ -106,6 +120,7 @@
 		B6901E23CAD1C52E5B5D4DFB /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 4FC3F0645FED6E4CF81CAFEA /* SwiftTerm */; };
 		C0038E7E60C9DF25E3140A33 /* TerminalHistoryControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */; };
 		C10E1E570F1CB3517620177B /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 6AAFDAF8215FF955BD7BB269 /* SwiftTerm */; };
+		C1BB07B839FB282E115C95F0 /* AppIntents.strings in Resources */ = {isa = PBXBuildFile; fileRef = 76E0C6D77397F02C84ABA8BC /* AppIntents.strings */; };
 		C484A54DEAA35199B3838EB1 /* TerminalPastePresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5901B2B8504FC4AFE0E1AF /* TerminalPastePresentation.swift */; };
 		C6FB6D381F5EECA45E21A99F /* container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = F835DC4D9DAF1826E7F72E03 /* container-migration.plist */; };
 		C977B0C69DF4D0F6AA6A5F0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C6E6C72BF2D4B11553855AB /* Assets.xcassets */; };
@@ -118,18 +133,24 @@
 		D1AB6A5A16A88C1CB8E62B88 /* TerminalHistoryControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7795F66E9C832118E5697197 /* TerminalHistoryControls.swift */; };
 		D4424DFA435E91C5935A883A /* FinderExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7DAF8DEA638B840F37776A /* FinderExtensionTests.swift */; };
 		D73600566BC5EBFF185BDCCD /* TerminalHistoryExportMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A96622F7118D39AD1850B77 /* TerminalHistoryExportMenu.swift */; };
+		D78A3F2E2F36718170C57F71 /* RunSSHCommandIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3602AB6FB2CB88788CCD9687 /* RunSSHCommandIntent.swift */; };
 		DB7050DE86A3CA831056BBB9 /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */; };
 		DBE0C4D310EA5844BAC1EA82 /* ServerTrustViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2A5E24C2F1EC25A784BEE7 /* ServerTrustViews.swift */; };
 		DDC08949A89485E56535C695 /* CloudSyncModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA0A3B7977544B614CCF0B4 /* CloudSyncModelTests.swift */; };
+		DE3BB91B1048EC8D5748F750 /* ShortcutHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9D4EB7A0D6DEDF0C53869A /* ShortcutHost.swift */; };
+		E12FE17B59189909652C05E1 /* SSHCommandResultEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32BFEBC34188B52BB0CD4632 /* SSHCommandResultEntity.swift */; };
 		E1644EDAD02EA89A72FAD708 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = D1E0BBB3191BFC628CC7666C /* AppIcon.icon */; };
 		E29915070E703D93A0876DC1 /* TerminalHistoryExportMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A96622F7118D39AD1850B77 /* TerminalHistoryExportMenu.swift */; };
+		E2C9EF9A105C533535CC8DD6 /* FarportAppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903326DB54DC43829943FCDA /* FarportAppShortcuts.swift */; };
 		E2E009AA384A04823B5F62E9 /* TerminalAppearanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4EE3F72D53B82891C41DA8 /* TerminalAppearanceSettings.swift */; };
 		E2F20ADAA5E06A546967EF55 /* FarportFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 423A63DD5D61CFB78800F657 /* FarportFinder */; };
 		E4E8870932D8D5BCFCB361E3 /* FarportCloud in Frameworks */ = {isa = PBXBuildFile; productRef = 80F85E9C3EF90F56B245F2D2 /* FarportCloud */; };
 		E80D99D5AA2B8A0888696347 /* FinderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C12B5B869AC8247908B362 /* FinderEnumerator.swift */; };
 		E9C69113AE138FDA1B6F64DE /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8669F206A4A9BBD52742B71 /* FileProviderExtension.swift */; };
 		EBD999878EF0E1D67598BD48 /* TerminalScrolling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0790BF194376BDEE95295BF0 /* TerminalScrolling.swift */; };
+		EE7022918AEC2FCD75242BC9 /* ShortcutServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3316A66CAE996C1CE82F030 /* ShortcutServices.swift */; };
 		EF1995EC576DD11894187CC9 /* FarportFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 9DC3FA68A450554696260A9D /* FarportFinder */; };
+		F0464DAD3C402F93AF2DD33B /* CommandResultFileIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A2952CE06F6058276721FA9 /* CommandResultFileIntent.swift */; };
 		F305F784F20CC59C8142B269 /* FarportSecurity in Frameworks */ = {isa = PBXBuildFile; productRef = F2DFBBC43E664FABBDE532F4 /* FarportSecurity */; };
 		F331467E91CB8F2418B56F9D /* TerminalPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BEE6B2471FD6122155E0C1 /* TerminalPalette.swift */; };
 		F4ED9119B9F8F12FD04E0F3B /* MobileLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89DA4CCF64732D128CB5C9F2 /* MobileLibraryView.swift */; };
@@ -189,6 +210,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		002BBA2F6E3EA55FC7103A55 /* ShortcutHostNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutHostNavigation.swift; sourceTree = "<group>"; };
 		0215E23F9AE5552252A0F428 /* CloudSyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncView.swift; sourceTree = "<group>"; };
 		03A5CBD929644DD5B7AB6ECE /* MobileTerminalModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileTerminalModel.swift; sourceTree = "<group>"; };
 		03B62BABA8763B4E76448433 /* EmptyHostLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyHostLibraryView.swift; sourceTree = "<group>"; };
@@ -207,6 +229,9 @@
 		2CA913B91BC4AFDC2062694E /* ScreenshotWindowSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotWindowSetup.swift; sourceTree = "<group>"; };
 		2FA6C1B441041FF4B2B38ABD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		302C18F0CEC7B2F86E342330 /* FinderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderModel.swift; sourceTree = "<group>"; };
+		32BFEBC34188B52BB0CD4632 /* SSHCommandResultEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHCommandResultEntity.swift; sourceTree = "<group>"; };
+		3602AB6FB2CB88788CCD9687 /* RunSSHCommandIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunSSHCommandIntent.swift; sourceTree = "<group>"; };
+		3A9D4EB7A0D6DEDF0C53869A /* ShortcutHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutHost.swift; sourceTree = "<group>"; };
 		3D83B1917D9142525DA82D9A /* ConnectionOnboardingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionOnboardingTests.swift; sourceTree = "<group>"; };
 		3E9DFFF8D38649FE0085D100 /* LibraryEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryEnvironment.swift; sourceTree = "<group>"; };
 		3FB0D50D1FD8A9586EF6ED12 /* TerminalModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalModel.swift; sourceTree = "<group>"; };
@@ -223,6 +248,7 @@
 		5C6E6C72BF2D4B11553855AB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5F8986076C008A405B4766BF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		65939C2D6FAA23D880D4A849 /* MobileWorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileWorkspaceView.swift; sourceTree = "<group>"; };
+		6A2952CE06F6058276721FA9 /* CommandResultFileIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandResultFileIntent.swift; sourceTree = "<group>"; };
 		6BE2726307EB806A91F33FC1 /* FilesPane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesPane.swift; sourceTree = "<group>"; };
 		6F4EE3F72D53B82891C41DA8 /* TerminalAppearanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalAppearanceSettings.swift; sourceTree = "<group>"; };
 		736FD4EF519F74C65A8A7C74 /* LibraryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryModel.swift; sourceTree = "<group>"; };
@@ -237,6 +263,7 @@
 		892A338EC32AF1BF1379D65D /* FarportAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FarportAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		89DA4CCF64732D128CB5C9F2 /* MobileLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileLibraryView.swift; sourceTree = "<group>"; };
 		8CA7391F5C0F7DFB0258BE1D /* LibraryWindowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryWindowTests.swift; sourceTree = "<group>"; };
+		903326DB54DC43829943FCDA /* FarportAppShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FarportAppShortcuts.swift; sourceTree = "<group>"; };
 		91450FAB138F3A7F5D1A8424 /* SheetFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetFrame.swift; sourceTree = "<group>"; };
 		93D3DC3938EDB35366EC3E1A /* SessionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionModels.swift; sourceTree = "<group>"; };
 		96DDDFE08E54941EB95A1B25 /* FarportRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FarportRelease.entitlements; sourceTree = "<group>"; };
@@ -245,16 +272,21 @@
 		9E72DB3B2C3AFE7043D4CE62 /* TerminalThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalThemeTests.swift; sourceTree = "<group>"; };
 		A011FBCC68C686962EAA1A3D /* FarportMobileTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FarportMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F95A9C427995CEA839BA4B /* KeychainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainTests.swift; sourceTree = "<group>"; };
+		A3316A66CAE996C1CE82F030 /* ShortcutServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutServices.swift; sourceTree = "<group>"; };
 		A3BEF0BBA828F1BE4ACAD278 /* FinderWriteFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderWriteFixture.swift; sourceTree = "<group>"; };
 		A4906A02D27C6C3AD68364BF /* FixtureTrust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureTrust.swift; sourceTree = "<group>"; };
 		A75C7AA14EC472551D6CCC7B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A98828CE23807E44A2082B39 /* FarportMobileApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FarportMobileApp.swift; sourceTree = "<group>"; };
 		AD53E68F1973AF203485C05C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		ADE79F844BB68D834BB17812 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/AppIntents.strings; sourceTree = "<group>"; };
 		B3384574DD7D31F73DC2EB71 /* MobileTerminalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileTerminalTests.swift; sourceTree = "<group>"; };
 		B41D6E65605D27DDFC7E53E7 /* AccentColorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentColorTests.swift; sourceTree = "<group>"; };
 		B7B7744095D0E37D4852CCA0 /* FarportFinder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FarportFinder.entitlements; sourceTree = "<group>"; };
+		BBDBBAC2CA6EAFF5C36B5F6F /* OpenSSHHostSettingsIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenSSHHostSettingsIntent.swift; sourceTree = "<group>"; };
+		BF01DFE90FF232CFC9E27200 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AppIntents.strings; sourceTree = "<group>"; };
 		BF2A5E24C2F1EC25A784BEE7 /* ServerTrustViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTrustViews.swift; sourceTree = "<group>"; };
 		BF49EA2F8CA0319C7774C4A0 /* Farport */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Farport; path = .; sourceTree = SOURCE_ROOT; };
+		C1F53B67811715166A2B2773 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
 		C43A17C9E2E1FD4C069F9178 /* ServerTrustModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTrustModelTests.swift; sourceTree = "<group>"; };
 		CBC9B8EDFC64AF78C8E3925E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CCAFB7DE0B755F5303EF959C /* FinderControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderControls.swift; sourceTree = "<group>"; };
@@ -276,6 +308,7 @@
 		ED59DC3EEF392EEEA10C399D /* FinderWriteCallbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderWriteCallbackTests.swift; sourceTree = "<group>"; };
 		F19CC199D3C3F3D472431C17 /* FarportLocal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FarportLocal.entitlements; sourceTree = "<group>"; };
 		F37671BECB86E8680BDBCC3D /* Farport.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Farport.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5944B4A2BC77B1233911A83 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
 		F835DC4D9DAF1826E7F72E03 /* container-migration.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "container-migration.plist"; sourceTree = "<group>"; };
 		FD5901B2B8504FC4AFE0E1AF /* TerminalPastePresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalPastePresentation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -377,6 +410,15 @@
 			path = FinderExtension;
 			sourceTree = "<group>";
 		};
+		40386DB8A4FB69FC0FD417B9 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				76E0C6D77397F02C84ABA8BC /* AppIntents.strings */,
+				81B6C59FDB5373C9E0C8B0A7 /* AppShortcuts.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		5CA06B77E9A50CA4FA00EF7B /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -410,6 +452,21 @@
 				D4649E46AFD582D9E721B316 /* PrivacyInfo.xcprivacy */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		87249FFAD38F84B59425EFFA /* Automation */ = {
+			isa = PBXGroup;
+			children = (
+				6A2952CE06F6058276721FA9 /* CommandResultFileIntent.swift */,
+				903326DB54DC43829943FCDA /* FarportAppShortcuts.swift */,
+				BBDBBAC2CA6EAFF5C36B5F6F /* OpenSSHHostSettingsIntent.swift */,
+				3602AB6FB2CB88788CCD9687 /* RunSSHCommandIntent.swift */,
+				3A9D4EB7A0D6DEDF0C53869A /* ShortcutHost.swift */,
+				002BBA2F6E3EA55FC7103A55 /* ShortcutHostNavigation.swift */,
+				A3316A66CAE996C1CE82F030 /* ShortcutServices.swift */,
+				32BFEBC34188B52BB0CD4632 /* SSHCommandResultEntity.swift */,
+			);
+			path = Automation;
 			sourceTree = "<group>";
 		};
 		87737CFB0157661ADC74FFEE /* Products */ = {
@@ -453,6 +510,8 @@
 				E4D8445ED5C0DA48445759B9 /* TerminalResolvedPalette.swift */,
 				0790BF194376BDEE95295BF0 /* TerminalScrolling.swift */,
 				E119DCD6FABE013A31B17B0A /* TerminalSessionModePicker.swift */,
+				87249FFAD38F84B59425EFFA /* Automation */,
+				40386DB8A4FB69FC0FD417B9 /* Resources */,
 			);
 			path = SharedUI;
 			sourceTree = "<group>";
@@ -799,6 +858,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F7F30675B8EDFCCF23FA373 /* AppIcon.icon in Resources */,
+				4922E046833E737B0314710F /* AppIntents.strings in Resources */,
+				3207634D76832EAADF4635CA /* AppShortcuts.strings in Resources */,
 				20BB01422E5EAEB064EE3999 /* Assets.xcassets in Resources */,
 				0BFB929D06026DA6EF79484A /* InfoPlist.strings in Resources */,
 				7B7F6BCECE8A51AF600CCC22 /* PrivacyInfo.xcprivacy in Resources */,
@@ -819,6 +880,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E1644EDAD02EA89A72FAD708 /* AppIcon.icon in Resources */,
+				C1BB07B839FB282E115C95F0 /* AppIntents.strings in Resources */,
+				719F7D7B53F60335EC7DEDA3 /* AppShortcuts.strings in Resources */,
 				C977B0C69DF4D0F6AA6A5F0B /* Assets.xcassets in Resources */,
 				2D50FFF2BF42EFEBF057C763 /* InfoPlist.strings in Resources */,
 				6D47F09E72CAEAD2DC2DECC1 /* PrivacyInfo.xcprivacy in Resources */,
@@ -876,8 +939,10 @@
 			files = (
 				762A63876DA9C351EBA70D86 /* AppSecretStore.swift in Sources */,
 				15E45B503E053506765A5F80 /* CloudSyncView.swift in Sources */,
+				F0464DAD3C402F93AF2DD33B /* CommandResultFileIntent.swift in Sources */,
 				11832C24CD83A3C45106C861 /* DebugEnvironment.swift in Sources */,
 				336017193AAD4A8D2E70577F /* EmptyHostLibraryView.swift in Sources */,
+				4FDFF532FCD6764D15E9CB86 /* FarportAppShortcuts.swift in Sources */,
 				7B6CFB7EE556FD1027D3A469 /* FarportMobileApp.swift in Sources */,
 				34AB9193DDF7470E6593DE2A /* HostAndTabReordering.swift in Sources */,
 				B5AD4CA0EE028EA9AB0DA91F /* HostEditor.swift in Sources */,
@@ -886,9 +951,15 @@
 				F4ED9119B9F8F12FD04E0F3B /* MobileLibraryView.swift in Sources */,
 				1EBE7450E76AB4CFED39B6CA /* MobileTerminalModel.swift in Sources */,
 				5332B78D25AD08BE607D8B20 /* MobileWorkspaceView.swift in Sources */,
+				56AA457C1651019D7BF31A72 /* OpenSSHHostSettingsIntent.swift in Sources */,
+				D78A3F2E2F36718170C57F71 /* RunSSHCommandIntent.swift in Sources */,
+				E12FE17B59189909652C05E1 /* SSHCommandResultEntity.swift in Sources */,
 				012699BE3EC9630D6C37F2D4 /* ScreenshotSupport.swift in Sources */,
 				CD75223A6C8C362029628D57 /* ServerTrustViews.swift in Sources */,
 				24A48AF2A6A007E663D7EB3E /* SheetFrame.swift in Sources */,
+				DE3BB91B1048EC8D5748F750 /* ShortcutHost.swift in Sources */,
+				67E154C6DA6ACB3F95D4DD38 /* ShortcutHostNavigation.swift in Sources */,
+				A7C0050D63DBEAA7A0EF79A9 /* ShortcutServices.swift in Sources */,
 				82575CA8C3136F323ABB8280 /* TerminalAppearanceSettings.swift in Sources */,
 				C0038E7E60C9DF25E3140A33 /* TerminalHistoryControls.swift in Sources */,
 				E29915070E703D93A0876DC1 /* TerminalHistoryExportMenu.swift in Sources */,
@@ -906,9 +977,11 @@
 			files = (
 				24D1BE3E6211295E5782E8FC /* AppSecretStore.swift in Sources */,
 				43FB662A7460503E91F6099D /* CloudSyncView.swift in Sources */,
+				34823DCE25FB6FB62D6D182C /* CommandResultFileIntent.swift in Sources */,
 				47F7790D5F40482E9A54CBE1 /* ConnectionRequirement.swift in Sources */,
 				7C0C72E82BD47F0C44031EE0 /* EmptyHostLibraryView.swift in Sources */,
 				214993804A312079C7DCA7F7 /* FarportApp.swift in Sources */,
+				E2C9EF9A105C533535CC8DD6 /* FarportAppShortcuts.swift in Sources */,
 				8793D93BDDEE287F86FA2592 /* FilesPane.swift in Sources */,
 				4C2D6CDF3177B303C0FA8640 /* FinderControls.swift in Sources */,
 				4BC11C1CE68B5BF271981E33 /* FinderModel.swift in Sources */,
@@ -917,11 +990,17 @@
 				4592FD0B134AC6794953A02C /* LibraryEnvironment.swift in Sources */,
 				0E94902301B1ECF322841D24 /* LibraryModel.swift in Sources */,
 				AE3CA87FBDADD3D5CDAC00F6 /* LibraryView.swift in Sources */,
+				3BF96147DFF8CB6F75A6E98B /* OpenSSHHostSettingsIntent.swift in Sources */,
+				88CB2AAC9A6750917F918291 /* RunSSHCommandIntent.swift in Sources */,
+				311C936A1DC5A228C848EA3C /* SSHCommandResultEntity.swift in Sources */,
 				7241BD372395F27972CB4253 /* ScreenshotSupport.swift in Sources */,
 				72756E67F3DB51E65473D24C /* ScreenshotWindowSetup.swift in Sources */,
 				1DD698356548901454D21F5B /* ServerTrustViews.swift in Sources */,
 				764F3143CD6905322EDA07FC /* SessionModels.swift in Sources */,
 				4FC61727DC0513F3B5ADA894 /* SheetFrame.swift in Sources */,
+				A20A6724D7D7895517E3D563 /* ShortcutHost.swift in Sources */,
+				766C7B2932472A91C7C46BE4 /* ShortcutHostNavigation.swift in Sources */,
+				EE7022918AEC2FCD75242BC9 /* ShortcutServices.swift in Sources */,
 				2241672700E92B651A5FD90C /* SystemTerminalView.swift in Sources */,
 				E2E009AA384A04823B5F62E9 /* TerminalAppearanceSettings.swift in Sources */,
 				D1AB6A5A16A88C1CB8E62B88 /* TerminalHistoryControls.swift in Sources */,
@@ -996,6 +1075,7 @@
 				041A7A37C9A0E994A4A8CC47 /* MobileWorkspaceView.swift in Sources */,
 				DBE0C4D310EA5844BAC1EA82 /* ServerTrustViews.swift in Sources */,
 				3C91B2DAE489DE8FCEA02AA6 /* SheetFrame.swift in Sources */,
+				6D02695E2CDFC8139AFB4613 /* ShortcutHostNavigation.swift in Sources */,
 				C9EE76A303141D7EF09B28F3 /* TerminalAppearanceSettings.swift in Sources */,
 				6232B74F068876BB3A57AA75 /* TerminalHistoryControls.swift in Sources */,
 				FDD86EB856DBD25F0BF1CF0C /* TerminalHistoryExportMenu.swift in Sources */,
@@ -1049,6 +1129,24 @@
 				2FA6C1B441041FF4B2B38ABD /* ru */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		76E0C6D77397F02C84ABA8BC /* AppIntents.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BF01DFE90FF232CFC9E27200 /* en */,
+				ADE79F844BB68D834BB17812 /* ru */,
+			);
+			name = AppIntents.strings;
+			sourceTree = "<group>";
+		};
+		81B6C59FDB5373C9E0C8B0A7 /* AppShortcuts.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C1F53B67811715166A2B2773 /* en */,
+				F5944B4A2BC77B1233911A83 /* ru */,
+			);
+			name = AppShortcuts.strings;
 			sourceTree = "<group>";
 		};
 		CA0AC1F27EDC44699F936B89 /* InfoPlist.strings */ = {
@@ -1236,7 +1334,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/Farport.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -1250,7 +1348,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor;
 				PRODUCT_MODULE_NAME = Farport;
 				PRODUCT_NAME = Farport;
@@ -1283,14 +1381,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = iOS/FarportMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor;
 				PRODUCT_MODULE_NAME = FarportMobile;
 				PRODUCT_NAME = Farport;
@@ -1308,7 +1406,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/FarportRelease.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -1322,7 +1420,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor;
 				PRODUCT_MODULE_NAME = Farport;
 				PRODUCT_NAME = Farport;
@@ -1354,12 +1452,12 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = FinderExtension/FarportFinder.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FinderExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor.finder;
 				PRODUCT_NAME = FarportFinderExtension;
 				SDKROOT = macosx;
@@ -1374,14 +1472,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = iOS/FarportMobileRelease.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor;
 				PRODUCT_MODULE_NAME = FarportMobile;
 				PRODUCT_NAME = Farport;
@@ -1436,7 +1534,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = iOS/FarportMobileLocal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				HARBOR_ICLOUD_CONTAINER = "";
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -1444,7 +1542,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor;
 				PRODUCT_MODULE_NAME = FarportMobile;
 				PRODUCT_NAME = Farport;
@@ -1478,12 +1576,12 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = FinderExtension/FarportFinder.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FinderExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor.finder;
 				PRODUCT_NAME = FarportFinderExtension;
 				SDKROOT = macosx;
@@ -1585,7 +1683,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/FarportLocal.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -1600,7 +1698,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor;
 				PRODUCT_MODULE_NAME = Farport;
 				PRODUCT_NAME = Farport;
@@ -1631,12 +1729,12 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = FinderExtension/FarportFinder.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FinderExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.panandafog.harbor.finder;
 				PRODUCT_NAME = FarportFinderExtension;
 				PROVISIONING_PROFILE_SPECIFIER = "$(FARPORT_FINDER_PROVISIONING_PROFILE)";

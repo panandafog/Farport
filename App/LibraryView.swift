@@ -81,6 +81,7 @@ struct LibraryView: View {
             }
         }
         .navigationTitle("Farport")
+        .modifier(ShortcutHostNavigationPresentation(model: model))
         #if DEBUG
         .modifier(ScreenshotRootModifier(model: model))
         .background { ScreenshotWindowSetup() }

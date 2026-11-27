@@ -49,3 +49,39 @@ public struct ProtectedHostRepository: HostRepository {
         return []
     }
 }
+
+public extension ProtectedHostRepository {
+    /// Automation queries never migrate libraries, touch Keychain, or write cloud/workspace state.
+    func automationProfiles() throws -> [HostProfile] {
+        try HostOrdering.sorted(automationReferences().map(\.profile))
+    }
+
+    /// Resolve secrets only for the selected route; an unrelated missing key must not block automation.
+    func automationRoute(to id: UUID) throws -> ConnectionRoute {
+        let entries = try automationReferences()
+        let placeholders = entries.map { SavedHost(profile: $0.profile, credentialsConfigured: false) }
+        guard let target = placeholders.first(where: { $0.id == id }) else {
+            throw HarborError.message(L10n.text("This saved host no longer exists. Select another host in Shortcuts."))
+        }
+        let route = try ConnectionRoute(to: target, library: placeholders)
+        let ids = Set(route.hosts.map(\.id))
+        let resolved = try entries.filter { ids.contains($0.profile.id) }.map { try $0.resolve(using: secrets) }
+        guard let host = resolved.first(where: { $0.id == id }) else { throw CancellationError() }
+        for endpoint in resolved { try endpoint.validate() }
+        return try ConnectionRoute(to: host, library: resolved)
+    }
+
+    private func automationReferences() throws -> [ProtectedHost] {
+        guard FileManager.default.fileExists(atPath: url.path) else { return [] }
+        let data = try Data(contentsOf: url)
+        let version = try JSONDecoder().decode(Header.self, from: data).schemaVersion
+        guard (4...7).contains(version) else {
+            throw HarborError.message(L10n.text("Open Farport to update the host library before using Shortcuts."))
+        }
+        let entries = try JSONDecoder().decode(Document.self, from: data).hosts
+        guard Set(entries.map { $0.profile.id }).count == entries.count else {
+            throw HarborError.message(L10n.text("The host library contains duplicate identifiers."))
+        }
+        return entries
+    }
+}

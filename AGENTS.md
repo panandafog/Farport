@@ -129,6 +129,19 @@ heartbeat, not merely on opening a new connection. Standard SSH never starts a
 replacement shell automatically. Local transcript persistence is future work.
 Never replay commands or install server software implicitly.
 
+Apple Shortcuts actions live in SharedUI/Automation and use a separate one-shot
+SSHCommandRunner, never a live terminal/tmux session or interactive input. Preserve
+stdout/stderr and confirmed exit status; nonzero status is a result, missing status
+is an unknown outcome. Never retry automatically. Bound input/output and total runtime;
+the mobile adapter caps timeout at 25 seconds. Host queries read protected metadata
+without Keychain/migration/writes; execution resolves only the selected route's secrets.
+Retain normal pins for every endpoint and device authentication. Do not mutate the
+library, cloud/workspace state or server configuration from an intent. Result entities
+are transient; no new command/result history database. Native intent metadata uses
+SharedUI/Resources/{en,ru}.lproj/AppIntents.strings and AppShortcuts.strings because
+App Intents requires main-bundle LocalizedStringResource metadata. Keep the tables
+and parameter references aligned. See Docs/Shortcuts.md for usage and runtime limits.
+
 iCloud sync is opt-in, using CKSyncEngine and encrypted per-host records in the
 private CloudKit database. Keep CloudKit out of Core. Sync HostProfile only, never
 SavedHost, Keychain references/secrets, server pins, Finder locations, terminal output,

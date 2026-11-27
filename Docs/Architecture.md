@@ -102,6 +102,12 @@ titles remain data; newly created default titles use the active language. System
 third-party errors retain their own localizedDescription; remote output is never rewritten.
 Local Network usage descriptions belong in the app's localized InfoPlist.strings.
 
+Native App Intents metadata is the exception to the L10n entry point: system
+extraction requires LocalizedStringResource in the main bundle. Both targets include
+SharedUI/Resources/{en,ru}.lproj/AppIntents.strings and AppShortcuts.strings; keep
+summary/phrase parameter references intact. Runtime automation errors still use L10n.
+See [Shortcuts](Shortcuts.md) for the independent command execution boundary.
+
 Package tests check both catalogs and placeholder parity, locale fallback, interpolation,
 portable recovery, stale file callbacks, transport-vs-file errors and workspace identity.
 The macOS suite separately covers native rendering/ANSI colors and UI integration.
