@@ -6,8 +6,8 @@ struct RunSSHCommandIntent: AppIntent {
     static let title = LocalizedStringResource("Run SSH Command", table: "AppIntents")
     static let description = IntentDescription(LocalizedStringResource(
         """
-        Run a script using a separate SSH connection. Returns output, errors and exit code. No automatic retries. \
-        Timeout includes connection time; maximum 25 seconds on iPhone/iPad and 300 seconds on Mac.
+        Run a script using a separate SSH connection. Returns output, errors and exit code. \
+        No automatic retries.
         """,
         table: "AppIntents"
     ))

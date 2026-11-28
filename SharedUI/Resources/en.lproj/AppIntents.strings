@@ -24,7 +24,7 @@
 "Plain Text" = "Plain Text";
 "Format" = "Format";
 "Open Host Settings" = "Open Host Settings";
-"Run a script using a separate SSH connection. Returns output, errors and exit code. No automatic retries. Timeout includes connection time; maximum 25 seconds on iPhone/iPad and 300 seconds on Mac." = "Run a script using a separate SSH connection. Returns output, errors and exit code. No automatic retries. Timeout includes connection time; maximum 25 seconds on iPhone/iPad and 300 seconds on Mac.";
+"Run a script using a separate SSH connection. Returns output, errors and exit code. No automatic retries." = "Run a script using a separate SSH connection. Returns output, errors and exit code. No automatic retries.";
 "Find hosts by name, address or username. Leave the filter empty to return all hosts. Use Repeat with Each to run a command on several hosts." = "Find hosts by name, address or username. Leave the filter empty to return all hosts. Use Repeat with Each to run a command on several hosts.";
 "Run ${command} on ${host}" = "Run ${command} on ${host}";
 "Find hosts matching ${filter}" = "Find hosts matching ${filter}";

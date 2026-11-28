@@ -140,7 +140,10 @@ library, cloud/workspace state or server configuration from an intent. Result en
 are transient; no new command/result history database. Native intent metadata uses
 SharedUI/Resources/{en,ru}.lproj/AppIntents.strings and AppShortcuts.strings because
 App Intents requires main-bundle LocalizedStringResource metadata. Keep the tables
-and parameter references aligned. See Docs/Shortcuts.md for usage and runtime limits.
+and parameter references aligned. Keep device brands out of Siri intent descriptions,
+including localization keys: Apple rejects iPhone/iPad/Mac there with ITMS-90626.
+Document platform-specific runtime limits outside intent metadata instead.
+See Docs/Shortcuts.md for usage and runtime limits.
 
 iCloud sync is opt-in, using CKSyncEngine and encrypted per-host records in the
 private CloudKit database. Keep CloudKit out of Core. Sync HostProfile only, never

@@ -35,6 +35,8 @@ final class LocalizationTests: XCTestCase {
             .deletingLastPathComponent().deletingLastPathComponent()
             .appendingPathComponent("SharedUI/Resources")
         let parameters = try NSRegularExpression(pattern: "\\$\\{[^}]+\\}")
+        // ITMS-90626: Siri metadata rejects device names, including in localization keys.
+        let deviceNames = try NSRegularExpression(pattern: #"\b(iphone|ipad|mac)\b"#, options: .caseInsensitive)
         for table in ["AppIntents", "AppShortcuts"] {
             func read(_ language: String) throws -> [String: String] {
                 let data = try Data(contentsOf: root.appendingPathComponent("\(language).lproj/\(table).strings"))
@@ -53,6 +55,12 @@ final class LocalizationTests: XCTestCase {
                     }.sorted()
                 }
                 XCTAssertEqual(references(value), references(translation), key)
+                if table == "AppIntents" {
+                    for text in [key, value, translation] {
+                        let range = NSRange(text.startIndex..., in: text)
+                        XCTAssertNil(deviceNames.firstMatch(in: text, range: range), key)
+                    }
+                }
             }
         }
     }

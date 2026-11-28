@@ -24,7 +24,7 @@
 "Plain Text" = "Обычный текст";
 "Format" = "Формат";
 "Open Host Settings" = "Открыть настройки хоста";
-"Run a script using a separate SSH connection. Returns output, errors and exit code. No automatic retries. Timeout includes connection time; maximum 25 seconds on iPhone/iPad and 300 seconds on Mac." = "Выполнить скрипт через отдельное SSH-подключение. Возвращает вывод, ошибки и код завершения. Без автоматических повторов. Таймаут включает подключение: до 25 секунд на iPhone/iPad и 300 секунд на Mac.";
+"Run a script using a separate SSH connection. Returns output, errors and exit code. No automatic retries." = "Выполнить скрипт через отдельное SSH-подключение. Возвращает вывод, ошибки и код завершения. Без автоматических повторов.";
 "Find hosts by name, address or username. Leave the filter empty to return all hosts. Use Repeat with Each to run a command on several hosts." = "Найти хосты по названию, адресу или имени пользователя. Пустой фильтр возвращает все хосты. Используйте «Повторить с каждым» для выполнения команды на нескольких хостах.";
 "Run ${command} on ${host}" = "Выполнить ${command} на ${host}";
 "Find hosts matching ${filter}" = "Найти хосты по фильтру ${filter}";
